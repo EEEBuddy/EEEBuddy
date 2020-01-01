@@ -17,6 +17,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +37,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private ProgressBar progressBar;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+    private boolean emailValidationResult;
 
 
     @Override
@@ -39,6 +47,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         setContentView(R.layout.activity_register);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Student Profile");
 
         if(firebaseAuth.getCurrentUser() !=null){
             //if user has already logged in
@@ -64,9 +73,10 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     }
 
     private void registerUser(){
-        String email = editTextEmail.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
-        String cfmPassword = editTextCfmPassword.getText().toString().trim();
+        final String email = editTextEmail.getText().toString().trim();
+        final String password = editTextPassword.getText().toString().trim();
+        final String cfmPassword = editTextCfmPassword.getText().toString().trim();
+
 
         if(TextUtils.isEmpty(email)){
             //if email is empty
@@ -74,7 +84,18 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             //stopping the function execution further
             editTextEmail.requestFocus();
             return;
+
+        }else{
+
+            boolean emailValidation = emailValidation(email);
+
+            if(!emailValidation){
+                editTextEmail.setError("Email Does Not Exist in Database, Please use NTU Email");
+                editTextEmail.setText("");
+                return;
+            }
         }
+
 
         if(TextUtils.isEmpty(password)){
             //if password is empty
@@ -94,6 +115,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
         }
 
+
         if(TextUtils.isEmpty(cfmPassword)){
             //if Cfmpassword is empty
             Toast.makeText(this,"Please Re-Enter Password", Toast.LENGTH_SHORT).show();
@@ -105,6 +127,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             editTextCfmPassword.setError("Password Does Not Match");
             return;
         }
+
+
 
 
 
@@ -129,6 +153,38 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     }
                 });
 
+    }
+
+    private boolean emailValidation(String email) {
+
+        final String mEmail = email;
+
+        final String childName = email.substring(0, email.indexOf("@"));
+        //databaseReference.child(childName);
+        databaseReference.child(childName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.getKey().equals("email")) {
+                        String getEmail = ds.getValue().toString().trim();
+                        if (!mEmail.equals(getEmail)) {
+                            emailValidationResult = false;
+                        }else{
+                            emailValidationResult = true;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
+
+        return emailValidationResult;
     }
 
     private boolean passwordValidation(String password) {
