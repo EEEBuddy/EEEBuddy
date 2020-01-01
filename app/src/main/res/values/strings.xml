@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">EEEBuddy</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="password">Password</string>
+    <string name="login_desc">Login with your registered NTU Email</string>
+    <string name="login_btn">Login</string>
+    <string name="singup_desc">Sign Up with Your NTU Email</string>
+    <string name="reg_pw">Re-enter your password</string>
+    <string name="logout">Log Out</string>
+    <string name="change_password">Change Password</string>
+    <string name="send_email">Send Email</string>
+    <string name="apply_as_senior_buddy">Apply as Senior Buddy</string>
+    <string name="profilepic">profile pic</string>
+    <string name="textview">TextView</string>
+    <string name="name">Name</string>
+    <string name="todo">TODO</string>
+    <string name="course">Course</string>
+    <string name="matric_number">Matric Number</string>
+    <string name="email">Email</string>
+    <string name="profile">Profile</string>
+    <string name="camera">Camera</string>
+    <string name="photo_album">Photo Album</string>
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "545660391191",
+    "firebase_url": "https://eeebuddy-e6c32.firebaseio.com",
+    "project_id": "eeebuddy-e6c32",
+    "storage_bucket": "eeebuddy-e6c32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545660391191:android:8d747db25117f0eda13152",
+        "android_client_info": {
+          "package_name": "com.example.EEEBuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545660391191-51pcscqs4n68sjg574o8mscnpjkgo2i8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.EEEBuddy",
+            "certificate_hash": "0c11719cc17d97478d7f36ce0f71a30c0421ae83"
+          }
+        },
+        {
+          "client_id": "545660391191-li4ccksva2hj6059q48rntsbhsk58sdp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATbDDE7wTpIy1q-hQCxXRWvWUCkHv3PKw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "545660391191-li4ccksva2hj6059q48rntsbhsk58sdp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
