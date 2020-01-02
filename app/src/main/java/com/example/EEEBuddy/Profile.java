@@ -65,6 +65,7 @@ public class Profile extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private String userID;
+    private String userEmail, userNode;
     private TextView profileName, profileMatric, profileEmail, profileCourse;
     private CircleImageView profileImage;
 
@@ -95,6 +96,8 @@ public class Profile extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference("Student Profile");
         FirebaseUser user = firebaseAuth.getCurrentUser();
         userID = user.getUid();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
 
         profileName = (TextView) findViewById(R.id. profile_name);
         profileEmail = (TextView) findViewById(R.id.profile_email);
@@ -106,7 +109,7 @@ public class Profile extends AppCompatActivity {
 
 
         // Read from the database student details
-        databaseReference.child(userID).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
@@ -131,7 +134,6 @@ public class Profile extends AppCompatActivity {
                 showUpdateDialog();
             }
         });
-
 
     }
 
