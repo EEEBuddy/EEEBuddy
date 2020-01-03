@@ -43,7 +43,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         if(firebaseAuth.getCurrentUser() !=null){
             //if user has already logged in
             finish();
-            startActivity(new Intent(getApplicationContext(), Logout.class));
+            startActivity(new Intent(getApplicationContext(), Account.class));
         }
 
 
@@ -96,7 +96,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                         imageView.setVisibility(View.GONE);
                         if(task.isSuccessful()){
                             finish();
-                            startActivity(new Intent(getApplicationContext(), Logout.class));
+                            startActivity(new Intent(getApplicationContext(), Account.class));
                         }else{
                             Toast.makeText(Login.this, "Login Failed." + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }

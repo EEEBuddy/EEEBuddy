@@ -52,7 +52,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         if(firebaseAuth.getCurrentUser() !=null){
             //if user has already logged in
             finish();
-            startActivity(new Intent(getApplicationContext(), Logout.class));
+            startActivity(new Intent(getApplicationContext(), Account.class));
         }
 
         //progressDialog = new ProgressDialog(this);
@@ -145,7 +145,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                             //user is successfully registered
                             Toast.makeText(Register.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
                             finish();
-                            startActivity(new Intent(getApplicationContext(), Logout.class));
+                            startActivity(new Intent(getApplicationContext(), Account.class));
 
                         }else{
                             Toast.makeText(Register.this, "Registration Failed." + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

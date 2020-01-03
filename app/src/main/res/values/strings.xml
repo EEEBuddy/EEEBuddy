@@ -21,4 +21,10 @@
     <string name="profile">Profile</string>
     <string name="camera">Camera</string>
     <string name="photo_album">Photo Album</string>
+    <string name="element">Element</string>
+    <string name="acct_profile">PROFILE</string>
+    <string name="event_registered">EVENT REGISTERED</string>
+    <string name="track_my_study">TRACK MY STUDY</string>
+    <string name="log_out">LOG OUT</string>
+
 </resources>

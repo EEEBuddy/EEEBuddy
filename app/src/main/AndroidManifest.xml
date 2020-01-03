@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Profile"></activity>
         <activity android:name=".ChangePW" />
-        <activity android:name=".Logout" />
+        <activity android:name=".Account" />
         <activity android:name=".Register" />
         <activity android:name=".TakePhoto"/>
         <activity android:name=".Splash">
