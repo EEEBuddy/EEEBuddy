@@ -99,6 +99,7 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        //customise toolbar
         title = (TextView) findViewById(R.id.toolbar_title);
         backBtn = (ImageView)findViewById(R.id.toolbar_back);
         filter = (ImageView) findViewById(R.id.toolbar_filter);
@@ -108,7 +109,7 @@ public class Profile extends AppCompatActivity {
         title.setText("Profile");
         filter.setVisibility(View.GONE);
 
-
+        //initialise attributes
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Student Profile");

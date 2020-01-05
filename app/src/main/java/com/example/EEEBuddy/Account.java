@@ -49,7 +49,7 @@ public class Account extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-
+        //customise bottom navigation
         spaceNavigationView = findViewById(R.id.navigation);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
         spaceNavigationView.addSpaceItem(new SpaceItem("Senior Buddy", R.drawable.ic_buddy_grey));
@@ -79,7 +79,7 @@ public class Account extends AppCompatActivity {
             }
         });
 
-
+        //customise bottom navigation above
 
         profileName = (TextView) findViewById(R.id. profile_name);
         profileImage = (CircleImageView) findViewById(R.id.profile_image);
