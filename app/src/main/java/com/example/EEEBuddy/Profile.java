@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -67,14 +68,16 @@ public class Profile extends AppCompatActivity {
     private String userID;
     private String userEmail, userNode;
     private TextView profileName, profileMatric, profileEmail, profileCourse;
-    private CircleImageView profileImage;
 
+    private CircleImageView profileImage;
     private Uri uriProfileImage;
     private String profileImageUrl;
     private ProgressBar progressBar;
 
     private String currentPhotoPath;
     static final int ALBUM = 1, CAMERA = 2;
+
+    private ImageView backBtn;
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -90,6 +93,8 @@ public class Profile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        backBtn = (ImageView)findViewById(R.id.back);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -135,6 +140,17 @@ public class Profile extends AppCompatActivity {
             }
         });
 
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GotoPreviousActivity();
+            }
+        });
+
+    }
+
+    private void GotoPreviousActivity() {
+        startActivity(new Intent(this,Account.class));
     }
 
     @Override

@@ -5,6 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
+    <ImageView
+        android:id="@+id/banner"
+        android:layout_width="397dp"
+        android:layout_height="140dp"
+        android:layout_marginBottom="3dp"
+        android:contentDescription="@string/app_name"
+        android:paddingBottom="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/banner" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/profile_progressBar"
+        app:layout_constraintEnd_toEndOf="@+id/banner"
+        app:layout_constraintHorizontal_bias="0.083"
+        app:layout_constraintStart_toStartOf="@+id/banner"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.371"
+        app:srcCompat="@drawable/ic_arrow_back"
+        tools:ignore="VectorDrawableCompat" />
+
+
+
     <ProgressBar
         android:id="@+id/profile_progressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -28,7 +57,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/profilePic" />
+        tools:src="@drawable/profile_pic" />
 
     <TextView
         android:id="@+id/profile_name"
@@ -107,18 +136,6 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/profile_feedback" />
-
-    <ImageView
-        android:id="@+id/banner"
-        android:layout_width="397dp"
-        android:layout_height="131dp"
-        android:layout_marginBottom="3dp"
-        android:contentDescription="@string/app_name"
-        android:paddingBottom="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/profile_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/banner" />
 
     <TextView
         android:id="@+id/profile_text"

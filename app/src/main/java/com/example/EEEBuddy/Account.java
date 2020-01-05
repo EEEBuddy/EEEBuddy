@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.luseen.spacenavigation.SpaceItem;
+import com.luseen.spacenavigation.SpaceNavigationView;
+import com.luseen.spacenavigation.SpaceOnClickListener;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -35,6 +39,8 @@ public class Account extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private String userID;
     private String userEmail, userNode;
+    private SpaceNavigationView spaceNavigationView;
+
 
 
 
@@ -43,6 +49,35 @@ public class Account extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
+
+        spaceNavigationView = findViewById(R.id.navigation);
+        spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
+        spaceNavigationView.addSpaceItem(new SpaceItem("Senior Buddy", R.drawable.ic_buddy_grey));
+        spaceNavigationView.addSpaceItem(new SpaceItem("Study Buddy", R.drawable.ic_msg_grey));
+        spaceNavigationView.addSpaceItem(new SpaceItem("Chat", R.drawable.ic_chat_grey));
+        spaceNavigationView.addSpaceItem(new SpaceItem("Account", R.drawable.ic_person_grey));
+
+        spaceNavigationView.changeCurrentItem(3);
+        spaceNavigationView.showIconOnly();
+
+
+        spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
+            @Override
+            public void onCentreButtonClick() {
+                Toast.makeText(Account.this,"onCentreButtonClick", Toast.LENGTH_SHORT).show();
+                spaceNavigationView.setCentreButtonSelectable(true);
+            }
+
+            @Override
+            public void onItemClick(int itemIndex, String itemName) {
+                Toast.makeText(Account.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onItemReselected(int itemIndex, String itemName) {
+                Toast.makeText(Account.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
 
@@ -119,6 +154,7 @@ public class Account extends AppCompatActivity {
 
 
     }
+
 
 
     private void GotoProfile(){
