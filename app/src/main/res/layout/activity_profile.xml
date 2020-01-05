@@ -5,33 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
-    <ImageView
-        android:id="@+id/banner"
-        android:layout_width="397dp"
-        android:layout_height="140dp"
-        android:layout_marginBottom="3dp"
-        android:contentDescription="@string/app_name"
-        android:paddingBottom="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/profile_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/banner" />
-
-    <ImageView
-        android:id="@+id/back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/profile_progressBar"
-        app:layout_constraintEnd_toEndOf="@+id/banner"
-        app:layout_constraintHorizontal_bias="0.083"
-        app:layout_constraintStart_toStartOf="@+id/banner"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.371"
-        app:srcCompat="@drawable/ic_arrow_back"
-        tools:ignore="VectorDrawableCompat" />
-
+    <include layout="@layout/toolbar" android:id="@+id/profile_toolbar"/>
 
 
     <ProgressBar
@@ -41,10 +15,9 @@
         android:layout_height="3dp"
         android:indeterminate="true"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/banner"
-        app:layout_constraintEnd_toEndOf="@+id/banner"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_text" />
+        app:layout_constraintBottom_toBottomOf="@+id/profile_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
@@ -137,20 +110,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/profile_feedback" />
 
-    <TextView
-        android:id="@+id/profile_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto"
-        android:text="@string/profile"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/profile_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.253" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

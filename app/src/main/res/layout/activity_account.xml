@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Account">
 
-    <include layout="@layout/menu" android:id="@+id/menu" />
+    <include layout="@layout/navigation" android:id="@+id/acct_nav" />
 
 
     <de.hdodenhof.circleimageview.CircleImageView

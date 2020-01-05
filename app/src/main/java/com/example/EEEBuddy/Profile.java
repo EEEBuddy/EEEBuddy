@@ -29,6 +29,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+//import android.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -77,7 +80,9 @@ public class Profile extends AppCompatActivity {
     private String currentPhotoPath;
     static final int ALBUM = 1, CAMERA = 2;
 
-    private ImageView backBtn;
+    private Toolbar toolbar;
+    private ImageView backBtn, filter;
+    private TextView title;
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -94,7 +99,15 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        backBtn = (ImageView)findViewById(R.id.back);
+        title = (TextView) findViewById(R.id.toolbar_title);
+        backBtn = (ImageView)findViewById(R.id.toolbar_back);
+        filter = (ImageView) findViewById(R.id.toolbar_filter);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        title.setText("Profile");
+        filter.setVisibility(View.GONE);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
