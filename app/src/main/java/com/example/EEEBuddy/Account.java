@@ -70,7 +70,10 @@ public class Account extends AppCompatActivity {
 
             @Override
             public void onItemClick(int itemIndex, String itemName) {
-                Toast.makeText(Account.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(Account.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
+                if(itemIndex == 1){
+                    startActivity(new Intent(Account.this, AddStudyEvent.class));
+                }
             }
 
             @Override

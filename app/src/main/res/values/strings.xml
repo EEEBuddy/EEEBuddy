@@ -27,5 +27,12 @@
     <string name="track_my_study">TRACK MY STUDY</string>
     <string name="log_out">LOG OUT</string>
     <string name="title">Title</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="group_size">Group Size</string>
+    <string name="date">Date</string>
+    <string name="course_code">Course Code</string>
+    <string name="task">Task</string>
+    <string name="publish">Publish</string>
 
 </resources>

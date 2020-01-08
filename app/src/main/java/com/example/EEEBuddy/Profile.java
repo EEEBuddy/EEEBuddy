@@ -70,8 +70,9 @@ public class Profile extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private String userID;
     private String userEmail, userNode;
-    private TextView profileName, profileMatric, profileEmail, profileCourse;
 
+    //declare elements on activity_profile layout
+    private TextView profileName, profileMatric, profileEmail, profileCourse;
     private CircleImageView profileImage;
     private Uri uriProfileImage;
     private String profileImageUrl;
@@ -102,14 +103,14 @@ public class Profile extends AppCompatActivity {
         //customise toolbar
         title = (TextView) findViewById(R.id.toolbar_title);
         backBtn = (ImageView)findViewById(R.id.toolbar_back);
-        filter = (ImageView) findViewById(R.id.toolbar_filter);
+        filter = (ImageView) findViewById(R.id.toolbar_right_icon);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         title.setText("Profile");
         filter.setVisibility(View.GONE);
 
-        //initialise attributes
+        //initialise firebase attributes
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Student Profile");

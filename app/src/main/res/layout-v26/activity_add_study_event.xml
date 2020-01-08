@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddStudyEvent">
+
+    <include layout="@layout/toolbar" android:id="@+id/profile_toolbar"/>
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="420dp"
+        android:layout_height="1000dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="60dp"
+        android:contentDescription="@string/element"
+        android:src="@drawable/add_board"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.341" />
+
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="55dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="540dp"
+        android:contentDescription="@string/element"
+        android:src="@drawable/book"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.462"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_toolbar"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TableLayout
+            android:id="@+id/add_table"
+            android:layout_width="350dp"
+            android:layout_height="500dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageView3">
+
+
+            <TextView
+                android:id="@+id/add_title1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/course_code"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/add_courseCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:ems="10"
+                android:fontFamily="@font/roboto"
+                android:inputType="textPersonName"
+                android:labelFor="@id/add_title1"
+                android:textColor="@color/mainFontColor" />
+
+
+            <TextView
+                android:id="@+id/add_title2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/course"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/add_course"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:ems="10"
+                android:fontFamily="@font/roboto"
+                android:inputType="textPersonName"
+                android:labelFor="@id/add_title2"
+                android:textColor="@color/mainFontColor" />
+
+            <TextView
+                android:id="@+id/add_title3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/task"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/add_task"
+                android:layout_width="231dp"
+                android:layout_height="48dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:fontFamily="@font/roboto"
+                android:inputType="textPersonName"
+                android:labelFor="@id/add_title3"
+                android:textColor="@color/mainFontColor" />
+
+            <TextView
+                android:id="@+id/add_title4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/location"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/add_location"
+                android:layout_width="231dp"
+                android:layout_height="48dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:fontFamily="@font/roboto"
+                android:inputType="textPersonName"
+                android:labelFor="@id/add_title4"
+                android:textColor="@color/mainFontColor" />
+
+
+            <TextView
+                android:id="@+id/add_title5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/date"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/add_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:ems="10"
+                android:inputType="date"
+                android:labelFor="@id/add_title5" />
+
+
+            <TextView
+                android:id="@+id/add_title6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/time"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/add_startTime"
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:ems="10"
+                    android:inputType="time"
+                    android:labelFor="@id/add_title6" />
+
+                <EditText
+                    android:id="@+id/add_endTime"
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:ems="10"
+                    android:inputType="time"
+                    android:labelFor="@id/add_title6" />
+            </TableRow>
+
+
+            <TextView
+                android:id="@+id/add_title7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/group_size"
+                android:textColor="@color/mainFontColor"
+                android:textSize="14sp" />
+
+
+            <EditText
+                android:id="@+id/add_groupSize"
+                android:layout_width="109dp"
+                android:layout_height="44dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:inputType="number"
+                android:labelFor="@id/add_title7" />
+
+
+        </TableLayout>
+
+
+    <Button
+        android:id="@+id/add_addEvent"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/login"
+        android:fontFamily="@font/roboto"
+        android:text="@string/publish"
+        android:textColor="#fff"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_table"
+        app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
