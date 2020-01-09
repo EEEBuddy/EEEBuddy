@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +35,8 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     private Toolbar toolbar;
     private ImageView backBtn, toolbarRightIcon;
     private TextView toolbarTitle;
-    private EditText courseCode, courseName, task, location, date, startTime, endTime, groupSize;
+    private EditText editTextSubjectCode, editTextSubjectName, editTextTask, editTextLocation;
+    private EditText editTextDate, editTextStartTime, editTextEndTime, editTextGroupSize;
     private Integer duration;
     private Button createBtn;
     private String selectedStartTime, selectedEndTime;
@@ -63,30 +66,32 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
         toolbarRightIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-        courseCode = (EditText) findViewById(R.id.add_courseCode);
-        courseName = (EditText) findViewById(R.id.add_course);
-        task = (EditText) findViewById(R.id.add_task);
-        location = (EditText) findViewById(R.id.add_location);
-        date = (EditText) findViewById(R.id.add_date);
-        startTime = (EditText) findViewById(R.id.add_startTime);
-        endTime = (EditText) findViewById(R.id.add_endTime);
-        groupSize = (EditText) findViewById(R.id.add_groupSize);
+        editTextSubjectCode = (EditText) findViewById(R.id.add_subjectCode);
+        editTextSubjectName = (EditText) findViewById(R.id.add_subjectName);
+        editTextTask = (EditText) findViewById(R.id.add_task);
+        editTextLocation = (EditText) findViewById(R.id.add_location);
+        editTextDate = (EditText) findViewById(R.id.add_date);
+        editTextStartTime = (EditText) findViewById(R.id.add_startTime);
+        editTextEndTime = (EditText) findViewById(R.id.add_endTime);
+        editTextGroupSize = (EditText) findViewById(R.id.add_groupSize);
         createBtn = (Button) findViewById(R.id.add_addEvent);
 
         //Initialise firebase stuff
         firebaseAuth = firebaseAuth.getInstance();
-        firebaseDatabase = firebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("Study Event");
+        //firebaseDatabase = firebaseDatabase.getInstance();
+
+        //relating user and study event. userNode is the foreign key in Study Event and the primary key in Student Profile
         user = firebaseAuth.getCurrentUser();
         userEmail = user.getEmail();
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
+        databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
 
         //change toolbar content
         toolbarTitle.setText("Create Study Event");
         toolbarRightIcon.setVisibility(View.GONE);
 
         //select a date
-        date.setOnClickListener(new View.OnClickListener() {
+        editTextDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePickerDialog();
@@ -94,7 +99,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         });
 
         //select start time event listener and action
-        startTime.setOnClickListener(new View.OnClickListener() {
+        editTextStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Calendar calendar = Calendar.getInstance();
@@ -114,7 +119,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                     selectedStartTime = hourOfDay + ":" + minute + " PM";
                                 }
 
-                                startTime.setText(selectedStartTime);
+                                editTextStartTime.setText(selectedStartTime);
                             }
                         }, hour, minute, true);
 
@@ -125,7 +130,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         });
 
         //select end time event listener and action
-        endTime.setOnClickListener(new View.OnClickListener() {
+        editTextEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Calendar calendar = Calendar.getInstance();
@@ -145,7 +150,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                     selectedEndTime = hourOfDay + ":" + minute + " PM";
                                 }
 
-                                endTime.setText(selectedEndTime);
+                                editTextEndTime.setText(selectedEndTime);
 
                                 //time validation
                                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -154,11 +159,11 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                     Date parsedEnd = sdf.parse(selectedEndTime);
 
                                     if(parsedEnd.compareTo(parsedStart)<0){
-                                        endTime.setError("End time cannot be early than start time");
-                                        startTime.setError("Start time cannot be later than end time");
+                                        editTextEndTime.setError("End time cannot be early than start time");
+                                        editTextStartTime.setError("Start time cannot be later than end time");
                                     }else{
-                                        endTime.setError(null);
-                                        startTime.setError(null);
+                                        editTextEndTime.setError(null);
+                                        editTextStartTime.setError(null);
                                     }
 
                                 } catch (ParseException e) {
@@ -174,6 +179,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             }
         });
 
+        //back to previous activity
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,13 +188,62 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             }
         });
 
+        //trigger to save data to firebase
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                createStudyEvent();
             }
         });
 
+
+    }
+
+    private void createStudyEvent() {
+        String subjectCode = editTextSubjectCode.getText().toString().trim();
+        String subjectName = editTextSubjectName.getText().toString().trim();
+        String task = editTextTask.getText().toString().trim();
+        String location = editTextLocation.getText().toString().trim();
+        String date = editTextDate.getText().toString().trim();
+        String startTime = editTextStartTime.getText().toString().trim();
+        String endTime = editTextEndTime.getText().toString().trim();
+        String groupSize = editTextGroupSize.getText().toString().trim();
+
+
+
+
+        if(!(TextUtils.isEmpty(subjectCode) && TextUtils.isEmpty(subjectName) && TextUtils.isEmpty(task) && TextUtils.isEmpty(location)
+                && TextUtils.isEmpty(date) && TextUtils.isEmpty(startTime) && TextUtils.isEmpty(endTime) && TextUtils.isEmpty(groupSize))){
+
+            String time = startTime + " - " + endTime;
+
+            //getting a unique id using push().getKey() method //this unique key is the primary key for the event
+            String eventID = databaseReference.push().getKey();
+
+            //creating an StudyEvent Object
+            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, time, groupSize);
+
+            //saving data to firebase
+            databaseReference.child(eventID).setValue(studyEvent);
+
+            //empty all text field
+            editTextSubjectCode.setText("");
+            editTextSubjectName.setText("");
+            editTextTask.setText("");
+            editTextLocation.setText("");
+            editTextDate.setText("");
+            editTextStartTime.setText("");
+            editTextEndTime.setText("");
+            editTextGroupSize.setText("");
+
+
+            Toast.makeText(this, "Study Event Created", Toast.LENGTH_LONG).show();
+
+        }else{
+
+            Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_LONG).show();
+
+        }
 
     }
 
@@ -215,7 +270,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     public void onDateSet(DatePicker view, int year, int month, int day){
         month = month +1;
         String selectedDate = day + "/" + month + "/" + year;
-        date.setText(selectedDate);
+        editTextDate.setText(selectedDate);
 
         //check if date is earlier than today
         Calendar calendar = Calendar.getInstance();
@@ -227,10 +282,10 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             Date now = new Date(System.currentTimeMillis());
             Date parsedDate = sdf.parse(modifiedDate);
             if (parsedDate.compareTo(now) < 0 ){ //parsedDate.compareTo(now) returns -1 if selected date is earlier than today, otherwise, returns 1.
-                date.setError("please select today or future date");
+                editTextDate.setError("please select today or future date");
                 System.out.println(parsedDate.compareTo(now));
             }else{
-                date.setError(null);
+                editTextDate.setError(null);
             }
 
         } catch (ParseException e) {
