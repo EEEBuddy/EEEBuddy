@@ -15,7 +15,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddStudyEvent"></activity>
+        <activity android:name=".StudyBuddyPage">
+           <!-- <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter> -->
+        </activity>
+        <activity android:name=".AddStudyEvent" />
         <activity
             android:name=".Profile"
             android:parentActivityName=".Account" />
@@ -24,7 +31,7 @@
         <activity android:name=".Register" />
         <activity android:name=".TakePhoto" />
         <activity android:name=".Splash">
-           <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,7 +39,6 @@
         </activity>
         <activity android:name=".Login" />
         <activity android:name=".Navigation" />
-
 
         <meta-data
             android:name="preloaded_fonts"

@@ -28,16 +28,14 @@
         android:id="@+id/imageView3"
         android:layout_width="55dp"
         android:layout_height="60dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="540dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="710dp"
         android:contentDescription="@string/element"
         android:src="@drawable/book"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.462"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_toolbar"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TableLayout
             android:id="@+id/add_table"
@@ -218,7 +216,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_table"
+        app:layout_constraintTop_toBottomOf="@+id/add_table"
         app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

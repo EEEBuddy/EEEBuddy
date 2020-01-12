@@ -35,5 +35,7 @@
     <string name="task">Task</string>
     <string name="create">Create</string>
     <string name="course">Course</string>
+    <string name="experience">Experience</string>
+    <string name="join">Join</string>
 
 </resources>

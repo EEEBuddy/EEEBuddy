@@ -254,9 +254,9 @@ public class Profile extends AppCompatActivity {
 
     private void updateProfileImage() {
 
-        databaseReference.child(userID).child("profileImageUrl").setValue(profileImageUrl);
+        databaseReference.child(userNode).child("profileImageUrl").setValue(profileImageUrl);
 
-        databaseReference.child(userID).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);

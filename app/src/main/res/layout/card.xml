@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="#fff"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp">
+
+
+            <TextView
+                android:id="@+id/card_subjectCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/subject_code"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/card_subjectName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/subject_name"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/card_subjectCode"/>
+
+
+        <TextView
+            android:id="@+id/card_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/task"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            android:layout_below="@id/card_subjectCode"/>
+
+        <TextView
+            android:id="@+id/card_Location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/location"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            android:layout_below="@id/card_task"/>
+
+        <TextView
+            android:id="@+id/card_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/time"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            android:layout_below="@id/card_Location"/>
+
+        <TextView
+            android:id="@+id/card_vacancy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/group_size"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            android:layout_below="@id/card_time"/>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/card_join"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="280dp"
+            android:layout_marginTop="80dp"
+            android:background="@drawable/login"
+            android:text="@string/join"
+            android:textColor="#fff" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
