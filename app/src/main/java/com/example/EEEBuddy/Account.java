@@ -72,7 +72,7 @@ public class Account extends AppCompatActivity {
             public void onItemClick(int itemIndex, String itemName) {
                 //Toast.makeText(Account.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
                 if(itemIndex == 0){//goto senior buddy page
-                    //startActivity(new Intent(StudyBuddyPage.this, AddStudyEvent.class));
+                    startActivity(new Intent(Account.this, SeniorBuddyPage.class));
                 }
                 if(itemIndex == 1){//goto study buddy page
                     startActivity(new Intent(Account.this, StudyBuddyPage.class));

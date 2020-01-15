@@ -38,7 +38,19 @@
                 android:layout_marginTop="5dp"/>
 
             <TextView
-                android:id="@+id/join_msg"
+                android:id="@+id/join_msg1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="Message title"
+                android:textColor="@color/mainFontColor"
+                android:textSize="24sp"
+                android:padding="10dp"
+                android:layout_marginTop="46dp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/join_msg2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
@@ -46,12 +58,23 @@
                 android:textColor="@color/mainFontColor"
                 android:textSize="24sp"
                 android:padding="10dp"
-                android:layout_marginTop="46dp"/>
+                android:layout_below="@id/join_msg1"/>
+
+            <TextView
+                android:id="@+id/join_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="note"
+                android:textColor="#cc0000"
+                android:textSize="18sp"
+                android:padding="10dp"
+                android:layout_below="@id/join_msg2" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/join_msg">
+                android:layout_below="@id/join_note">
 
                 <Button
                     android:id="@+id/join_cancleBtn"

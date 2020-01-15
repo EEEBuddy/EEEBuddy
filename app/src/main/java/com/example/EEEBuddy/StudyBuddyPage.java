@@ -50,10 +50,11 @@ public class StudyBuddyPage extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private String userID;
     private String userEmail, userNode;
+
     private SpaceNavigationView spaceNavigationView;
 
-    private Dialog dialog;
-    private TextView message;
+
+    private TextView message1, message2, note;
     private Button cancleBtn, confirmBtn;
 
 
@@ -63,7 +64,7 @@ public class StudyBuddyPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_buddy_page);
 
-        //customise bottom navigation
+      //customise bottom navigation
         spaceNavigationView = findViewById(R.id.navigation);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
         spaceNavigationView.addSpaceItem(new SpaceItem("Senior Buddy", R.drawable.ic_buddy_grey));
@@ -87,7 +88,7 @@ public class StudyBuddyPage extends AppCompatActivity {
                 Toast.makeText(StudyBuddyPage.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
 
                 if(itemIndex == 0){//goto senior buddy page
-                    //startActivity(new Intent(StudyBuddyPage.this, AddStudyEvent.class));
+                    startActivity(new Intent(StudyBuddyPage.this, SeniorBuddyPage.class));
                 }
                 if(itemIndex == 1){//goto study buddy page
                     //void
@@ -107,6 +108,8 @@ public class StudyBuddyPage extends AppCompatActivity {
         });
 
         //customise bottom navigation above
+
+
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -161,7 +164,7 @@ public class StudyBuddyPage extends AppCompatActivity {
 
     }
 
-    public void showDialogBox(final Context context){
+    public void showDialogBox(final Context context, String code, String subject, String task, String location, String time){
 
         //need to pass the context from the class calling this method.
 
@@ -177,9 +180,12 @@ public class StudyBuddyPage extends AppCompatActivity {
         dialog.show();
 
         //dialog.setContentView(R.layout.join_studyevent_dialog);
-        message = (TextView) dialog.findViewById(R.id.join_msg);
+        message1 = (TextView) dialog.findViewById(R.id.join_msg1);
+        message2 = (TextView) dialog.findViewById(R.id.join_msg2);
+        note = (TextView) dialog.findViewById(R.id.join_note);
         cancleBtn = (Button) dialog.findViewById(R.id.join_cancleBtn);
         confirmBtn = (Button) dialog.findViewById(R.id.join_cfmBtn);
+
 
         cancleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,8 +201,13 @@ public class StudyBuddyPage extends AppCompatActivity {
             }
         });
 
-        //dialog.show();
-
+        //message content
+        message1.setText(code + " " + subject);
+        message2.setText(
+                "Task: " + task + "\n"
+                + "Location: " + location + "\n"
+                + "Time: " + time);
+        note.setText("Note: Goto 'Account > Study Events' to manage your registered events.");
     }
 
 }

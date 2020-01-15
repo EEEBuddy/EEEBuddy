@@ -19,7 +19,7 @@
 
     <ImageView
         android:id="@+id/toolbar_right_icon"
-        android:layout_width="40dp"
+        android:layout_width="35dp"
         android:layout_height="40dp"
         app:srcCompat="@drawable/ic_filter_unselect"
         android:layout_gravity="right"

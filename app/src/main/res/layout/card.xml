@@ -97,7 +97,6 @@
             android:text="@string/join"
             android:textColor="#fff" />
 
-
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

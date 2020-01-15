@@ -76,7 +76,7 @@ public class Profile extends AppCompatActivity {
     private CircleImageView profileImage;
     private Uri uriProfileImage;
     private String profileImageUrl;
-    private ProgressBar progressBar;
+    private ImageView progressBar;
 
     private String currentPhotoPath;
     static final int ALBUM = 1, CAMERA = 2;
@@ -125,7 +125,7 @@ public class Profile extends AppCompatActivity {
         profileCourse = (TextView) findViewById(R.id. profile_course);
         profileImage = (CircleImageView) findViewById(R.id.profile_image);
 
-        progressBar = findViewById(R.id.profile_progressBar);
+        progressBar = (ImageView) findViewById(R.id.profile_loading);
 
 
         // Read from the database student details
@@ -263,6 +263,7 @@ public class Profile extends AppCompatActivity {
                 String newProfileImageUrl = userInfo.getProfileImageUrl();
                 Picasso.get().load(newProfileImageUrl).into(profileImage);
                 Toast.makeText(Profile.this, "Profile Image Uploaded Successfully", Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override

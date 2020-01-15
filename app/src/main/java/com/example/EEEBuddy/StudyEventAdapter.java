@@ -50,7 +50,15 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             public void onClick(View v) {
 
                 final StudyBuddyPage studyBuddyPage = new StudyBuddyPage();
-               studyBuddyPage.showDialogBox(context);
+               studyBuddyPage.showDialogBox(
+                       context,
+                       studyEvents.get(position).getSubjectCode(),
+                       studyEvents.get(position).getSubjectName(),
+                       studyEvents.get(position).getTask(),
+                       studyEvents.get(position).getLocation(),
+                       studyEvents.get(position).getTime()
+
+                       );
             }
         });
 
