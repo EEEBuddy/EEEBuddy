@@ -18,8 +18,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/card_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             app:civ_border_color="#FFFFFF"
             app:civ_border_width="2dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -38,8 +38,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_toEndOf="@id/card_image"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"/>
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"/>
 
         <TextView
             android:id="@+id/card_course"
@@ -51,11 +51,11 @@
             android:textSize="18sp"
             android:layout_below="@id/card_name"
             android:layout_toEndOf="@id/card_image"
-            android:layout_marginStart="20dp"/>
+            android:layout_marginStart="30dp"/>
 
 
         <TextView
-            android:id="@+id/card_year"
+            android:id="@+id/card_exp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
@@ -64,9 +64,8 @@
             android:textSize="18sp"
             android:layout_toEndOf="@id/card_image"
             android:layout_below="@id/card_course"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="30dp"
             />
-
 
 
 

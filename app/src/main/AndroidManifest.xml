@@ -15,25 +15,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SeniorBuddyPage">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-        </activity>
+        <activity android:name=".SeniorBuddyPage"></activity>
+        <activity android:name=".AllFragment"></activity>
+        <activity android:name=".RecommFragment"></activity>
         <activity android:name=".StudyBuddyPage"></activity>
         <activity android:name=".AddStudyEvent" />
-        <activity
-            android:name=".Profile"
-            android:parentActivityName=".Account" />
+        <activity android:name=".Profile">
+        </activity>
         <activity android:name=".ChangePW" />
-        <activity android:name=".Account" />
+        <activity android:name=".Account" ></activity>
         <activity android:name=".Register" />
         <activity android:name=".TakePhoto" />
         <activity android:name=".Splash">
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>r
             <!--
            <intent-filter>
                <action android:name="android.intent.action.MAIN" />

@@ -33,6 +33,7 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -126,6 +127,8 @@ public class Profile extends AppCompatActivity {
         profileImage = (CircleImageView) findViewById(R.id.profile_image);
 
         progressBar = (ImageView) findViewById(R.id.profile_loading);
+        Glide.with(this).asGif().load(R.drawable.single_dog_loading).into(progressBar);
+
 
 
         // Read from the database student details
@@ -301,7 +304,7 @@ public class Profile extends AppCompatActivity {
         buttonCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verifyStoragePermissions(Profile.this);
+                verifyPermissions(Profile.this);//check file storage and camera permission
                 dispatchTakePictureIntent();
                 alertDialog.dismiss();
             }
@@ -319,17 +322,27 @@ public class Profile extends AppCompatActivity {
     }
 
 
-    public static void verifyStoragePermissions(Activity activity) {
+    public void verifyPermissions(Activity activity) {
         // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int filePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int CameraPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
+
+        if (filePermission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
+        }
+
+        if(CameraPermission != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                    activity,
+                    new String[]{Manifest.permission.CAMERA}, CAMERA);
+        }else{
+            dispatchTakePictureIntent();
         }
     }
 

@@ -76,12 +76,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-   <!-- <include
+   <include
         layout="@layout/navigation"
         android:id="@+id/seniorbuddy_nav"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/seniorbuddy_tablayout"
-        /> -->
+        />
 
 </RelativeLayout>
