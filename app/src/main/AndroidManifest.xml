@@ -10,40 +10,40 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SeniorBuddyPage"></activity>
-        <activity android:name=".AllFragment"></activity>
-        <activity android:name=".RecommFragment"></activity>
-        <activity android:name=".StudyBuddyPage"></activity>
+
+        <activity android:name=".SeniorBuddyInfo"/>
+        <activity android:name=".SeniorBuddyPage" />
+        <activity android:name=".AllFragment" />
+        <activity android:name=".RecommFragment" />
+        <activity android:name=".StudyBuddyPage" />
         <activity android:name=".AddStudyEvent" />
-        <activity android:name=".Profile">
-        </activity>
+        <activity android:name=".Profile"/>
         <activity android:name=".ChangePW" />
-        <activity android:name=".Account" ></activity>
+        <activity android:name=".Account" />
         <activity android:name=".Register" />
         <activity android:name=".TakePhoto" />
+        <activity android:name=".Login" />
+        <activity android:name=".Navigation" />
         <activity android:name=".Splash">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>r
+            </intent-filter>
             <!--
            <intent-filter>
                <action android:name="android.intent.action.MAIN" />
 
                <category android:name="android.intent.category.LAUNCHER" />
            </intent-filter>
-           -->
+            -->
 
         </activity>
-        <activity android:name=".Login" />
-        <activity android:name=".Navigation" />
 
         <meta-data
             android:name="preloaded_fonts"

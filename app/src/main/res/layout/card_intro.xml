@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="#fff">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/card_introTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="Introduction"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/mainFontColor"
+                android:gravity="center"/>
+
+            <ImageView
+                android:id="@+id/card_expand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_expand_more"
+                android:layout_below="@id/card_introTitle"
+                android:layout_centerHorizontal="true"/>
+
+            <ImageView
+                android:id="@+id/card_collaps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_expand_less"
+                android:layout_below="@id/card_introTitle"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"/>
+
+
+            <TextView
+                android:id="@+id/card_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:textSize="18sp"
+                android:textColor="@color/mainFontColor"
+                android:layout_below="@id/card_introTitle"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>

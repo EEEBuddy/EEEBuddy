@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/info_bg"
+        android:layout_width="400dp"
+        android:layout_height="360dp"
+        android:contentDescription="@string/element"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/header" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/info_profilepic"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        app:layout_constraintBottom_toBottomOf="@+id/info_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.226"
+        tools:src="@drawable/profile_pic" />
+
+    <ImageView
+        android:id="@+id/info_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/info_profilepic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.052"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_arrow_back" />
+
+    <TextView
+        android:id="@+id/info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:text="@string/name"
+        android:textColor="#fff"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/info_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info_profilepic"
+        app:layout_constraintVertical_bias="0.131" />
+
+
+    <TextView
+        android:id="@+id/info_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/roboto"
+        android:text="@string/email"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/info_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info_name"
+        app:layout_constraintVertical_bias="0.111" />
+
+    <Button
+        android:id="@+id/info_requestBtn"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/login"
+        android:text="REQUEST"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/info_bg"
+        app:layout_constraintEnd_toStartOf="@+id/info_msgBtn"
+        app:layout_constraintHorizontal_bias="0.591"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/info_msgBtn"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/login"
+        android:text="MESSAGE"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/info_bg"
+        app:layout_constraintEnd_toEndOf="parent"></Button>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info_bg"
+        app:layout_constraintVertical_bias="0.085"
+        android:gravity="center">
+
+
+        <TextView
+            android:id="@+id/info_course"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/course"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/info_Hall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="Stay in Hall?"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@+id/info_course"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/info_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="Gender"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@+id/info_Hall"
+            android:gravity="center"/>
+
+
+        <TextView
+            android:id="@+id/info_exp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/experience"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@+id/info_gender"
+            android:gravity="center"/>
+
+
+            <include
+                layout="@layout/card_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/info_exp"/>
+
+
+    </RelativeLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
