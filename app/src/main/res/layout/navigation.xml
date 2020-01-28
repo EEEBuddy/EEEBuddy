@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Navigation">
+
+    <!-- using dependency from https://github.com/armcha/Space-Navigation-View -->
+
+    <com.luseen.spacenavigation.SpaceNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        app:active_item_color="#4B86EC"
+        app:centre_button_color="#c0c0c0"
+        app:inactive_item_color="#000000"
+        app:space_background_color="#ffffff"
+        app:centre_button_icon="@drawable/ic_home_black"
+        app:space_item_icon_size="25dp"
+        app:space_item_icon_only_size="@dimen/space_item_icon_only_size"
+        app:space_item_text_size="@dimen/space_item_text_default_size" />
+
+
+</RelativeLayout>

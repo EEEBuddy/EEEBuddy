@@ -15,16 +15,16 @@
         android:roundIcon="@mipmap/ic_launcher_customised"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".SeniorBuddyInfo"/>
+        <activity android:name=".TrackStudyPage"></activity>
+        <activity android:name=".SeniorBuddyInfo" />
         <activity android:name=".SeniorBuddyPage" />
         <activity android:name=".AllFragment" />
         <activity android:name=".RecommFragment" />
         <activity android:name=".StudyBuddyPage" />
-        <activity android:name=".AddStudyEvent"
-            android:parentActivityName=".StudyBuddyPage"/>
-
-        <activity android:name=".Profile"/>
+        <activity
+            android:name=".AddStudyEvent"
+            android:parentActivityName=".StudyBuddyPage" />
+        <activity android:name=".Profile" />
         <activity android:name=".ChangePW" />
         <activity android:name=".Account" />
         <activity android:name=".Register" />
@@ -50,8 +50,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
-
 
         <provider
             android:name="androidx.core.content.FileProvider"
