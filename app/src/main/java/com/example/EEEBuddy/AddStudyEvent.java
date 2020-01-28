@@ -17,7 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,6 +44,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
     //private DatePickerDialog.OnDateSetListener dateSetListener;
     private TimePickerDialog.OnTimeSetListener onStartTimeSetListener, onEndTimeSetListener;;
+
 
 
 
@@ -89,6 +91,9 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         //change toolbar content
         toolbarTitle.setText("Create Study Event");
         toolbarRightIcon.setVisibility(View.GONE);
+        //this.setSupportActionBar(toolbar);
+        //this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         //select a date
         editTextDate.setOnClickListener(new View.OnClickListener() {

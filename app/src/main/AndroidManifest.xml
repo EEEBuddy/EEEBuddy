@@ -10,9 +10,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/launcher"
+        android:icon="@mipmap/ic_launcher_customised"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_customised"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -21,7 +21,9 @@
         <activity android:name=".AllFragment" />
         <activity android:name=".RecommFragment" />
         <activity android:name=".StudyBuddyPage" />
-        <activity android:name=".AddStudyEvent" />
+        <activity android:name=".AddStudyEvent"
+            android:parentActivityName=".StudyBuddyPage"/>
+
         <activity android:name=".Profile"/>
         <activity android:name=".ChangePW" />
         <activity android:name=".Account" />
@@ -48,6 +50,8 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

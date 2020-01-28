@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/seniorbuddy_info_layout">
 
 
     <ImageView
@@ -104,78 +105,80 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/info_intro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info_bg"
-        app:layout_constraintVertical_bias="0.085"
-        android:gravity="center">
+        app:layout_constraintTop_toBottomOf="@+id/info_bg">
 
 
         <TextView
             android:id="@+id/info_course"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/roboto"
+            android:gravity="center"
             android:text="@string/course"
             android:textColor="@color/mainFontColor"
             android:textSize="18sp"
-            app:layout_constraintVertical_bias="1.0"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center"/>
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/info_Hall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/info_course"
+            android:layout_marginLeft="20dp"
             android:fontFamily="@font/roboto"
+            android:gravity="center"
             android:text="Stay in Hall?"
             android:textColor="@color/mainFontColor"
             android:textSize="18sp"
-            app:layout_constraintVertical_bias="1.0"
-            android:layout_marginLeft="20dp"
-            android:layout_below="@+id/info_course"
-            android:gravity="center"/>
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/info_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/info_Hall"
+            android:layout_marginLeft="20dp"
             android:fontFamily="@font/roboto"
+            android:gravity="center"
             android:text="Gender"
             android:textColor="@color/mainFontColor"
             android:textSize="18sp"
-            app:layout_constraintVertical_bias="1.0"
-            android:layout_marginLeft="20dp"
-            android:layout_below="@+id/info_Hall"
-            android:gravity="center"/>
+            app:layout_constraintVertical_bias="1.0" />
 
 
         <TextView
             android:id="@+id/info_exp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/info_gender"
+            android:layout_marginLeft="20dp"
             android:fontFamily="@font/roboto"
+            android:gravity="center"
             android:text="@string/experience"
             android:textColor="@color/mainFontColor"
             android:textSize="18sp"
-            app:layout_constraintVertical_bias="1.0"
-            android:layout_marginLeft="20dp"
-            android:layout_below="@+id/info_gender"
-            android:gravity="center"/>
-
-
-            <include
-                layout="@layout/card_intro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/info_exp"/>
-
+            app:layout_constraintVertical_bias="1.0" />
 
     </RelativeLayout>
 
+    <include
+        android:id="@+id/info_intro"
+        layout="@layout/card_intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

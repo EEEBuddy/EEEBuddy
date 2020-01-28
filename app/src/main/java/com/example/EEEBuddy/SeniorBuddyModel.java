@@ -6,7 +6,7 @@ public class SeniorBuddyModel {
     private String course;
     private String year;
     private String profileImageUrl;
-    private String dateJoin;
+    private String joinedDate;
     private String selfIntro;
     private String gender;
     private String hall;
@@ -15,13 +15,13 @@ public class SeniorBuddyModel {
 
     }
 
-    public SeniorBuddyModel(String name, String email, String course, String year, String profileImageUrl, String dateJoin, String selfIntro, String hall, String gender) {
+    public SeniorBuddyModel(String name, String email, String course, String year, String profileImageUrl, String joinedDate, String selfIntro, String hall, String gender) {
         this.name = name;
         this.email = email;
         this.course = course;
         this.year = year;
         this.profileImageUrl = profileImageUrl;
-        this.dateJoin = dateJoin;
+        this.joinedDate = joinedDate;
         this.selfIntro = selfIntro;
         this.hall = hall;
         this.gender = gender;
@@ -47,9 +47,6 @@ public class SeniorBuddyModel {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public void setDateJoin(String experience) {
-        this.dateJoin = dateJoin;
-    }
 
     public void setSelfIntro(String selfIntro) {
         this.selfIntro = selfIntro;
@@ -75,9 +72,7 @@ public class SeniorBuddyModel {
         return profileImageUrl;
     }
 
-    public String getDateJoin() {
-        return dateJoin;
-    }
+
 
     public String getSelfIntro() {
         return selfIntro;
@@ -97,5 +92,13 @@ public class SeniorBuddyModel {
 
     public void setHall(String hall) {
         this.hall = hall;
+    }
+
+    public String getJoinedDate() {
+        return joinedDate;
+    }
+
+    public void setJoinedDate(String joinedDate) {
+        this.joinedDate = joinedDate;
     }
 }

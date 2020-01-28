@@ -61,6 +61,16 @@
             android:layout_below="@id/card_task"/>
 
         <TextView
+            android:id="@+id/card_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="Date"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            android:layout_below="@id/card_Location"/>
+
+        <TextView
             android:id="@+id/card_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,7 +78,7 @@
             android:text="@string/time"
             android:textColor="@color/mainFontColor"
             android:textSize="18sp"
-            android:layout_below="@id/card_Location"/>
+            android:layout_below="@id/card_date"/>
 
         <TextView
             android:id="@+id/card_vacancy"
@@ -92,7 +102,7 @@
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginStart="280dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="100dp"
             android:background="@drawable/login"
             android:text="@string/join"
             android:textColor="#fff" />

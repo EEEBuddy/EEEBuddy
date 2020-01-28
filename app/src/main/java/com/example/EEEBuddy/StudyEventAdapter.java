@@ -41,6 +41,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
         holder.subjectName.setText(studyEvents.get(position).getSubjectName());
         holder.task.setText("Task: " + studyEvents.get(position).getTask());
         holder.location.setText("Location: " + studyEvents.get(position).getLocation());
+        holder.date.setText("Date: " + studyEvents.get(position).getDate());
         holder.time.setText("Time: " + studyEvents.get(position).getTime());
         holder.groupSize.setText("Vacancy: " + studyEvents.get(position).getGroupSize());
 
@@ -55,6 +56,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
                        studyEvents.get(position).getSubjectName(),
                        studyEvents.get(position).getTask(),
                        studyEvents.get(position).getLocation(),
+                       studyEvents.get(position).getDate(),
                        studyEvents.get(position).getTime()
 
                        );
@@ -71,7 +73,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView subjectCode, subjectName, task, location, time, groupSize;
+        TextView subjectCode, subjectName, task, location, date, time, groupSize;
         final Button joinBtn;
 
 
@@ -82,6 +84,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             subjectName = (TextView) itemView.findViewById(R.id.card_subjectName);
             task = (TextView) itemView.findViewById(R.id.card_task);
             location = (TextView) itemView.findViewById(R.id.card_Location);
+            date = (TextView) itemView.findViewById(R.id.card_date);
             time = (TextView) itemView.findViewById(R.id.card_time);
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
             joinBtn = (Button) itemView.findViewById(R.id.card_join);

@@ -164,7 +164,7 @@ public class StudyBuddyPage extends AppCompatActivity {
 
     }
 
-    public void showDialogBox(final Context context, String code, String subject, String task, String location, String time){
+    public void showDialogBox(final Context context, String code, String subject, String task, String location, String date, String time){
 
         //need to pass the context from the class calling this method.
 
@@ -206,7 +206,8 @@ public class StudyBuddyPage extends AppCompatActivity {
         message2.setText(
                 "Task: " + task + "\n"
                 + "Location: " + location + "\n"
-                + "Time: " + time);
+                        + "Date: " + date + "\n"
+                        + "Time: " + time);
         note.setText("Note: Goto 'Account > Study Events' to manage your registered events.");
     }
 

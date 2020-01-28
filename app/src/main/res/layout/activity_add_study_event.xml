@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".AddStudyEvent">
 
-    <include layout="@layout/toolbar" android:id="@+id/profile_toolbar"/>
+    <include layout="@layout/toolbar" android:id="@+id/add_toolbar"/>
 
 
     <ImageView
@@ -33,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/add_toolbar"
         app:layout_constraintVertical_bias="0.102" />
 
 
