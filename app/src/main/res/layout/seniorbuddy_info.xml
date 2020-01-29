@@ -101,13 +101,14 @@
         app:layout_constraintBottom_toBottomOf="@+id/info_bg"
         app:layout_constraintEnd_toEndOf="parent"></Button>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/info_intro"
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="391dp"
+        android:layout_height="348dp"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,8 +119,6 @@
             android:id="@+id/info_course"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:fontFamily="@font/roboto"
             android:gravity="center"
             android:text="@string/course"
@@ -131,8 +130,6 @@
             android:id="@+id/info_Hall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/info_course"
-            android:layout_marginLeft="20dp"
             android:fontFamily="@font/roboto"
             android:gravity="center"
             android:text="Stay in Hall?"
@@ -144,8 +141,6 @@
             android:id="@+id/info_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/info_Hall"
-            android:layout_marginLeft="20dp"
             android:fontFamily="@font/roboto"
             android:gravity="center"
             android:text="Gender"
@@ -158,8 +153,6 @@
             android:id="@+id/info_exp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/info_gender"
-            android:layout_marginLeft="20dp"
             android:fontFamily="@font/roboto"
             android:gravity="center"
             android:text="@string/experience"
@@ -167,18 +160,35 @@
             android:textSize="18sp"
             app:layout_constraintVertical_bias="1.0" />
 
-    </RelativeLayout>
+        <ScrollView
+            android:id="@+id/info_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/info_exp">
 
-    <include
-        android:id="@+id/info_intro"
-        layout="@layout/card_intro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/info_intro"
+                    layout="@layout/card_intro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

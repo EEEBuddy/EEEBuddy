@@ -29,6 +29,7 @@ public class Account extends AppCompatActivity {
     private String profileImageUrl;
     private TextView profileName;
     private ImageView profilePage;
+    private ImageView myBuddy;
     private ImageView events;
     private ImageView trackStudy;
     private ImageView logout;
@@ -96,6 +97,7 @@ public class Account extends AppCompatActivity {
         profileName = (TextView) findViewById(R.id. profile_name);
         profileImage = (CircleImageView) findViewById(R.id.profile_image);
         profilePage = (ImageView) findViewById(R.id.acct_profile);
+        myBuddy = (ImageView) findViewById(R.id.acct_mybuddy);
         events = (ImageView) findViewById(R.id.acct_event);
         trackStudy = (ImageView) findViewById(R.id.acct_study);
         logout = (ImageView) findViewById(R.id.acct_logout);
@@ -132,6 +134,8 @@ public class Account extends AppCompatActivity {
             }
         });
 
+
+        //onClick Listener for acct page selections
         profilePage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,11 +143,18 @@ public class Account extends AppCompatActivity {
             }
         });
 
+        myBuddy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GotoMySeniorBuddyInfoPage();
+            }
+        });
+
 
         events.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RegisteredEvents();
+                GotoRegisteredEvents();
             }
         });
 
@@ -152,7 +163,7 @@ public class Account extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                TrackStudy();
+                GotoTrackStudy();
             }
         });
 
@@ -167,6 +178,11 @@ public class Account extends AppCompatActivity {
 
     }
 
+    private void GotoMySeniorBuddyInfoPage() {
+
+        //TODO
+        Toast.makeText(this, "TODO...", Toast.LENGTH_SHORT).show();
+    }
 
 
     private void GotoProfile(){
@@ -176,15 +192,19 @@ public class Account extends AppCompatActivity {
 
 
 
-    private void RegisteredEvents() {
-
+    private void GotoRegisteredEvents() {
         //TODO
+        Toast.makeText(this, "TODO...", Toast.LENGTH_SHORT).show();
+
     }
 
-    private void TrackStudy(){
+    private void GotoTrackStudy(){
 
-        //TODO
+        startActivity(new Intent(this, TrackStudyPage.class));
+
     }
+
+
 
     private void Logout(){
         firebaseAuth.signOut();
