@@ -1,107 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.daimajia.swipe.SwipeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:paddingTop="15dp">
+    app:leftEdgeSwipeOffset="0dp"
+    app:rightEdgeSwipeOffset="0dp"
+    android:id="@+id/add_record_swipe">
 
-    <TextView
-        android:id="@+id/study_record_subject"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:id="@+id/add_record_swipe_content"
+        android:layout_width="160dp"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/add_record_swipe_edit"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/blue"
+            android:gravity="center"
+            android:text="Edit"
+            android:textColor="#fff"/>
+
+
+        <TextView
+            android:id="@+id/add_record_swipe_delete"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#F20D10"
+            android:gravity="center"
+            android:text="Delete"
+            android:textColor="#fff"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_height="wrap_content"
-        android:text="Subject"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:maxLength="30"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_task"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Task"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:maxLength="50"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_completion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Task Completion"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Duration"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_satisfaction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Satisfactory Level"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textColor="@color/mainFontColor"/>
-
-    <!--
-    <TextView
-        android:id="@+id/study_record_method"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Learning Method"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_groupSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Study Group Size"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Location"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:textColor="@color/mainFontColor"/>
-
-    <TextView
-        android:id="@+id/study_record_remarks"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Remarks"
-        android:fontFamily="@font/roboto"
-        android:textSize="16sp"
-        android:maxLength="100"
-        android:textColor="@color/mainFontColor"
-        android:background="@drawable/borderline"
-        android:paddingBottom="20dp"
-        />
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="15dp">
 
-        -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/borderline"/>
+        <TextView
+            android:id="@+id/study_record_subject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subject"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLength="30"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Task"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:maxLength="50"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_completion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Task Completion"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duration"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_satisfaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Satisfactory Level"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textColor="@color/mainFontColor"/>
 
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/study_record_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Learning Method"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_groupSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Study Group Size"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:textColor="@color/mainFontColor"/>
+
+        <TextView
+            android:id="@+id/study_record_remarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Remarks"
+            android:fontFamily="@font/roboto"
+            android:textSize="16sp"
+            android:maxLength="100"
+            android:textColor="@color/mainFontColor"
+            android:background="@drawable/borderline"
+            android:paddingBottom="20dp"
+            />
+
+
+        <!-- <TextView
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@drawable/borderline"/> -->
+
+    </LinearLayout>
+
+
+
+
+</com.daimajia.swipe.SwipeLayout>

@@ -22,7 +22,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
     Toolbar toolbar;
     TextView title;
-    ImageView backBtn, rightIcon;
+    ImageView backBtn, filterIcon;
 
     TabLayout tabLayout;
     TabItem tab_recommendation, tab_all;
@@ -83,8 +83,11 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
 
 
-        toolbar = (Toolbar) findViewById(R.id.seniorbuddy_toolbar);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         title = (TextView) findViewById(R.id.toolbar_title);
+        backBtn = (ImageView) findViewById(R.id.toolbar_back);
+        filterIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         tabLayout = (TabLayout) findViewById(R.id.seniorbuddy_tablayout);
@@ -92,8 +95,25 @@ public class SeniorBuddyPage extends AppCompatActivity {
         tab_all = (TabItem) findViewById(R.id.seniorbuddy_all);
 
         //cumtomise toolbar
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //setSupportActionBar(toolbar);
+        //getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        backBtn.setVisibility(View.GONE);
+        title.setText("Senior Buddy");
+        title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SeniorBuddyPage.this, "TODO", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        filterIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterIcon.setImageResource(R.drawable.ic_filter_colour2);
+                Toast.makeText(SeniorBuddyPage.this, "TODO", Toast.LENGTH_LONG).show();
+            }
+        });
 
         pageAdapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);

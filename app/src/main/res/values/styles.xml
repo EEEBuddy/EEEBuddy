@@ -6,7 +6,61 @@
        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">#93E3D7</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
+
+    <string-array name="duration">
+        <item>Select</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>>5</item>
+    </string-array>
+
+    <string-array name="completion">
+        <item>Select</item>
+        <item>0</item>
+        <item>25</item>
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+    </string-array>
+
+    <string-array name="satisfactory">
+        <item>Select</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="groupSize">
+        <item>Select</item>
+        <item>1</item>
+        <item>2-3</item>
+        <item>4-6</item>
+        <item>7-10</item>
+        <item>>10</item>
+    </string-array>
+
+    <string-array name="learningMethod">
+        <item>Select</item>
+        <item>Self Study</item>
+        <item>Discussion</item>
+        <item>Consultation</item>
+    </string-array>
+
+    <string-array name="studyLocation">
+        <item>Select</item>
+        <item>Library</item>
+        <item>Home</item>
+        <item>Open Area</item>
+        <item>Cafe</item>
+        <item>Others</item>
+    </string-array>
+
+
 
 </resources>

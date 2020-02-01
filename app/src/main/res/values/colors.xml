@@ -6,4 +6,5 @@
     <color name="mainFontColor">#4C4B5E</color>
     <color name="purple">#7152F2</color>
     <color name="blue">#93E3D7</color>
+    <color name ="transparent">#ffffff00</color>
 </resources>

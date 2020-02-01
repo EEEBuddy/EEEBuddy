@@ -86,7 +86,6 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         user = firebaseAuth.getCurrentUser();
         userEmail = user.getEmail();
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
-        databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
 
         //change toolbar content
         toolbarTitle.setText("Create Study Event");
@@ -222,6 +221,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
             String time = startTime + " - " + endTime;
 
+
             //getting a unique id using push().getKey() method //this unique key is the primary key for the event
             String eventID = databaseReference.push().getKey();
 
@@ -229,6 +229,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, time, groupSize);
 
             //saving data to firebase
+            databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
             databaseReference.child(eventID).setValue(studyEvent);
 
             //empty all text field
@@ -254,7 +255,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
 
     //show Date Pick Dialog
-    private void showDatePickerDialog() {
+    public void showDatePickerDialog() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
