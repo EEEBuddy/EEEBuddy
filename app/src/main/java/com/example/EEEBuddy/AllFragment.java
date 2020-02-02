@@ -118,6 +118,7 @@ public class AllFragment extends Fragment{
         return view;
     }
 
+   /*
     //Toolbar Menu
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -134,5 +135,7 @@ public class AllFragment extends Fragment{
         }
         return true;
     }
+
+    */
 
 }

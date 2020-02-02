@@ -226,7 +226,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             String eventID = databaseReference.push().getKey();
 
             //creating an StudyEvent Object
-            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, time, groupSize);
+            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, time, groupSize,userNode);
 
             //saving data to firebase
             databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);

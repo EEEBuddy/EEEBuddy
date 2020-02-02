@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/my_event_swipeLayout">
+
+
+    <LinearLayout
+        android:id="@+id/my_event_swipe_content"
+        android:layout_width="160dp"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/my_event_swipe_edit"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/blue"
+            android:gravity="center"
+            android:text="Edit"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"/>
+
+
+        <TextView
+            android:id="@+id/my_event_swipe_delete"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#F20D10"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:text="Delete"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp">
+
+            <TextView
+                android:id="@+id/my_event_subjectCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/subject_code"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/my_event_subjectName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/subject_name"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/my_event_subjectCode"/>
+
+
+            <TextView
+                android:id="@+id/my_event_task"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/task"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:layout_below="@id/my_event_subjectCode"/>
+
+            <TextView
+                android:id="@+id/my_event_Location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/location"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:layout_below="@id/my_event_task"/>
+
+            <TextView
+                android:id="@+id/my_event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="Date"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:layout_below="@id/my_event_Location"/>
+
+            <TextView
+                android:id="@+id/my_event_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/time"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:layout_below="@id/my_event_date"/>
+
+            <TextView
+                android:id="@+id/my_event_vacancy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="@string/group_size"
+                android:textColor="@color/mainFontColor"
+                android:textSize="18sp"
+                android:layout_below="@id/my_event_time"
+                android:background="@drawable/borderline"
+                android:paddingBottom="20dp"/>
+
+        </RelativeLayout>
+
+
+</com.daimajia.swipe.SwipeLayout>
+
+
+

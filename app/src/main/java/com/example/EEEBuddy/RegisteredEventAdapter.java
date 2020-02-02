@@ -15,15 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.MyViewHolder> {
+public class RegisteredEventAdapter extends RecyclerView.Adapter<RegisteredEventAdapter.MyViewHolder> {
 
     Context context;
-    ArrayList<StudyEvent> studyEvents; //StudyEvent Model
+    ArrayList<StudyEvent> upcomingEventList; //StudyEvent Model
 
 
-    public StudyEventAdapter(Context context, ArrayList<StudyEvent> studyEvents) {
+    public RegisteredEventAdapter (Context context, ArrayList<StudyEvent> upcomingEventList) {
         this.context = context;
-        this.studyEvents = studyEvents;
+        this.upcomingEventList = upcomingEventList;
     }
 
 
@@ -37,29 +37,20 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
-        holder.subjectCode.setText(studyEvents.get(position).getSubjectCode());
-        holder.subjectName.setText(studyEvents.get(position).getSubjectName());
-        holder.task.setText("Task: " + studyEvents.get(position).getTask());
-        holder.location.setText("Location: " + studyEvents.get(position).getLocation());
-        holder.date.setText("Date: " + studyEvents.get(position).getDate());
-        holder.time.setText("Time: " + studyEvents.get(position).getTime());
-        holder.groupSize.setText("Vacancy: " + studyEvents.get(position).getGroupSize());
+        holder.subjectCode.setText(upcomingEventList.get(position).getSubjectCode());
+        holder.subjectName.setText(upcomingEventList.get(position).getSubjectName());
+        holder.task.setText("Task: " + upcomingEventList.get(position).getTask());
+        holder.location.setText("Location: " + upcomingEventList.get(position).getLocation());
+        holder.date.setText("Date: " + upcomingEventList.get(position).getDate());
+        holder.time.setText("Time: " + upcomingEventList.get(position).getTime());
+        holder.groupSize.setText("Vacancy: " + upcomingEventList.get(position).getGroupSize());
 
-        holder.joinBtn.setOnClickListener(new View.OnClickListener() {
+        holder.cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final StudyBuddyPage studyBuddyPage = new StudyBuddyPage();
-               studyBuddyPage.showDialogBox(
-                       context,
-                       studyEvents.get(position).getSubjectCode(),
-                       studyEvents.get(position).getSubjectName(),
-                       studyEvents.get(position).getTask(),
-                       studyEvents.get(position).getLocation(),
-                       studyEvents.get(position).getDate(),
-                       studyEvents.get(position).getTime()
-
-                       );
+                //TODO...
+                Toast.makeText(context, "TODO...", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -67,14 +58,14 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
 
     @Override
     public int getItemCount() {
-        return studyEvents.size();
+        return upcomingEventList.size();
     }
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView subjectCode, subjectName, task, location, date, time, groupSize;
-        final Button joinBtn;
+        final Button cancelButton;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -87,7 +78,9 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             date = (TextView) itemView.findViewById(R.id.card_date);
             time = (TextView) itemView.findViewById(R.id.card_time);
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
-            joinBtn = (Button) itemView.findViewById(R.id.card_button);
+            cancelButton= (Button) itemView.findViewById(R.id.card_button);
+
+            cancelButton.setText("Cancle");
 
 
         }

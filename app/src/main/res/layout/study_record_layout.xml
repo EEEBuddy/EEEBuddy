@@ -25,7 +25,10 @@
             android:background="@color/blue"
             android:gravity="center"
             android:text="Edit"
-            android:textColor="#fff"/>
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"/>
 
 
         <TextView
@@ -34,9 +37,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#F20D10"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="Delete"
-            android:textColor="#fff"/>
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 

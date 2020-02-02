@@ -115,7 +115,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
             }
         });
 
-        pageAdapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        pageAdapter = new SeniorBuddyPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

@@ -13,17 +13,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.swipe.SwipeLayout;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
-public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.MyViewHolder> {
+public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyViewHolder> {
 
     Context context;
-    ArrayList<StudyEvent> studyEvents; //StudyEvent Model
+    ArrayList<StudyEvent> pastEventList; //StudyEvent Model
 
 
-    public StudyEventAdapter(Context context, ArrayList<StudyEvent> studyEvents) {
+    public PastEventAdapter (Context context, ArrayList<StudyEvent> pastEventList) {
         this.context = context;
-        this.studyEvents = studyEvents;
+        this.pastEventList = pastEventList;
     }
 
 
@@ -37,29 +41,19 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
-        holder.subjectCode.setText(studyEvents.get(position).getSubjectCode());
-        holder.subjectName.setText(studyEvents.get(position).getSubjectName());
-        holder.task.setText("Task: " + studyEvents.get(position).getTask());
-        holder.location.setText("Location: " + studyEvents.get(position).getLocation());
-        holder.date.setText("Date: " + studyEvents.get(position).getDate());
-        holder.time.setText("Time: " + studyEvents.get(position).getTime());
-        holder.groupSize.setText("Vacancy: " + studyEvents.get(position).getGroupSize());
+        holder.subjectCode.setText(pastEventList.get(position).getSubjectCode());
+        holder.subjectName.setText(pastEventList.get(position).getSubjectName());
+        holder.task.setText("Task: " + pastEventList.get(position).getTask());
+        holder.location.setText("Location: " + pastEventList.get(position).getLocation());
+        holder.date.setText("Date: " + pastEventList.get(position).getDate());
+        holder.time.setText("Time: " + pastEventList.get(position).getTime());
+        holder.groupSize.setText("Vacancy: " + pastEventList.get(position).getGroupSize());
 
-        holder.joinBtn.setOnClickListener(new View.OnClickListener() {
+        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                final StudyBuddyPage studyBuddyPage = new StudyBuddyPage();
-               studyBuddyPage.showDialogBox(
-                       context,
-                       studyEvents.get(position).getSubjectCode(),
-                       studyEvents.get(position).getSubjectName(),
-                       studyEvents.get(position).getTask(),
-                       studyEvents.get(position).getLocation(),
-                       studyEvents.get(position).getDate(),
-                       studyEvents.get(position).getTime()
-
-                       );
+                //TODO...
+                Toast.makeText(context, "TODO...", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -67,14 +61,14 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
 
     @Override
     public int getItemCount() {
-        return studyEvents.size();
+        return pastEventList.size();
     }
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView subjectCode, subjectName, task, location, date, time, groupSize;
-        final Button joinBtn;
+        final Button deleteBtn;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -87,8 +81,9 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             date = (TextView) itemView.findViewById(R.id.card_date);
             time = (TextView) itemView.findViewById(R.id.card_time);
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
-            joinBtn = (Button) itemView.findViewById(R.id.card_button);
+            deleteBtn= (Button) itemView.findViewById(R.id.card_button);
 
+            deleteBtn.setText("Delete");
 
         }
     }

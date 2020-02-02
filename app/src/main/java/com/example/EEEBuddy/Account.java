@@ -194,7 +194,7 @@ public class Account extends AppCompatActivity {
 
     private void GotoRegisteredEvents() {
         //TODO
-        Toast.makeText(this, "TODO...", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, RegisterdEventsPage.class));
 
     }
 

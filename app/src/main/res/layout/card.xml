@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+    <androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="15dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="#fff"
-    >
+    app:cardBackgroundColor="#fff">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -91,14 +94,8 @@
             android:layout_below="@id/card_time"/>
 
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        </RelativeLayout>
-
         <Button
-            android:id="@+id/card_join"
+            android:id="@+id/card_button"
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginStart="280dp"
@@ -110,3 +107,4 @@
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
+

@@ -6,12 +6,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 
-public class PageAdapter extends FragmentPagerAdapter {
+public class MyEventPageAdapter extends FragmentPagerAdapter {
 
     private int numOfTabs;
 
-    //PageAdapter constructer is use to communicate between this class and SeniorBuddyPage
-    public PageAdapter(@NonNull FragmentManager fm, int numOfTabs) {
+    //SeniorBuddyPageAdapter constructer is use to communicate between this class and SeniorBuddyPage
+    public MyEventPageAdapter(@NonNull FragmentManager fm, int numOfTabs) {
         super(fm);
         this.numOfTabs = numOfTabs;
     }
@@ -24,11 +24,11 @@ public class PageAdapter extends FragmentPagerAdapter {
 
         switch (position){
             case 0:
-                fragment = new RecommFragment();
+                fragment = new MyUpcomingEventFragment();
                 break;
 
             case 1:
-                fragment =  new AllFragment();
+                fragment =  new MyPastEventFragment();
                 break;
 
         }

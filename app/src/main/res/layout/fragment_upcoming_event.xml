@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/all_fragment"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="120dp"
+    tools:context=".UpcomingEventFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relativeLayout_upcoming_frag">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/upcoming_event_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="134dp" />
+
+        <TextView
+            android:id="@+id/upcoming_event_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="- No Events - "
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:textColor="@color/purple"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/upcoming_event_gif"
+            android:layout_marginBottom="15dp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/upcoming_event_gif"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/happystudy"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+
+</FrameLayout>

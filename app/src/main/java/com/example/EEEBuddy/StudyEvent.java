@@ -10,6 +10,8 @@ public class StudyEvent {
     private String date;
     private String time;
     private String groupSize;
+    private String createdBy;
+    private String eventID;
 
 
     public StudyEvent(){
@@ -17,7 +19,7 @@ public class StudyEvent {
     }
 
 
-    public StudyEvent(String subjectCode, String subjectName, String task, String location, String date, String time, String groupSize) {
+    public StudyEvent(String subjectCode, String subjectName, String task, String location, String date, String time, String groupSize, String createdBy) {
         this.subjectCode = subjectCode;
         this.subjectName = subjectName;
         this.task = task;
@@ -25,6 +27,7 @@ public class StudyEvent {
         this.date = date;
         this.time = time;
         this.groupSize = groupSize;
+        this.createdBy = createdBy;
     }
 
     public String getSubjectCode() {
@@ -82,5 +85,21 @@ public class StudyEvent {
 
     public void setGroupSize(String groupSize) {
         this.groupSize = groupSize;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
     }
 }
