@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,11 +37,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AllFragment extends Fragment{
+public class AllFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private ArrayList<SeniorBuddyModel> seniorBuddyList;
-    private SeniorBuddyAdapter adapter;
+    private SearchView searchView;
+    private ArrayList<SeniorBuddyModel> seniorBuddyList, searchResultList;
+    private SeniorBuddyAdapter adapter1, adapter2;
 
 
     //declare database stuff
@@ -64,8 +66,10 @@ public class AllFragment extends Fragment{
 
 
         recyclerView = (RecyclerView) view.findViewById(R.id.seniorbuddy_recyclerView);
+        searchView = (SearchView) view.findViewById(R.id.seniorbuddy_searchview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         seniorBuddyList = new ArrayList<SeniorBuddyModel>();
+        searchResultList = new ArrayList<SeniorBuddyModel>();
 
 
         seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
@@ -75,38 +79,49 @@ public class AllFragment extends Fragment{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                seniorBuddyList.clear();
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        userNode  = dataSnapshot1.getKey();
+                    seniorBuddyList.clear();
 
-                      studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
+                    userNode = dataSnapshot1.getKey();
+
+                    studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            SeniorBuddyModel studentInfo = dataSnapshot.getValue(SeniorBuddyModel.class);
+                            seniorBuddyList.add(studentInfo);
+
+                            //creating adapter
+                            adapter1 = new SeniorBuddyAdapter(getActivity(), seniorBuddyList);
+                            //attaching adapter to recycler-view
+                            recyclerView.setAdapter(adapter1);
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    if(searchView != null){
+                        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                SeniorBuddyModel studentInfo = dataSnapshot.getValue(SeniorBuddyModel.class);
-                                seniorBuddyList.add(studentInfo);
-
-                                /*for(DataSnapshot dataSnapshot2 : dataSnapshot.getChildren()){
-                                        SeniorBuddyModel studentInfo = dataSnapshot2.getValue(SeniorBuddyModel.class);
-                                        seniorBuddyList.add(studentInfo);
-                                }
-
-                                 */
-
-                                //creating adapter
-                                adapter = new SeniorBuddyAdapter(getActivity(), seniorBuddyList);
-                                //attaching adapter to recycler-view
-                                recyclerView.setAdapter(adapter);
+                            public boolean onQueryTextSubmit(String query) {
+                                return false;
                             }
 
                             @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            public boolean onQueryTextChange(String searchString) {
+                                Search(searchString);
+                                return true;
                             }
                         });
+                    }
 
                 }
+
             }
 
             @Override
@@ -115,8 +130,29 @@ public class AllFragment extends Fragment{
             }
         });
 
+
         return view;
     }
+
+
+
+    private void Search(String searchString) {
+
+        searchResultList.clear();
+
+        for(SeniorBuddyModel object : seniorBuddyList){
+            if(object.getName().toLowerCase().contains(searchString.toLowerCase()) ||
+                object.getCourse().toLowerCase().contains(searchString.toLowerCase())){
+
+                searchResultList.add(object);
+            }
+        }
+
+        adapter2 = new SeniorBuddyAdapter(getActivity(), searchResultList);
+        recyclerView.setAdapter(adapter2);
+    }
+
+
 
    /*
     //Toolbar Menu
@@ -137,5 +173,7 @@ public class AllFragment extends Fragment{
     }
 
     */
+
+
 
 }

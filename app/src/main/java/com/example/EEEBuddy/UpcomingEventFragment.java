@@ -59,6 +59,8 @@ public class UpcomingEventFragment extends Fragment{
     private String userID;
     private String userEmail, userNode;
 
+    private int arraySize, loopCount;
+
 
     public UpcomingEventFragment() {
         // Required empty public constructor
@@ -70,6 +72,7 @@ public class UpcomingEventFragment extends Fragment{
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
         final View view = inflater.inflate(R.layout.fragment_upcoming_event, container, false);
+
 
 
         recyclerView = (RecyclerView) view.findViewById(R.id.upcoming_event_recyclerView);
@@ -86,6 +89,8 @@ public class UpcomingEventFragment extends Fragment{
 
 
         upcomingEventList.clear();
+        arraySize = 0;
+        loopCount = 0;
         registeredEventRef.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -109,9 +114,11 @@ public class UpcomingEventFragment extends Fragment{
                             try {
                                 Date now = new Date(System.currentTimeMillis());
                                 Date parsedDate = sdf.parse(eventDate);
+                                loopCount++;
 
                                 if(parsedDate.compareTo(now) > 0 ){
                                     upcomingEventList.add(studyEventDetail);
+                                    arraySize++;
                                 }
 
                             } catch (ParseException e) {
@@ -119,7 +126,7 @@ public class UpcomingEventFragment extends Fragment{
                             }
 
                             //if no upcoming event show hints
-                            if(upcomingEventList.size() == 0){
+                            if(arraySize == 0 && loopCount != 1){
                                 hint = view.findViewById(R.id.upcoming_event_hint);
                                 hint.setVisibility(View.VISIBLE);
 
@@ -128,11 +135,10 @@ public class UpcomingEventFragment extends Fragment{
                                 Glide.with(UpcomingEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
                             }
 
-
                             adapter = new RegisteredEventAdapter(getActivity(), upcomingEventList);
                             recyclerView.setAdapter(adapter);
-
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -152,6 +158,8 @@ public class UpcomingEventFragment extends Fragment{
 
             }
         });
+
+
 
 
         return view;

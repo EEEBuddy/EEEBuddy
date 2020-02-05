@@ -10,21 +10,31 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
         android:id="@+id/relativeLayout_all_frag">
 
+        <SearchView
+            android:id="@+id/seniorbuddy_searchview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search here by name/course"
+            android:paddingRight="15dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/seniorbuddy_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="75dp"
             tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="134dp" />
+            tools:layout_editor_absoluteY="134dp"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 
 </FrameLayout>

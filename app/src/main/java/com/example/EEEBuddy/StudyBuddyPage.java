@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -37,10 +38,10 @@ import java.util.ArrayList;
 public class StudyBuddyPage extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private ArrayList<StudyEvent> studyEventsList;
+    private SearchView searchView;
+    private ArrayList<StudyEvent> studyEventsList, searchResultList;
     private StudyEventAdapter adapter;
 
-    private Toolbar toolbar;
     private TextView toolbarTitle;
     private ImageView addIcon, backBtn;
 
@@ -112,7 +113,6 @@ public class StudyBuddyPage extends AppCompatActivity {
 
 
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         addIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
@@ -120,6 +120,8 @@ public class StudyBuddyPage extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.studybuddy_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         studyEventsList = new ArrayList<StudyEvent>();
+        searchResultList = new ArrayList<StudyEvent>();
+        searchView = (SearchView) findViewById(R.id.studybuddy_searchview);
 
         backBtn.setVisibility(View.GONE);
         toolbarTitle.setText("Study Buddy");
@@ -149,6 +151,21 @@ public class StudyBuddyPage extends AppCompatActivity {
             }
         });
 
+        if(searchView != null){
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String searchString) {
+                    Search(searchString);
+                    return true;
+                }
+            });
+        }
+
 
 
         addIcon.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +179,24 @@ public class StudyBuddyPage extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    private void Search(String searchString) {
+
+        searchResultList.clear();
+
+        for(StudyEvent object : studyEventsList){
+            if(object.getSubjectCode().toLowerCase().contains(searchString.toLowerCase()) ||
+                    object.getSubjectName().toLowerCase().contains(searchString.toLowerCase()) ||
+                    object.getCreatedBy().toLowerCase().contains(searchString.toLowerCase())){
+
+                searchResultList.add(object);
+            }
+        }
+
+        adapter = new StudyEventAdapter(this, searchResultList);
+        recyclerView.setAdapter(adapter);
     }
 
     public void showDialogBox(final Context context, String code, String subject, String task, String location, String date, String time){

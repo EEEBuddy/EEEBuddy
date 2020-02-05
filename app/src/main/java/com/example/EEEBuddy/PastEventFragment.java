@@ -55,6 +55,8 @@ public class PastEventFragment extends Fragment{
     private String userID;
     private String userEmail, userNode;
 
+    private int arraySize, loopCount;
+
 
     public PastEventFragment() {
         // Required empty public constructor
@@ -82,6 +84,7 @@ public class PastEventFragment extends Fragment{
 
 
         pastEventList.clear();
+        arraySize=0;
         registeredEventRef.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -101,6 +104,7 @@ public class PastEventFragment extends Fragment{
 
                             Calendar calendar = Calendar.getInstance();
                             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            loopCount++;
 
                             try {
                                 Date now = new Date(System.currentTimeMillis());
@@ -108,6 +112,8 @@ public class PastEventFragment extends Fragment{
 
                                 if(parsedDate.compareTo(now) < 0 ){
                                     pastEventList.add(studyEventDetail);
+                                    arraySize++;
+
                                 }
 
                             } catch (ParseException e) {
@@ -115,18 +121,19 @@ public class PastEventFragment extends Fragment{
                             }
 
                             //if no upcoming event show hints
-                            if(pastEventList.size() == 0) {
+                            if(arraySize == 0 && loopCount !=1){
                                 hint = view.findViewById(R.id.past_event_hint);
                                 hint.setVisibility(View.VISIBLE);
 
                                 gif = view.findViewById(R.id.past_event_gif);
                                 gif.setVisibility(View.VISIBLE);
                                 Glide.with(PastEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
-
                             }
+
 
                             adapter = new PastEventAdapter(getActivity(), pastEventList);
                             recyclerView.setAdapter(adapter);
+
 
                         }
                         @Override
@@ -149,7 +156,6 @@ public class PastEventFragment extends Fragment{
 
             }
         });
-
 
         return view;
     }
