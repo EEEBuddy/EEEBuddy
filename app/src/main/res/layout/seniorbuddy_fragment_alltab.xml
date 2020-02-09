@@ -4,37 +4,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="120dp"
     android:layout_marginBottom="75dp"
     tools:context=".AllFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:id="@+id/relativeLayout_all_frag">
 
-        <SearchView
-            android:id="@+id/seniorbuddy_searchview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:iconifiedByDefault="false"
-            android:queryHint="Search here by name/course"
-            android:paddingRight="15dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/seniorbuddy_recyclerView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="75dp"
-            tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="134dp"/>
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:id="@+id/relativeLayout_all_frag">
 
-    </LinearLayout>
+            <include layout="@layout/toolbar"
+                android:id="@+id/all_fragment_toolbar" />
+
+            <SearchView
+                android:id="@+id/seniorbuddy_searchview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search here by name/course"
+                android:paddingRight="15dp"
+                android:layout_marginTop="50dp"/>
+
+            <TextView
+                android:id="@+id/seniorbuddy_clearFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Click to Clear Filter"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/purple"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/seniorbuddy_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="75dp"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="134dp"/>
+
+        </LinearLayout>
+
+
 
 
 </FrameLayout>

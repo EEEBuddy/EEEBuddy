@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -127,6 +128,7 @@ public class TrackStudyPage extends AppCompatActivity {
                 recyclerView.setLayoutManager(new LinearLayoutManager(TrackStudyPage.this));
                 studyRecordList.clear();
                 databaseReference.child(userNode).child(dateNode).addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("ResourceType")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -139,6 +141,9 @@ public class TrackStudyPage extends AppCompatActivity {
                         trackStudyAdapter = new TrackStudyAdapter(TrackStudyPage.this, studyRecordList);
                         recyclerView.setAdapter(trackStudyAdapter);
 
+                        if(studyRecordList.size() != 0 ){
+                            //calendarView.setSelectedDateVerticalBar(R.color.blue);
+                        }
                     }
 
                     @Override

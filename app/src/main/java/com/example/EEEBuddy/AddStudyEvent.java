@@ -197,6 +197,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             @Override
             public void onClick(View v) {
                 createStudyEvent();
+                startActivity(new Intent(AddStudyEvent.this, StudyBuddyPage.class));
             }
         });
 
@@ -223,14 +224,15 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
 
             //getting a unique id using push().getKey() method //this unique key is the primary key for the event
+            databaseReference = firebaseDatabase.getInstance().getReference("Study Event");
             String eventID = databaseReference.push().getKey();
 
             //creating an StudyEvent Object
             StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, time, groupSize,userNode);
 
             //saving data to firebase
-            databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
-            databaseReference.child(eventID).setValue(studyEvent);
+            //databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
+            databaseReference.child(userNode).child(eventID).setValue(studyEvent);
 
             //empty all text field
             editTextSubjectCode.setText("");
@@ -244,6 +246,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
 
             Toast.makeText(this, "Study Event Created", Toast.LENGTH_LONG).show();
+
 
         }else{
 

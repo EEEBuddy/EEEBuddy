@@ -24,6 +24,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickListener {
@@ -47,6 +52,8 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
     private String reEmail, reName, reCourse, reHall, reGender, reImgUrl, reYear;
 
     private View layout;
+
+    private String exp = "";
 
 
 
@@ -98,7 +105,33 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
-                infoExperience.setText("Joined Date: " + seniorBuddyModel.getJoinedDate());
+
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    String joinDate = seniorBuddyModel.getJoinedDate();
+                    Date today = new Date();
+                    today = sdf.parse(sdf.format(new Date()));
+                    Date parsedJoindedDate = sdf.parse(joinDate);
+                    long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
+                    long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
+                    long diffMonth = diffDays/30;
+
+                    if (diffMonth <= 12) {
+                        exp = "Freshy";
+
+                    } else if (diffMonth > 12 && diffMonth <= 24) {
+                        exp = "Senior";
+                    } else{
+                        exp = "Expert";
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+
+                infoExperience.setText("Joined Date: " + seniorBuddyModel.getJoinedDate() + " | Level: " + exp);
                 selfIntro = seniorBuddyModel.getSelfIntro();
             }
 

@@ -1,17 +1,26 @@
 package com.example.EEEBuddy;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.luseen.spacenavigation.SpaceItem;
@@ -28,6 +37,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
     TabItem tab_recommendation, tab_all;
     PagerAdapter pageAdapter;
     ViewPager viewPager;
+
 
     SpaceNavigationView spaceNavigationView;
 
@@ -94,26 +104,15 @@ public class SeniorBuddyPage extends AppCompatActivity {
         tab_recommendation = (TabItem) findViewById(R.id.seniorbuddy_recomm);
         tab_all = (TabItem) findViewById(R.id.seniorbuddy_all);
 
+
         //cumtomise toolbar
         //setSupportActionBar(toolbar);
         //getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         backBtn.setVisibility(View.GONE);
         title.setText("Senior Buddy");
-        title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(SeniorBuddyPage.this, "TODO", Toast.LENGTH_LONG).show();
-            }
-        });
 
-        filterIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterIcon.setImageResource(R.drawable.ic_filter_colour2);
-                Toast.makeText(SeniorBuddyPage.this, "TODO", Toast.LENGTH_LONG).show();
-            }
-        });
+        filterIcon.setVisibility(View.GONE);
 
         pageAdapter = new SeniorBuddyPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
@@ -125,8 +124,11 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
                 if(tab.getPosition() == 0){
                     pageAdapter.notifyDataSetChanged();
+                    filterIcon.setVisibility(View.GONE);
                 }else if(tab.getPosition() == 1){
                     pageAdapter.notifyDataSetChanged();
+                    filterIcon.setVisibility(View.VISIBLE);
+
                 }
             }
 
@@ -146,4 +148,5 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
 
     }
+
 }

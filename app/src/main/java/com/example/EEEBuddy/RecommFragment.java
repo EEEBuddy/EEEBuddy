@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import static android.view.View.GONE;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +38,7 @@ public class RecommFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.seniorbuddy_fragment_recomm, container, false);
         setHasOptionsMenu(true);
+
 
         return view;
     }

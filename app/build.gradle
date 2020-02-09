@@ -8,7 +8,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.EEEBuddy"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -57,4 +57,7 @@ dependencies {
     implementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
 
     implementation "com.daimajia.swipelayout:library:1.2.0@aar"
+
+    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
+
 }

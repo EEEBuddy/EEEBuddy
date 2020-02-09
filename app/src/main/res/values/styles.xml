@@ -6,6 +6,11 @@
        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">#93E3D7</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:dateTextAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:weekDayTextAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="android:colorControlActivated">@color/blue</item>
+
+
     </style>
 
     <string-array name="duration">
@@ -59,6 +64,33 @@
         <item>Open Area</item>
         <item>Cafe</item>
         <item>Others</item>
+    </string-array>
+
+
+    <string-array name="chooseHall">
+        <item>No preference</item>
+        <item>Hall 1</item>
+        <item>Hall 2</item>
+        <item>Hall 3</item>
+        <item>Hall 4</item>
+        <item>Hall 5</item>
+        <item>Cresent Hall</item>
+        <item>Pioneer Hall</item>
+        <item>North Hill Halls</item>
+
+    </string-array>
+
+    <string-array name="gender">
+        <item>No preference</item>
+        <item>M</item>
+        <item>F</item>
+    </string-array>
+
+    <string-array name="exp">
+        <item>No preference</item>
+        <item>Freshy</item>
+        <item>Senior</item>
+        <item>Expert</item>
     </string-array>
 
 

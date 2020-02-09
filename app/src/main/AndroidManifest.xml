@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_customised"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MyStudyEvents"></activity>
+        <activity android:name=".Test"></activity>
+        <activity android:name=".MyStudyEvents" />
         <activity android:name=".UpcomingEventFragment" />
         <activity android:name=".PastEventFragment" />
         <activity android:name=".RegisterdEventsPage" />
