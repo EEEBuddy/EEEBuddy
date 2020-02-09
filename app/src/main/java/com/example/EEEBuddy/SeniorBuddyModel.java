@@ -10,6 +10,7 @@ public class SeniorBuddyModel {
     private String selfIntro;
     private String gender;
     private String hall;
+    private String applicationDate;
 
     public SeniorBuddyModel(){
 
@@ -26,6 +27,13 @@ public class SeniorBuddyModel {
         this.hall = hall;
         this.gender = gender;
     }
+
+    public SeniorBuddyModel(String selfIntro, String applicationDate){
+        this.joinedDate = applicationDate;
+        this.selfIntro = selfIntro;
+    }
+
+
 
     public void setName(String name) {
         this.name = name;
@@ -101,4 +109,6 @@ public class SeniorBuddyModel {
     public void setJoinedDate(String joinedDate) {
         this.joinedDate = joinedDate;
     }
+
+
 }

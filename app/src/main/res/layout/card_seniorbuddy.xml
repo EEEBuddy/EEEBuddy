@@ -39,7 +39,7 @@
             android:textStyle="bold"
             android:layout_toEndOf="@id/card_image"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="20dp"/>
 
         <TextView
             android:id="@+id/card_course"
@@ -54,6 +54,7 @@
             android:layout_marginStart="30dp"/>
 
 
+       <!--
         <TextView
             android:id="@+id/card_exp"
             android:layout_width="wrap_content"
@@ -66,6 +67,7 @@
             android:layout_below="@id/card_course"
             android:layout_marginStart="30dp"
             />
+            -->
 
 
 

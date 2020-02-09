@@ -30,7 +30,7 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 public class SeniorBuddyPage extends AppCompatActivity {
 
     Toolbar toolbar;
-    TextView title;
+    TextView title,applyText;
     ImageView backBtn, filterIcon;
 
     TabLayout tabLayout;
@@ -104,6 +104,14 @@ public class SeniorBuddyPage extends AppCompatActivity {
         tab_recommendation = (TabItem) findViewById(R.id.seniorbuddy_recomm);
         tab_all = (TabItem) findViewById(R.id.seniorbuddy_all);
 
+        applyText =findViewById(R.id.toolbar_apply);
+        applyText.setVisibility(View.VISIBLE);
+        applyText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SeniorBuddyApplication();
+            }
+        });
 
         //cumtomise toolbar
         //setSupportActionBar(toolbar);
@@ -147,6 +155,10 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
 
 
+    }
+
+    private void SeniorBuddyApplication() {
+        Toast.makeText(SeniorBuddyPage.this,"TODO...", Toast.LENGTH_LONG).show();
     }
 
 }

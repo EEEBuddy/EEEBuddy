@@ -16,6 +16,17 @@
         android:layout_gravity="left"
         android:visibility="visible"/>
 
+    <TextView
+        android:id="@+id/toolbar_apply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto"
+        android:layout_gravity="left"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/toolbar_right_icon"
         android:layout_width="35dp"

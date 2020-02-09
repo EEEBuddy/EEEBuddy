@@ -17,8 +17,7 @@
             android:layout_gravity="center"
             android:id="@+id/relativeLayout_all_frag">
 
-            <include layout="@layout/toolbar"
-                android:id="@+id/all_fragment_toolbar" />
+            <include layout="@layout/toolbar" android:id="@+id/all_fragment_toolbar"/>
 
             <SearchView
                 android:id="@+id/seniorbuddy_searchview"

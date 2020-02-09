@@ -56,7 +56,7 @@ public class SeniorBuddyAdapter extends RecyclerView.Adapter<SeniorBuddyAdapter.
         Picasso.get().load(imageUrl).into(profileImage);
         holder.name.setText(seniorBuddyList.get(position).getName());
         holder.course.setText("Course: " + seniorBuddyList.get(position).getCourse() + ", Year "+ seniorBuddyList.get(position).getYear());
-       // holder.experience.setText("Experience: " + seniorBuddyList.get(position).getExperience());
+        //holder.experience.setText("Experience: ");
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

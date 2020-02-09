@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -65,7 +68,7 @@ public class AllFragment extends Fragment {
     //toolbar
     private ImageView backBtn, filterIcon;
     private TextView title;
-    private TextView clearFilter;
+    private TextView clearFilter, applyText;
 
 
     //declare database stuff
@@ -118,6 +121,15 @@ public class AllFragment extends Fragment {
         backBtn.setVisibility(View.GONE);
 
         clearFilter = view.findViewById(R.id.seniorbuddy_clearFilter);
+
+        applyText = view.findViewById(R.id.toolbar_apply);
+        applyText.setVisibility(View.VISIBLE);
+        applyText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SeniorBuddyApplication();
+            }
+        });
 
 
         filterIcon = (ImageView) view.findViewById(R.id.toolbar_right_icon);
@@ -189,7 +201,6 @@ public class AllFragment extends Fragment {
 
         return view;
     }
-
 
     private void Search(String searchString) {
 
@@ -402,7 +413,100 @@ public class AllFragment extends Fragment {
         }
     }
 
-    private void Hint() {
+
+    private void SeniorBuddyApplication() {
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        final String userKey = user.getEmail().substring(0,user.getEmail().indexOf("@"));
+        final boolean[] yearOne = {false};
+
+            studentProfileRef = firebaseDatabase.getInstance().getReference("Student Profile");
+            studentProfileRef.child(userKey).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
+                    Integer year = Integer.parseInt(seniorBuddyModel.getYear());
+
+                    if(year.equals(1)){
+                        yearOne[0] = true;
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+        seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
+        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    if(dataSnapshot.hasChild(userKey)){
+                        Toast.makeText(getActivity(), "You have already registered as senior buddy, check out at Account page", Toast.LENGTH_LONG).show();
+
+                    }else if(yearOne[0]){
+                        Toast.makeText(getActivity(), "Only Year 2 or above are allowed to apply as senior buddy", Toast.LENGTH_LONG).show();
+
+                    } else{
+
+                        Date date = new Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        final String applicationDate = sdf.format(date);
+
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        //LayoutInflater inflater = getLayoutInflater();
+                        final View dialogView = inflater.inflate(R.layout.card_applicaition_form, null);
+                        dialogBuilder.setView(dialogView);
+
+                        final AlertDialog applicationDialog = dialogBuilder.create();
+                        applicationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        applicationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        applicationDialog.show();
+
+                        final EditText editTextSelfIntro = dialogView.findViewById(R.id.apply_intro);
+                        Button applyBtn = dialogView.findViewById(R.id.apply_applybtn);
+                        ImageView closeBtn = dialogView.findViewById(R.id.apply_closeBtn);
+
+                        //add record into database
+                        applyBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                String selfIntro = editTextSelfIntro.getText().toString();
+
+                                if(!TextUtils.isEmpty(selfIntro)){
+                                    seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
+                                    SeniorBuddyModel registration = new SeniorBuddyModel(selfIntro, applicationDate);
+                                    seniorBuddyRef.child(userKey).setValue(registration);
+                                    Toast.makeText(getActivity(), "Successfully Registered", Toast.LENGTH_LONG).show();
+                                    applicationDialog.dismiss();
+
+                                }else{
+                                    Toast.makeText(getActivity(), "Introduction cannot be empty", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                        closeBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                applicationDialog.dismiss();
+                            }
+                        });
+                    }
+                }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
+
 }
