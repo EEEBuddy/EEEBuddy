@@ -18,7 +18,7 @@
         app:centre_button_color="#fff"
         app:inactive_item_color="#000000"
         app:space_background_color="#ffffff"
-        app:centre_button_icon="@drawable/ic_home_grey"
+        app:centre_button_icon="@drawable/bot"
         app:space_item_icon_size="25dp"
         app:space_item_icon_only_size="@dimen/space_item_icon_only_size"
         app:space_item_text_size="@dimen/space_item_text_default_size" />

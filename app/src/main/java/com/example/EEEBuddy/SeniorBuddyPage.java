@@ -23,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
@@ -38,6 +39,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
     PagerAdapter pageAdapter;
     ViewPager viewPager;
 
+    FirebaseAuth firebaseAuth;
 
     SpaceNavigationView spaceNavigationView;
 
@@ -46,6 +48,14 @@ public class SeniorBuddyPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_senior_buddy_page);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        if(firebaseAuth.getCurrentUser() == null){
+            //if user has already logged out
+            finish();
+            startActivity(new Intent(this,Login.class));
+        }
 
         //customise bottom navigation
         spaceNavigationView = findViewById(R.id.navigation);

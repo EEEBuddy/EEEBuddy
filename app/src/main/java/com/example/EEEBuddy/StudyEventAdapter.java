@@ -89,7 +89,6 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
             joinBtn = (Button) itemView.findViewById(R.id.card_button);
 
-
         }
     }
 

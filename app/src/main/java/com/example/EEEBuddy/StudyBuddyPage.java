@@ -65,6 +65,14 @@ public class StudyBuddyPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_buddy_page);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        if(firebaseAuth.getCurrentUser() == null){
+            //if user has already logged out
+            finish();
+            startActivity(new Intent(this,Login.class));
+        }
+
       //customise bottom navigation
         spaceNavigationView = findViewById(R.id.navigation);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);

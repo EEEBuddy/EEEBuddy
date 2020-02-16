@@ -95,11 +95,23 @@
 
 
         <Button
+            android:id="@+id/card_button_mark"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/login"
+            android:text="Attended"
+            android:textColor="#fff"
+            />
+
+        <Button
             android:id="@+id/card_button"
             android:layout_width="80dp"
             android:layout_height="40dp"
-            android:layout_marginStart="280dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="120dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/login"
             android:text="@string/join"
             android:textColor="#fff" />

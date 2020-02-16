@@ -6,8 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".Account">
 
-    <include layout="@layout/navigation" android:id="@+id/acct_nav" />
 
+    <include
+        android:id="@+id/acct_nav"
+        layout="@layout/navigation"
+        tools:layout_editor_absoluteX="154dp"
+        tools:layout_editor_absoluteY="0dp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
@@ -113,13 +117,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="130dp"
         android:fontFamily="@font/roboto"
-        android:text="MY SENIOR BUDDY"
+        android:text="SENIOR/JUNIOR BUDDY"
         android:textColor="#666666"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/acct_mybuddy"
-        app:layout_constraintHorizontal_bias="0.955"
+        app:layout_constraintHorizontal_bias="0.474"
         app:layout_constraintStart_toStartOf="@+id/acct_mybuddy"
         app:layout_constraintTop_toTopOf="@+id/acct_mybuddy" />
 
@@ -130,11 +133,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="40dp"
         android:fontFamily="@font/roboto"
-        android:text="MY EVENTS"
+        android:text="STUDY EVENTS"
         android:textColor="#666666"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/acct_event"
-        app:layout_constraintHorizontal_bias="0.367"
+        app:layout_constraintHorizontal_bias="0.42"
         app:layout_constraintStart_toStartOf="@+id/acct_event"
         app:layout_constraintTop_toTopOf="@+id/acct_event" />
 
@@ -167,5 +170,20 @@
         app:layout_constraintEnd_toEndOf="@+id/acct_logout"
         app:layout_constraintStart_toStartOf="@+id/acct_logout"
         app:layout_constraintTop_toTopOf="@+id/acct_logout" />
+
+
+    <ImageView
+        android:id="@+id/acct_change_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="-45"
+        app:layout_constraintBottom_toTopOf="@+id/profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.955"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/key" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,9 +53,18 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
             @Override
             public void onClick(View v) {
                 //TODO...
-                Toast.makeText(context, "TODO...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "TODO...delete", Toast.LENGTH_SHORT).show();
             }
         });
+
+        holder.markBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO...
+                Toast.makeText(context, "TODO...mark", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
     }
 
@@ -68,7 +77,7 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView subjectCode, subjectName, task, location, date, time, groupSize;
-        final Button deleteBtn;
+        final Button deleteBtn, markBtn;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -82,8 +91,10 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
             time = (TextView) itemView.findViewById(R.id.card_time);
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
             deleteBtn= (Button) itemView.findViewById(R.id.card_button);
+            markBtn = (Button) itemView.findViewById(R.id.card_button_mark);
 
             deleteBtn.setText("Delete");
+            markBtn.setVisibility(View.VISIBLE);
 
         }
     }

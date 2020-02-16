@@ -63,6 +63,12 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_study_event);
 
+        if(firebaseAuth.getCurrentUser() == null){
+            //if user has already logged out
+            finish();
+            startActivity(new Intent(this,Login.class));
+        }
+
         //initialise elements on add_study_event layout
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
