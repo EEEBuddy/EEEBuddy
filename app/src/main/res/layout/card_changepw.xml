@@ -33,7 +33,8 @@
             android:text="Old Password"
             android:fontFamily="@font/roboto"
             android:textSize="20sp"
-            android:textColor="#EEEBEB"
+            android:textColor="@color/mainFontColor"
+            android:alpha="0.5"
             android:layout_marginBottom="10dp"/>
 
 
@@ -44,7 +45,8 @@
             android:text="New Password"
             android:fontFamily="@font/roboto"
             android:textSize="20sp"
-            android:textColor="#EEEBEB"
+            android:textColor="@color/mainFontColor"
+            android:alpha="0.5"
             android:layout_marginBottom="10dp"/>
 
         <EditText
@@ -54,7 +56,8 @@
             android:text="Confirm Password"
             android:fontFamily="@font/roboto"
             android:textSize="20sp"
-            android:textColor="#EEEBEB"
+            android:textColor="@color/mainFontColor"
+            android:alpha="0.5"
             android:layout_marginBottom="10dp"/>
 
         <Button

@@ -114,6 +114,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
         tab_recommendation = (TabItem) findViewById(R.id.seniorbuddy_recomm);
         tab_all = (TabItem) findViewById(R.id.seniorbuddy_all);
 
+        /*
         applyText =findViewById(R.id.toolbar_apply);
         applyText.setVisibility(View.VISIBLE);
         applyText.setOnClickListener(new View.OnClickListener() {
@@ -122,6 +123,8 @@ public class SeniorBuddyPage extends AppCompatActivity {
                 SeniorBuddyApplication();
             }
         });
+
+         */
 
         //cumtomise toolbar
         //setSupportActionBar(toolbar);

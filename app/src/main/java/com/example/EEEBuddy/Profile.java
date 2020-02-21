@@ -232,6 +232,7 @@ public class Profile extends AppCompatActivity {
                             profileImageUrl = uri.toString();
                             UserInfo userInfo = new UserInfo();
                             userInfo.setProfileImageUrl(profileImageUrl);
+                            updateProfileImage();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -241,7 +242,6 @@ public class Profile extends AppCompatActivity {
                     });
 
                     //update image url to firebase
-                    updateProfileImage();
 
                 }
             })
@@ -256,15 +256,14 @@ public class Profile extends AppCompatActivity {
 
 
     private void updateProfileImage() {
-
         databaseReference.child(userNode).child("profileImageUrl").setValue(profileImageUrl);
 
         databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
-                String newProfileImageUrl = userInfo.getProfileImageUrl();
-                Picasso.get().load(newProfileImageUrl).into(profileImage);
+                //UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
+                //String newProfileImageUrl = userInfo.getProfileImageUrl();
+                Picasso.get().load(profileImageUrl).into(profileImage);
                 Toast.makeText(Profile.this, "Profile Image Uploaded Successfully", Toast.LENGTH_LONG).show();
                 progressBar.setVisibility(View.GONE);
             }
@@ -305,8 +304,8 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 verifyPermissions(Profile.this);//check file storage and camera permission
-                dispatchTakePictureIntent();
                 alertDialog.dismiss();
+                dispatchTakePictureIntent();
             }
         });
 
@@ -341,9 +340,10 @@ public class Profile extends AppCompatActivity {
             ActivityCompat.requestPermissions(
                     activity,
                     new String[]{Manifest.permission.CAMERA}, CAMERA);
-        }else{
-            dispatchTakePictureIntent();
         }
+        //else{
+            //dispatchTakePictureIntent();
+        //}
     }
 
 
@@ -367,9 +367,9 @@ public class Profile extends AppCompatActivity {
                 Uri photoUri = FileProvider.getUriForFile(this, "com.example.EEEBuddy.fileprovider", photoFile);
                 //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 //startActivityForResult(cameraIntent, CAMERA);
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                //Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 //intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(intent.createChooser(intent, "Take Photo"), CAMERA);
+                startActivityForResult(cameraIntent.createChooser(cameraIntent, "Take Photo"), CAMERA);
             }
         }
 

@@ -265,6 +265,7 @@ public class Account extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 editTextOldPw.setTextColor(ContextCompat.getColor(Account.this, R.color.mainFontColor));
+                editTextOldPw.setAlpha(1);
                 editTextOldPw.getText().clear();
             }
         });
@@ -273,6 +274,7 @@ public class Account extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 editTextNewPw.setTextColor(ContextCompat.getColor(Account.this, R.color.mainFontColor));
+                editTextNewPw.setAlpha(1);
                 editTextNewPw.getText().clear();
             }
         });
@@ -281,6 +283,7 @@ public class Account extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 editTextCfmPw.setTextColor(ContextCompat.getColor(Account.this, R.color.mainFontColor));
+                editTextCfmPw.setAlpha(1);
                 editTextCfmPw.getText().clear();
             }
         });
@@ -298,7 +301,7 @@ public class Account extends AppCompatActivity {
             public void onClick(View v) {
                 oldPass = editTextOldPw.getText().toString().trim();
                 newPass = editTextNewPw.getText().toString().trim();
-                cfmPass = editTextOldPw.getText().toString().trim();
+                cfmPass = editTextCfmPw.getText().toString().trim();
 
                 if(TextUtils.isEmpty(oldPass)){
                     //if Cfmpassword is empty
@@ -366,7 +369,8 @@ public class Account extends AppCompatActivity {
                                     }
                                 });
                             }else{
-                                Toast.makeText(Account.this,"Wrong password", Toast.LENGTH_LONG).show();
+                                editTextOldPw.setError("Wrong Password");
+                                //Toast.makeText(Account.this,"Wrong password", Toast.LENGTH_LONG).show();
                             }
                         }
                     });

@@ -74,7 +74,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView subjectCode, subjectName, task, location, date, time, groupSize;
-        final Button joinBtn;
+        final Button joinBtn, attendBtn;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -88,6 +88,9 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             time = (TextView) itemView.findViewById(R.id.card_time);
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
             joinBtn = (Button) itemView.findViewById(R.id.card_button);
+            attendBtn = (Button) itemView.findViewById(R.id.card_button_mark);
+
+            attendBtn.setVisibility(View.GONE);
 
         }
     }
