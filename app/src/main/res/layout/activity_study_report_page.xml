@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context=".StudyReportPage">
+
+    <include layout="@layout/toolbar" android:id="@+id/report_toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/report_layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:layout_below="@id/report_toolbar">
+
+        <Spinner
+            android:id="@+id/report_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            style="@style/spinner_style"
+            android:layout_centerHorizontal="true"
+            android:entries="@array/months"/>
+
+        <Button
+            android:id="@+id/report_loadBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/login"
+            android:layout_weight="1"
+            android:text="Load"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignEnd="@id/report_spinner"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/report_layout_1">
+
+        <LinearLayout
+            android:id="@+id/report_datasheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TableLayout
+                android:id="@+id/report_layout_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_below="@id/report_layout_1">
+
+                <TableRow android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="Total Study Duration (hr): "
+                        android:textColor="@color/mainFontColor"
+                        android:textSize="22sp"/>
+
+                    <TextView
+                        android:id="@+id/report_total_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="-"
+                        android:textColor="@color/purple"
+                        android:textSize="28sp"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="Number of Tasks: "
+                        android:textColor="@color/mainFontColor"
+                        android:textSize="22sp"/>
+
+                    <TextView
+                        android:id="@+id/report_total_tasks"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="-"
+                        android:textColor="@color/purple"
+                        android:textSize="28sp"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="Avg Task Completion (%) : "
+                        android:textColor="@color/mainFontColor"
+                        android:textSize="22sp"/>
+
+                    <TextView
+                        android:id="@+id/report_avg_completion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="-"
+                        android:textColor="@color/purple"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="Avg Task Satisfation (/5) : "
+                        android:textColor="@color/mainFontColor"
+                        android:textSize="22sp"/>
+
+                    <TextView
+                        android:id="@+id/report_avg_task_satisfaction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="-"
+                        android:textColor="@color/purple"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="No. of Study Event Attended : "
+                        android:textColor="@color/mainFontColor"
+                        android:textSize="22sp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="-"
+                        android:textColor="@color/purple"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+            </TableLayout>
+
+            <LinearLayout
+                android:id="@+id/report_layout_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_below="@id/report_layout_2"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/roboto"
+                    android:text="Monthly Study Duration Line Graph"
+                    android:textColor="@color/mainFontColor"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/report_study_hour_chart"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="400dp"
+                    android:layout_height="300dp">
+                </com.github.mikephil.charting.charts.LineChart>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/roboto"
+                    android:text="Study Group Size Chart"
+                    android:textColor="@color/mainFontColor"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/report_group_size_chart"
+                    android:layout_width="350dp"
+                    android:layout_height="350dp">
+                </com.github.mikephil.charting.charts.PieChart>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/roboto"
+                    android:text="Study Methods Chart"
+                    android:textColor="@color/mainFontColor"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/report_study_method_chart"
+                    android:layout_width="350dp"
+                    android:layout_height="350dp">
+                </com.github.mikephil.charting.charts.PieChart>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/roboto"
+                    android:text="Study Location Chart"
+                    android:textColor="@color/mainFontColor"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/report_study_location_chart"
+                    android:layout_width="350dp"
+                    android:layout_height="350dp">
+                </com.github.mikephil.charting.charts.PieChart>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+</RelativeLayout>

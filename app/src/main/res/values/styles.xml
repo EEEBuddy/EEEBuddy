@@ -9,8 +9,18 @@
         <item name="android:dateTextAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:weekDayTextAppearance">@android:style/TextAppearance.Medium</item>
         <item name="android:colorControlActivated">@color/blue</item>
+    </style>
 
-
+    <style name="spinner_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/gradient_spinner</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:popupBackground">#DFFFFFFF</item>
     </style>
 
     <string-array name="duration">
@@ -20,7 +30,11 @@
         <item>3</item>
         <item>4</item>
         <item>5</item>
-        <item>>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
     </string-array>
 
     <string-array name="completion">
@@ -91,6 +105,21 @@
         <item>Freshy</item>
         <item>Senior</item>
         <item>Expert</item>
+    </string-array>
+
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
     </string-array>
 
 

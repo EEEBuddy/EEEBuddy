@@ -166,6 +166,7 @@ public class TrackStudyPage extends AppCompatActivity {
 
         //TODO...
         Toast.makeText(this, "TODO...", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(TrackStudyPage.this, StudyReportPage.class));
     }
 
     private void AddStudyRecord(){
