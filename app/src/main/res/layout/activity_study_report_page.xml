@@ -190,7 +190,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/roboto"
-                    android:text="Monthly Study Duration Line Graph"
+                    android:text="Monthly Study Duration Graph"
                     android:textColor="@color/mainFontColor"
                     android:textSize="22sp"
                     android:textStyle="bold"/>
@@ -198,8 +198,8 @@
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/report_study_hour_chart"
                     android:layout_marginBottom="10dp"
-                    android:layout_width="400dp"
-                    android:layout_height="300dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp">
                 </com.github.mikephil.charting.charts.LineChart>
 
                 <TextView

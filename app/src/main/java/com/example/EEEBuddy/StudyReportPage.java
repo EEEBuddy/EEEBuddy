@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,9 +19,19 @@ import com.firebase.ui.database.FirebaseIndexArray;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -74,6 +85,8 @@ public class StudyReportPage extends AppCompatActivity {
     Map<String, Integer> groupSizeDataMap = new HashMap<String, Integer>();
     Map<String, Integer> studyMethodDataMap = new HashMap<String, Integer>();
     Map<String, Integer> studyLocationDataMap = new HashMap<String, Integer>();
+    Map<String, Integer> studyHourDataMap = new HashMap<String, Integer>();
+
 
     int selectedMonthDigit = 0;
     int totalStudyHours = 0;
@@ -82,6 +95,8 @@ public class StudyReportPage extends AppCompatActivity {
     int totalTaskSatisfaction = 0;
     double avgTaskCompletion = 0.0;
     double avgTaskSatisfaction = 0.0;
+    float avgStudyHour = 0f;
+
 
 
 
@@ -123,48 +138,6 @@ public class StudyReportPage extends AppCompatActivity {
         studyLocationPieChart = (PieChart) findViewById(R.id.report_study_location_chart);
         studyMethodPieChart = (PieChart) findViewById(R.id.report_study_method_chart);
 
-        //studyHours Line Chart Setting
-
-
-
-        //studyGroupSize Chart Setting
-        studyGroupSizePieChart.setUsePercentValues(true);
-        studyGroupSizePieChart.getDescription().setEnabled(false);
-        studyGroupSizePieChart.setExtraOffsets(5,5,5,5);
-
-        studyGroupSizePieChart.setDragDecelerationFrictionCoef(0.99f);
-
-        studyGroupSizePieChart.setDrawHoleEnabled(true);
-        studyGroupSizePieChart.setHoleColor(Color.WHITE);
-        studyGroupSizePieChart.setTransparentCircleRadius(70f);
-        studyGroupSizePieChart.setCenterTextColor(Color.BLACK);
-        studyGroupSizePieChart.setEntryLabelColor(Color.BLACK);
-
-        //studyLocationPieChart Chart Setting
-        studyLocationPieChart.setUsePercentValues(true);
-        studyLocationPieChart.getDescription().setEnabled(false);
-        studyLocationPieChart.setExtraOffsets(5,5,5,5);
-
-        studyLocationPieChart.setDragDecelerationFrictionCoef(0.99f);
-
-        studyLocationPieChart.setDrawHoleEnabled(true);
-        studyLocationPieChart.setHoleColor(Color.WHITE);
-        studyLocationPieChart.setTransparentCircleRadius(70f);
-
-
-        //studyGroupSize Chart Setting
-        studyMethodPieChart.setUsePercentValues(true);
-        studyMethodPieChart.getDescription().setEnabled(false);
-        studyMethodPieChart.setExtraOffsets(5,5,5,5);
-
-        studyMethodPieChart.setDragDecelerationFrictionCoef(0.99f);
-
-        studyMethodPieChart.setDrawHoleEnabled(true);
-        studyMethodPieChart.setHoleColor(Color.WHITE);
-        studyMethodPieChart.setTransparentCircleRadius(70f);
-
-
-
 
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,6 +166,8 @@ public class StudyReportPage extends AppCompatActivity {
         studyLocationDataMap.put("Open Area", 0);
         studyLocationDataMap.put("Cafe", 0);
         studyLocationDataMap.put("Others", 0);
+
+
 
         totalStudyHours = 0;
         totalTasks = 0;
@@ -231,6 +206,11 @@ public class StudyReportPage extends AppCompatActivity {
             selectedMonthDigit = 12;
         }
 
+        //initialize study hour data map
+        for(int i=1; i<=31; i++){
+            studyHourDataMap.put("2020-"+selectedMonthDigit+"-"+i,0);
+        }
+
         //Check selected month if is in the Past
         //Report can ONLY be generated for PAST Months
         final Calendar calendar1 = Calendar.getInstance();
@@ -254,7 +234,7 @@ public class StudyReportPage extends AppCompatActivity {
                     for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
 
                         //check the month node is the month selected by user
-                        String date = dataSnapshot1.getKey().toString().trim();
+                        String date = dataSnapshot1.getKey().trim();
                         Calendar calendar2 = Calendar.getInstance();
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -275,6 +255,9 @@ public class StudyReportPage extends AppCompatActivity {
                                 //get total study duration
                                 String tempStudyHour = trackStudyModel.getDuration().trim();
                                 int tempStudyHourInt = Integer.parseInt(tempStudyHour);
+                                if(date != null && studyHourDataMap.containsKey(date)){
+                                    studyHourDataMap.put(date,studyHourDataMap.get(date) + tempStudyHourInt);
+                                }
                                 totalStudyHours = totalStudyHours + tempStudyHourInt;
 
                                 //get total number of tasks
@@ -363,6 +346,53 @@ public class StudyReportPage extends AppCompatActivity {
 
     private void ShowDataAndDrawGraph() {
 
+        avgStudyHour = 0f;
+
+        //studyHours Line Chart Setting
+        studyHourLineChart.setDragEnabled(true);
+        studyHourLineChart.setScaleEnabled(true);
+        studyHourLineChart.getDescription().setEnabled(false);
+
+
+        //studyGroupSize Chart Setting
+        studyGroupSizePieChart.setUsePercentValues(true);
+        studyGroupSizePieChart.getDescription().setEnabled(false);
+        studyGroupSizePieChart.setExtraOffsets(5,5,5,5);
+
+        studyGroupSizePieChart.setDragDecelerationFrictionCoef(0.99f);
+
+        studyGroupSizePieChart.setDrawHoleEnabled(true);
+        studyGroupSizePieChart.setHoleColor(Color.WHITE);
+        studyGroupSizePieChart.setTransparentCircleRadius(70f);
+        studyGroupSizePieChart.setCenterTextColor(Color.BLACK);
+        studyGroupSizePieChart.setEntryLabelColor(Color.BLACK);
+
+        //studyLocationPieChart Chart Setting
+        studyLocationPieChart.setUsePercentValues(true);
+        studyLocationPieChart.getDescription().setEnabled(false);
+        studyLocationPieChart.setExtraOffsets(5,5,5,5);
+
+        studyLocationPieChart.setDragDecelerationFrictionCoef(0.99f);
+
+        studyLocationPieChart.setDrawHoleEnabled(true);
+        studyLocationPieChart.setHoleColor(Color.WHITE);
+        studyLocationPieChart.setTransparentCircleRadius(70f);
+
+
+        //studyGroupSize Chart Setting
+        studyMethodPieChart.setUsePercentValues(true);
+        studyMethodPieChart.getDescription().setEnabled(false);
+        studyMethodPieChart.setExtraOffsets(5,5,5,5);
+
+        studyMethodPieChart.setDragDecelerationFrictionCoef(0.99f);
+
+        studyMethodPieChart.setDrawHoleEnabled(true);
+        studyMethodPieChart.setHoleColor(Color.WHITE);
+        studyMethodPieChart.setTransparentCircleRadius(70f);
+
+
+
+        //data processing
         DecimalFormat df = new DecimalFormat("0.00");
         totalStudyHourTextView.setText(Integer.toString(totalStudyHours));
         totalTaskTextView.setText(Integer.toString(totalTasks));
@@ -374,6 +404,107 @@ public class StudyReportPage extends AppCompatActivity {
         //cal avg task satisfaction
         avgTaskSatisfaction = Double.parseDouble(df.format(totalTaskSatisfaction/totalTasks));
         avgTaskSatisfactionTextView.setText(Double.toString(avgTaskSatisfaction));
+
+        //draw studyHour Line Chart
+        ArrayList<Entry> studyHour = new ArrayList<>();
+
+        for(int i=0; i<31; i++){
+            studyHour.add(new Entry(i,studyHourDataMap.get("2020-"+selectedMonthDigit+"-"+(i+1))));
+        }
+
+        LineDataSet dataSet = new LineDataSet(studyHour,"study hours");
+        dataSet.setFillAlpha(110);
+        dataSet.setColor(R.color.purple);
+        dataSet.setLineWidth(2f);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueTextSize(12f);
+
+        studyHourLineChart.getAxisRight().setEnabled(false);
+        ArrayList<ILineDataSet> studyHourDataSet = new ArrayList<>();
+        studyHourDataSet.add(dataSet);
+
+        LineData studyHourLineData = new LineData(studyHourDataSet);
+
+        //Line for avg study hours per day
+
+        if(selectedMonthDigit == 1 || selectedMonthDigit == 3 || selectedMonthDigit == 5 || selectedMonthDigit == 7 || selectedMonthDigit == 8 || selectedMonthDigit == 10 || selectedMonthDigit == 12){
+            avgStudyHour = Float.parseFloat(df.format(avgStudyHour + totalStudyHours/31f));
+
+        }else if(selectedMonthDigit == 4 || selectedMonthDigit == 6 || selectedMonthDigit == 9 || selectedMonthDigit == 11){
+            avgStudyHour = Float.parseFloat(df.format(avgStudyHour + totalStudyHours/30f));
+
+        }else{
+            avgStudyHour = Float.parseFloat(df.format(avgStudyHour + totalStudyHours/28f));
+        }
+
+        LimitLine avgStudyHourLine = new LimitLine(avgStudyHour, "Avg Study Hrs/Day = " + avgStudyHour + "hr");
+        avgStudyHourLine.setLineWidth(2f);
+        avgStudyHourLine.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        avgStudyHourLine.setTextSize(14f);
+        avgStudyHourLine.setTextColor(Color.RED);
+        avgStudyHourLine.setLineColor(Color.RED);
+
+        YAxis leftAxis = studyHourLineChart.getAxisLeft();
+        leftAxis.removeAllLimitLines();
+        leftAxis.addLimitLine(avgStudyHourLine);
+
+        //customise y axis
+        studyHourLineChart.getAxisLeft().setLabelCount(12);//split into 24 counts
+        leftAxis.setAxisMinimum(0f); // start at zero
+        leftAxis.setAxisMaximum(24f); //max 24 hours/day
+
+        leftAxis.setDrawLimitLinesBehindData(true);
+
+
+        studyHourLineChart.setData(studyHourLineData);
+        studyHourLineChart.invalidate();
+
+
+        //customise x-axis
+        String temp = new String();
+        for(int i=1; i<=31; i++){
+            temp = temp + '"'+ i + "/" +selectedMonthDigit +'"' +",";
+        }
+        String tempStr = temp.substring(0, temp.length() - 1);
+        String [] myValues = new String[] {"1/"+ selectedMonthDigit,
+                "2/"+ selectedMonthDigit,
+                "3/"+ selectedMonthDigit,
+                "4/"+ selectedMonthDigit,
+                "5/"+ selectedMonthDigit,
+                "6/"+ selectedMonthDigit,
+                "7/"+ selectedMonthDigit,
+                "8/"+ selectedMonthDigit,
+                "9/"+ selectedMonthDigit,
+                "10/"+ selectedMonthDigit,
+                "11/"+ selectedMonthDigit,
+                "12/"+ selectedMonthDigit,
+                "13/"+ selectedMonthDigit,
+                "14/"+ selectedMonthDigit,
+                "15/"+ selectedMonthDigit,
+                "16/"+ selectedMonthDigit,
+                "17/"+ selectedMonthDigit,
+                "18/"+ selectedMonthDigit,
+                "19/"+ selectedMonthDigit,
+                "20/"+ selectedMonthDigit,
+                "21/"+ selectedMonthDigit,
+                "22/"+ selectedMonthDigit,
+                "23/"+ selectedMonthDigit,
+                "24/"+ selectedMonthDigit,
+                "25/"+ selectedMonthDigit,
+                "26/"+ selectedMonthDigit,
+                "27/"+ selectedMonthDigit,
+                "28/"+ selectedMonthDigit,
+                "29/"+ selectedMonthDigit,
+                "30/"+ selectedMonthDigit,
+                "31/"+ selectedMonthDigit
+        };
+
+
+        XAxis xAxis = studyHourLineChart.getXAxis();
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(myValues));
+        xAxis.setGranularity(1);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
 
 
         //draw studyGroupSize PieChart
@@ -452,5 +583,19 @@ public class StudyReportPage extends AppCompatActivity {
         studyMethodPieChart.setData(studyMethodData);
         studyMethodPieChart.invalidate();//refresh chart
 
+    }
+
+    public class MyXAxisValueFormatter extends ValueFormatter{
+
+        private String[] myValues;
+        public MyXAxisValueFormatter(String[] myValues){
+
+            this.myValues = myValues;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            return myValues[(int)value];
+        }
     }
 }
