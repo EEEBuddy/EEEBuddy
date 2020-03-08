@@ -365,7 +365,6 @@ public class StudyReportPage extends AppCompatActivity {
         studyGroupSizePieChart.setHoleColor(Color.WHITE);
         studyGroupSizePieChart.setTransparentCircleRadius(70f);
         studyGroupSizePieChart.setCenterTextColor(Color.BLACK);
-        studyGroupSizePieChart.setEntryLabelColor(Color.BLACK);
 
         //studyLocationPieChart Chart Setting
         studyLocationPieChart.setUsePercentValues(true);
@@ -412,7 +411,7 @@ public class StudyReportPage extends AppCompatActivity {
             studyHour.add(new Entry(i,studyHourDataMap.get("2020-"+selectedMonthDigit+"-"+(i+1))));
         }
 
-        LineDataSet dataSet = new LineDataSet(studyHour,"study hours");
+        LineDataSet dataSet = new LineDataSet(studyHour,"Study Hours");
         dataSet.setFillAlpha(110);
         dataSet.setColor(R.color.purple);
         dataSet.setLineWidth(2f);
@@ -520,6 +519,7 @@ public class StudyReportPage extends AppCompatActivity {
         groupSize.add(new PieEntry(groupSizeDataMap.get(">10"), ">10"));
 
         PieDataSet groupSizeDataSet = new PieDataSet(groupSize,"Study Group Size");
+        groupSizeDataSet.setValueTextSize(12f);
         groupSizeDataSet.setSliceSpace(3f);
         groupSizeDataSet.setSelectionShift(5f);
         groupSizeDataSet.setColors(ColorTemplate.JOYFUL_COLORS);
@@ -547,6 +547,7 @@ public class StudyReportPage extends AppCompatActivity {
 
 
         PieDataSet studyLocationDataSet = new PieDataSet(studyLocation,"Study Locations");
+        studyLocationDataSet.setValueTextSize(12f);
         studyLocationDataSet.setSliceSpace(3f);
         studyLocationDataSet.setSelectionShift(5f);
         studyLocationDataSet.setColors(ColorTemplate.JOYFUL_COLORS);
@@ -571,6 +572,7 @@ public class StudyReportPage extends AppCompatActivity {
 
 
         PieDataSet studyMethodDataSet = new PieDataSet(studyMethod,"Study Methods");
+        studyMethodDataSet.setValueTextSize(12f);
         studyMethodDataSet.setSliceSpace(3f);
         studyMethodDataSet.setSelectionShift(5f);
         studyMethodDataSet.setColors(ColorTemplate.JOYFUL_COLORS);

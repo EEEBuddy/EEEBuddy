@@ -7,19 +7,26 @@
     tools:context=".RecommFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="400dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/seniorbuddy_buddyRequest_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="75dp"
+            android:layout_marginTop="130dp"
+            android:layout_alignParentTop="true"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="134dp"/>
 
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/seniorbuddy_noBuddy"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="RECOMM TODO..."
-        android:layout_centerHorizontal="true"
-        android:textSize="30dp"/>
+        android:text="NO Request"
+        android:textSize="30sp"
+        android:visibility="gone"
+        />
 
-    </RelativeLayout>
 
 </FrameLayout>

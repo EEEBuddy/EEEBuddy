@@ -10,10 +10,24 @@ public class UserInfo {
     private String year;
     private String matric;
     private String profileImageUrl;
+    private String hall, gender;
+
+    public UserInfo(String name, String email, String course, String year, String matric, String profileImageUrl, String hall, String gender) {
+        this.name = name;
+        this.email = email;
+        this.course = course;
+        this.year = year;
+        this.matric = matric;
+        this.profileImageUrl = profileImageUrl;
+        this.hall = hall;
+        this.gender = gender;
+    }
 
     public UserInfo(){
 
     }
+
+
 
     public String getProfileImageUrl() {
         return profileImageUrl;
@@ -63,5 +77,22 @@ public class UserInfo {
     public void setYear(String year) {
 
         this.year = year;
+    }
+
+
+    public String getHall() {
+        return hall;
+    }
+
+    public void setHall(String hall) {
+        this.hall = hall;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
