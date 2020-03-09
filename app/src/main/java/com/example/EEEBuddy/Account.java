@@ -54,12 +54,15 @@ public class Account extends AppCompatActivity {
     private ImageView changepw;
     private String oldPass, newPass, cfmPass;
 
+    boolean hasSeniorBuddy, hasJuniorBuddy;
+    String seniorBuddy;
+
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     AuthCredential authCredential;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference, seniorBuddyRef;
     private String userID;
     private String userEmail, userNode;
     private SpaceNavigationView spaceNavigationView;
@@ -129,6 +132,7 @@ public class Account extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Student Profile");
+        seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
         FirebaseUser user = firebaseAuth.getCurrentUser();
         userID = user.getUid();
         userEmail = user.getEmail();
@@ -212,8 +216,57 @@ public class Account extends AppCompatActivity {
 
     private void GotoMySeniorBuddyInfoPage() {
 
-        //TODO
-        Toast.makeText(this, "TODO...", Toast.LENGTH_SHORT).show();
+        hasSeniorBuddy = false;
+        hasJuniorBuddy = false;
+
+        databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChild("seniorBuddy")){
+                    UserInfo juniorInfo = dataSnapshot.getValue(UserInfo.class);
+                    seniorBuddy = juniorInfo.getSeniorBuddy().trim();
+                    hasSeniorBuddy = true;
+
+                    if(hasSeniorBuddy == true){
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), BuddyManagementPage.class));
+                    }else{
+                        Toast.makeText(getApplicationContext(), "You Do Not Have A Senior Buddy", Toast.LENGTH_LONG).show();
+                    }
+
+
+                    seniorBuddyRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if(dataSnapshot.hasChild("juniorBuddy")){
+                                hasJuniorBuddy = true;
+
+                                if(hasJuniorBuddy == true){
+                                    finish();
+                                    startActivity(new Intent(getApplicationContext(), BuddyManagementPage.class));
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "You Do Not Have Junior Buddy", Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
 

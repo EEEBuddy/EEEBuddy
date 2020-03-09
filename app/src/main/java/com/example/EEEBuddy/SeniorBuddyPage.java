@@ -1,5 +1,6 @@
 package com.example.EEEBuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
@@ -24,6 +25,12 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
@@ -39,7 +46,12 @@ public class SeniorBuddyPage extends AppCompatActivity {
     PagerAdapter pageAdapter;
     ViewPager viewPager;
 
-    FirebaseAuth firebaseAuth;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference seniorBuddyRef;
+    private String userEmail, userNode;
+    private FirebaseUser user;
+
 
     SpaceNavigationView spaceNavigationView;
 
@@ -114,21 +126,15 @@ public class SeniorBuddyPage extends AppCompatActivity {
         tab_recommendation = (TabItem) findViewById(R.id.seniorbuddy_recomm);
         tab_all = (TabItem) findViewById(R.id.seniorbuddy_all);
 
-        /*
-        applyText =findViewById(R.id.toolbar_apply);
-        applyText.setVisibility(View.VISIBLE);
-        applyText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SeniorBuddyApplication();
-            }
-        });
 
-         */
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
 
-        //cumtomise toolbar
-        //setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         backBtn.setVisibility(View.GONE);
         title.setText("Senior Buddy");
@@ -138,19 +144,37 @@ public class SeniorBuddyPage extends AppCompatActivity {
         pageAdapter = new SeniorBuddyPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
 
+        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(userNode)){
+
+                    tabLayout.getTabAt(0).setText("Buddy Requests");                        }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
+            public void onTabSelected(final TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
 
                 if(tab.getPosition() == 0){
                     pageAdapter.notifyDataSetChanged();
                     filterIcon.setVisibility(View.GONE);
+
                 }else if(tab.getPosition() == 1){
                     pageAdapter.notifyDataSetChanged();
                     filterIcon.setVisibility(View.VISIBLE);
 
                 }
+
+
+
             }
 
             @Override

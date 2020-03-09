@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +23,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,10 +49,11 @@ public class RecommFragment extends Fragment {
     private String request_type;
     private TextView noRequest;
 
+
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference studentProfileRef, buddyRequestRef;
+    private DatabaseReference studentProfileRef, buddyRequestRef, seniorBuddyRef;
     private String userEmail, userNode;
     private FirebaseUser user;
 
@@ -73,13 +77,18 @@ public class RecommFragment extends Fragment {
 
         noRequest = (TextView) view.findViewById(R.id.seniorbuddy_noBuddy);
 
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         studentProfileRef = firebaseDatabase.getReference("Student Profile");
         buddyRequestRef = firebaseDatabase.getReference("Buddy Requests");
+        seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         userEmail = user.getEmail();
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+
+
 
 
         buddyRequestRef.addValueEventListener(new ValueEventListener() {

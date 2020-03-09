@@ -11,8 +11,9 @@ public class UserInfo {
     private String matric;
     private String profileImageUrl;
     private String hall, gender;
+    private String seniorBuddy;
 
-    public UserInfo(String name, String email, String course, String year, String matric, String profileImageUrl, String hall, String gender) {
+    public UserInfo(String name, String email, String course, String year, String matric, String profileImageUrl, String hall, String gender, String seniorBuddy) {
         this.name = name;
         this.email = email;
         this.course = course;
@@ -21,13 +22,20 @@ public class UserInfo {
         this.profileImageUrl = profileImageUrl;
         this.hall = hall;
         this.gender = gender;
+        this.seniorBuddy =  seniorBuddy;
     }
 
     public UserInfo(){
 
     }
 
+    public String getSeniorBuddy() {
+        return seniorBuddy;
+    }
 
+    public void setSeniorBuddy(String seniorBuddy) {
+        this.seniorBuddy = seniorBuddy;
+    }
 
     public String getProfileImageUrl() {
         return profileImageUrl;
