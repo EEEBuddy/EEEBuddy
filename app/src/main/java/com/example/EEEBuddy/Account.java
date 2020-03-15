@@ -219,24 +219,14 @@ public class Account extends AppCompatActivity {
         hasSeniorBuddy = false;
         hasJuniorBuddy = false;
 
-        databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
+
+        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.hasChild("seniorBuddy")){
-                    UserInfo juniorInfo = dataSnapshot.getValue(UserInfo.class);
-                    seniorBuddy = juniorInfo.getSeniorBuddy().trim();
-                    hasSeniorBuddy = true;
+                if(dataSnapshot.hasChild(userNode)){
 
-                    if(hasSeniorBuddy == true){
-                        finish();
-                        startActivity(new Intent(getApplicationContext(), BuddyManagementPage.class));
-                    }else{
-                        Toast.makeText(getApplicationContext(), "You Do Not Have A Senior Buddy", Toast.LENGTH_LONG).show();
-                    }
-
-
-                    seniorBuddyRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
+                    seniorBuddyRef.child(userNode).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -246,10 +236,9 @@ public class Account extends AppCompatActivity {
                                 if(hasJuniorBuddy == true){
                                     finish();
                                     startActivity(new Intent(getApplicationContext(), BuddyManagementPage.class));
-                                }else{
-                                    Toast.makeText(getApplicationContext(), "You Do Not Have Junior Buddy", Toast.LENGTH_LONG).show();
                                 }
-
+                            }else{
+                                Toast.makeText(getApplicationContext(), "You Do Not Have any Junior Buddy", Toast.LENGTH_LONG).show();
                             }
                         }
 
@@ -258,13 +247,41 @@ public class Account extends AppCompatActivity {
 
                         }
                     });
+                }else{
+
+                    databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if(dataSnapshot.hasChild("seniorBuddy")){
+                                UserInfo juniorInfo = dataSnapshot.getValue(UserInfo.class);
+                                seniorBuddy = juniorInfo.getSeniorBuddy().trim();
+                                hasSeniorBuddy = true;
+
+                                if(hasSeniorBuddy == true){
+                                    finish();
+                                    startActivity(new Intent(getApplicationContext(), BuddyManagementPage.class));
+                                }
+                            }else{
+                                Toast.makeText(getApplicationContext(), "You Do Not Have a Senior Buddy", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+
+
+
 
 
     }

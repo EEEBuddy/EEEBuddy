@@ -185,6 +185,18 @@
             android:textSize="18sp"
             app:layout_constraintVertical_bias="1.0" />
 
+        <TextView
+            android:id="@+id/info_buddyDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:text="Relation Date"
+            android:textColor="@color/mainFontColor"
+            android:textSize="18sp"
+            app:layout_constraintVertical_bias="1.0"
+            android:visibility="gone"/>
+
         <ScrollView
             android:id="@+id/info_scrollview"
             android:layout_width="match_parent"
@@ -211,7 +223,44 @@
 
         </ScrollView>
 
+
+        <LinearLayout
+            android:id="@+id/info_buttons_layout_below"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/seniorbuddy_linearLayout"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <Button
+                android:id="@+id/info_commentBtn"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/login"
+                android:text="Comment"
+                android:textColor="#fff"
+                android:textSize="18sp"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/info_appointmentBtn"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/login"
+                android:text="Book Appointment"
+                android:textColor="#fff"
+                android:textSize="18sp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+
     </LinearLayout>
+
+
 
 
 

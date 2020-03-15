@@ -11,6 +11,7 @@ public class SeniorBuddyModel {
     private String gender;
     private String hall;
     private String applicationDate;
+    private  String relationDate;
 
     public SeniorBuddyModel(){
 
@@ -31,6 +32,27 @@ public class SeniorBuddyModel {
     public SeniorBuddyModel(String selfIntro, String applicationDate){
         this.joinedDate = applicationDate;
         this.selfIntro = selfIntro;
+    }
+
+    public SeniorBuddyModel(String relationDate){
+        this.relationDate = relationDate;
+    }
+
+
+    public String getRelationDate() {
+        return relationDate;
+    }
+
+    public void setRelationDate(String relationDate) {
+        this.relationDate = relationDate;
+    }
+
+    public String getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(String applicationDate) {
+        this.applicationDate = applicationDate;
     }
 
 

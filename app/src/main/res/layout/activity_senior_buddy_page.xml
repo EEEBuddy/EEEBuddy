@@ -85,7 +85,7 @@
             android:id="@+id/seniorbuddy_recomm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recommended Buddy"
+            android:text="Buddy Requests"
             android:fontFamily="@font/roboto"
             android:textSize="18sp"
             android:textStyle="bold"/>

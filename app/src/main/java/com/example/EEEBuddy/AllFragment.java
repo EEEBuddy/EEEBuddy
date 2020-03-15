@@ -76,7 +76,7 @@ public class AllFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference seniorBuddyRef, studentProfileRef;
     private String userID;
-    private String userEmail, userNode;
+    private String userEmail, userNode, seniorNode;
 
     //filter dialog
     private ImageView closeBtn;
@@ -144,6 +144,16 @@ public class AllFragment extends Fragment {
         seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
         studentProfileRef = firebaseDatabase.getInstance().getReference("Student Profile");
 
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+
+
+
         seniorBuddyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -151,9 +161,9 @@ public class AllFragment extends Fragment {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
                     seniorBuddyList.clear();
-                    userNode = dataSnapshot1.getKey();
+                    seniorNode = dataSnapshot1.getKey();
 
-                    studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
+                    studentProfileRef.child(seniorNode).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -201,6 +211,8 @@ public class AllFragment extends Fragment {
 
         return view;
     }
+
+
 
     private void Search(String searchString) {
 

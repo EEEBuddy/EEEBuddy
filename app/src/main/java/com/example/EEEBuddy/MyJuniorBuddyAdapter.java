@@ -27,14 +27,14 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class JuniorBuddyAdapter extends RecyclerView.Adapter<JuniorBuddyAdapter.MyViewHolder> {
+public class MyJuniorBuddyAdapter extends RecyclerView.Adapter<MyJuniorBuddyAdapter.MyViewHolder> {
 
     Context context;
     ArrayList<UserInfo> juniorBuddyList; //Student Info Model
     private CircleImageView profileImage;
 
 
-    public JuniorBuddyAdapter(Context context, ArrayList<UserInfo> juniorBuddyList) {
+    public MyJuniorBuddyAdapter(Context context, ArrayList<UserInfo> juniorBuddyList) {
         this.context = context;
         this.juniorBuddyList = juniorBuddyList;
     }
@@ -72,7 +72,7 @@ public class JuniorBuddyAdapter extends RecyclerView.Adapter<JuniorBuddyAdapter.
                 intent.putExtra("gender", juniorBuddyList.get(position).getGender());
                 intent.putExtra("year", juniorBuddyList.get(position).getYear());
                 intent.putExtra("profileImg", imageUrl);
-                intent.putExtra("juniorBuddyRequestPage", "yes");
+                intent.putExtra("myJuniorBuddyPage", "yes");
 
                 context.startActivity(intent);
             }

@@ -109,7 +109,7 @@ public class RecommFragment extends Fragment {
                                 BuddyRequestModel buddyRequestModel = dataSnapshot1.getValue(BuddyRequestModel.class);
                                 request_type = buddyRequestModel.getRequest_type();
 
-                                if(request_type.equals("received")){
+                                if(request_type.equals("buddy_request_received") || request_type.equals("remove_request_received")){
 
                                     studentProfileRef.child(juniorID).addValueEventListener(new ValueEventListener() {
                                         @Override
