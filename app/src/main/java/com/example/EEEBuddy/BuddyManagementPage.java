@@ -58,7 +58,7 @@ public class BuddyManagementPage extends AppCompatActivity {
     private CircleImageView profilePic;
     private TextView infoName, infoEmail;
     private Button requestBtn, declineBtn,commentBtn, appointBtn;
-    private TextView infoCourse, infoHall, infoGender, infoExperience, infoBuddyRelationDate;
+    private TextView infoCourse, infoHall, infoGender, infoExperience, infoBuddyRelationDate, removeBuddyRequestHint;
 
     private ArrayList<UserInfo> juniorBuddyList;
     private MyJuniorBuddyAdapter adapter;
@@ -116,6 +116,7 @@ public class BuddyManagementPage extends AppCompatActivity {
         declineBtn = (Button) findViewById(R.id.info_declineBtn);
         commentBtn = (Button) findViewById(R.id.info_commentBtn);
         appointBtn = (Button) findViewById(R.id.info_appointmentBtn);
+        removeBuddyRequestHint = (TextView) findViewById(R.id.info_remove_buddy_request);
 
         CURRENT_STATE = "buddy";
         remove_request_type = "";
@@ -311,7 +312,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                         if(task.isSuccessful()){
 
 
-                            seniorBuddyRef.child(receiverUserID).child("juniorBuddy").child(senderUserID).removeValue()
+                            seniorBuddyRef.child(receiverUserID).child("juniorBuddy").child(senderUserID).child("relationDate").removeValue()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -386,11 +387,16 @@ public class BuddyManagementPage extends AppCompatActivity {
 
                                 btnLinearLayout.removeView(requestBtn);
                                 btnLinearLayout.addView(requestBtn);
+                                requestBtn.setEnabled(true);
+
+                                commentBtn.setVisibility(View.VISIBLE);
+                                removeBuddyRequestHint.setVisibility(View.VISIBLE);
+                                removeBuddyRequestHint.setText("Your Senior Buddy Requests to Remove Buddy Relationship");
                                 //btnLinearLayout.removeView(declineBtn);
                                 //btnLinearLayout.addView(declineBtn);
 
                                 //declineBtn.setEnabled(true);
-                                requestBtn.setEnabled(true);
+
 
                                 /*
                                 declineBtn.setOnClickListener(new View.OnClickListener() {
