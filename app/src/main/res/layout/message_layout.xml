@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:id="@+id/message_Layout">
+
+    <LinearLayout
+        android:id="@+id/message_receivermsg_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/message_receiver_profileImg"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/profile_pic"/>
+
+        <TextView
+            android:id="@+id/message_receiverMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5dp"
+            android:padding="10dp"
+            android:layout_marginRight="55dp"
+            android:layout_toEndOf="@+id/message_receiver_profileImg"
+            android:background="@drawable/receiver_message_bubble"
+            android:text="Receiver Message"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto"/>
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/message_sendermsg_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/message_senderMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:layout_marginLeft="55dp"
+            android:background="@drawable/sender_message_bubble"
+            android:layout_gravity="right"
+            android:text="Sender Message"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto" />
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/message_sender_profileImg"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/profile_pic"
+            android:layout_alignParentEnd="true"/>
+
+
+
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

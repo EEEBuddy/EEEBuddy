@@ -71,6 +71,9 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
     private boolean seniorBuddyIdentity, hasSeniorBuddy, removeRequestReceived, buddyRequestReceived, buddyRequestSent;
 
 
+    //pass variable to chat via intent
+    private String chat_receiverUserID, chat_receiverName, chat_receiverProfileImgUrl, chat_senderID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,10 +224,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
 
 
-
         backBtn.setOnClickListener(this);
-        //requestBtn.setOnClickListener(this);
-        messageBtn.setOnClickListener(this);
         expandBtn.setOnClickListener(this);
         collapsBtn.setOnClickListener(this);
 
@@ -242,6 +242,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
         removeRequestReceived = false;
         buddyRequestReceived = false;
         buddyRequestSent = false;
+
 
 
 
@@ -312,20 +313,31 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
         }
 
 
-        /*
-        //if a junior already had a senior buddy, remove the send request btn
-        if(HasSeniorBuddy()){
-            requestBtn.setBackgroundResource(R.drawable.btn_disabled);
-            requestBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "You already have a Senior Buddy, Please check out at the Account Page", Toast.LENGTH_LONG).show();
-                }
-            });
-            //btnLinearLayout.removeView(requestBtn);
-        }
+        messageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-         */
+
+                if(juniorBuddyPageRequestPage.equals("yes") || myJuniorBuddyPage.equals("yes") || CURRENT_STATE.equals("buddy")){
+                    messageBtn.setEnabled(true);
+
+                    Intent chatIntent = new Intent(SeniorBuddyInfo.this, Chat.class);
+                    chatIntent.putExtra("senderUserID", userNode);
+                    chatIntent.putExtra("receiverUserID", chat_receiverUserID);
+                    chatIntent.putExtra("receiverName", chat_receiverName);
+                    chatIntent.putExtra("receiverProfileImgUrl", chat_receiverProfileImgUrl);
+
+                    startActivity(chatIntent);
+
+                }else{
+
+                    Toast.makeText(getApplicationContext(),
+                            "You Can Only Message the Senior Buddy after he/she accepts your request. Senior Buddy can message you upon receiving your Request",
+                            Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
 
     }
 
@@ -1026,6 +1038,11 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             reYear = getIntent().getStringExtra("year");
             juniorBuddyPageRequestPage = getIntent().getStringExtra("juniorBuddyRequestPage");
 
+            chat_receiverUserID = reEmail.substring(0,reEmail.indexOf("@"));
+            chat_receiverName = reName;
+            chat_receiverProfileImgUrl = reImgUrl;
+            chat_senderID = userNode;
+
         }else if(getIntent().hasExtra("email")
                 && getIntent().hasExtra("name")
                 && getIntent().hasExtra("course")
@@ -1045,6 +1062,11 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             reImgUrl = getIntent().getStringExtra("profileImg");
             reYear = getIntent().getStringExtra("year");
             myJuniorBuddyPage = getIntent().getStringExtra("myJuniorBuddyPage");
+
+            chat_receiverUserID = reEmail.substring(0,reEmail.indexOf("@"));
+            chat_receiverName = reName;
+            chat_receiverProfileImgUrl = reImgUrl;
+            chat_senderID = userNode;
 
         }else{
 
@@ -1103,11 +1125,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(this,"TODO...", Toast.LENGTH_LONG).show();
         }
 
-
-        if(v == messageBtn){
-
-            //TODO
-            Toast.makeText(this,"TODO...", Toast.LENGTH_LONG).show();
-        }
     }
+
+
 }

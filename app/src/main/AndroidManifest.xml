@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_customised"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BuddyManagementPage"></activity>
+        <activity android:name=".Chat"></activity>
+        <activity android:name=".BuddyManagementPage" />
         <activity android:name=".StudyReportPage" />
         <activity android:name=".Test" />
         <activity android:name=".MyStudyEvents" />

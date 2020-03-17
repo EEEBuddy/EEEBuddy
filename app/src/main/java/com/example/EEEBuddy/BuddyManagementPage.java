@@ -30,7 +30,6 @@ import com.squareup.picasso.Picasso;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -68,6 +67,7 @@ public class BuddyManagementPage extends AppCompatActivity {
 
     private String CURRENT_STATE, remove_request_type, senderUserID, receiverUserID;
     private Boolean seniorRemovedFromJuniorProfile;
+    private String receiverName, receiverProfileImgUrl;
 
 
 
@@ -121,6 +121,7 @@ public class BuddyManagementPage extends AppCompatActivity {
         CURRENT_STATE = "buddy";
         remove_request_type = "";
         seniorRemovedFromJuniorProfile = false;
+
 
 
 
@@ -193,6 +194,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                     commentBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            //TODO...
                             CommentSeniorBuddy();
                         }
                     });
@@ -209,8 +211,14 @@ public class BuddyManagementPage extends AppCompatActivity {
                     messageBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //TODO...
-                            Toast.makeText(getApplicationContext(), "TODO MESSAGE FUNCTION", Toast.LENGTH_LONG).show();
+                            Intent chatIntent = new Intent(BuddyManagementPage.this, Chat.class);
+                            chatIntent.putExtra("senderUserID", userNode);
+                            chatIntent.putExtra("receiverUserID", receiverUserID);
+                            chatIntent.putExtra("receiverName", receiverName);
+                            chatIntent.putExtra("receiverProfileImgUrl", receiverProfileImgUrl);
+
+                            startActivity(chatIntent);
+
                         }
                     });
 
@@ -430,13 +438,11 @@ public class BuddyManagementPage extends AppCompatActivity {
 
     private void ShowSeniorBuddyInfo() {
 
-
             studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.hasChild("seniorBuddy")) {
-
 
                         UserInfo seniorID = dataSnapshot.getValue(UserInfo.class);
                         seniorBuddy = seniorID.getSeniorBuddy().trim();
@@ -447,6 +453,10 @@ public class BuddyManagementPage extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                 UserInfo seniorInfo = dataSnapshot.getValue(UserInfo.class);
+
+                                receiverName = seniorInfo.getName().trim();
+                                receiverProfileImgUrl = seniorInfo.getProfileImageUrl().trim();
+
                                 infoName.setText(seniorInfo.getName().trim());
                                 infoEmail.setText(seniorInfo.getEmail().trim());
                                 infoCourse.setText("Course: " + seniorInfo.getCourse().trim());
