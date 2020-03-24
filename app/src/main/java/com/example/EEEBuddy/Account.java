@@ -104,7 +104,7 @@ public class Account extends AppCompatActivity {
                     startActivity(new Intent(Account.this, StudyBuddyPage.class));
                 }
                 if(itemIndex == 2){//goto chat
-                    //startActivity(new Intent(StudyBuddyPage.this, AddStudyEvent.class));
+                    startActivity(new Intent(Account.this, ChatListPage.class));
                 }
                 if(itemIndex == 3){//goto profile page
                     //void

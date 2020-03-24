@@ -43,7 +43,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         if(firebaseAuth.getCurrentUser() !=null){
             //if user has already logged in
             finish();
-            startActivity(new Intent(getApplicationContext(), Account.class));
+            startActivity(new Intent(getApplicationContext(), SeniorBuddyPage.class));
         }
 
 

@@ -127,6 +127,8 @@ public class TrackStudyPage extends AppCompatActivity {
                 studyRecordList = new ArrayList<TrackStudyModel>();
                 recyclerView.setLayoutManager(new LinearLayoutManager(TrackStudyPage.this));
                 studyRecordList.clear();
+
+                databaseReference.keepSynced(true);
                 databaseReference.child(userNode).child(dateNode).addValueEventListener(new ValueEventListener() {
                     @SuppressLint("ResourceType")
                     @Override
@@ -164,8 +166,6 @@ public class TrackStudyPage extends AppCompatActivity {
 
     private void GenerateReport() {
 
-        //TODO...
-        Toast.makeText(this, "TODO...", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(TrackStudyPage.this, StudyReportPage.class));
     }
 

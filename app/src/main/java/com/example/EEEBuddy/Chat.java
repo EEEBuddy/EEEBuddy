@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -58,7 +59,7 @@ public class Chat extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     private DatabaseReference rootRef, studentProfileRef, messagesRef;
-    private String userEmail, userNode, messageSentDate, messageSentTime;
+    private String userEmail, userNode, messageSentDate, messageSentTime, profileImageUrl;
 
 
     @Override
@@ -76,7 +77,7 @@ public class Chat extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Chat.this, BuddyManagementPage.class));
+                //startActivity(new Intent(Chat.this, BuddyManagementPage.class));
             }
         });
 
@@ -192,8 +193,31 @@ public class Chat extends AppCompatActivity {
     }
 
     private void DisplayReceiverInfo() {
-        toolbarTitle.setText(receiverName);
-        Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+
+        if(receiverProfileImgUrl.equals("none")){
+            studentProfileRef = firebaseDatabase.getReference("Student Profile");
+            studentProfileRef.child(receiverUserID)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
+                            profileImageUrl = userInfo.getProfileImageUrl();
+                            receiverProfileImgUrl = profileImageUrl;
+                            toolbarTitle.setText(receiverName);
+                            Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }else{
+            toolbarTitle.setText(receiverName);
+            Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+        }
+
     }
 
     private void GetIncomingIntents() {
@@ -202,6 +226,7 @@ public class Chat extends AppCompatActivity {
         receiverName = getIntent().getStringExtra("receiverName").trim();
         receiverProfileImgUrl = getIntent().getStringExtra("receiverProfileImgUrl");
         senderUserID = getIntent().getStringExtra("senderUserID");
+
     }
 
 
@@ -218,6 +243,7 @@ public class Chat extends AppCompatActivity {
 
 
         rightIcon.setVisibility(View.GONE);
+        backBtn.setVisibility(View.GONE);
         profilePic.setVisibility(View.VISIBLE);
 
 

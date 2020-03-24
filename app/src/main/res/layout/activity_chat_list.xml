@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChatListPage">
+
+    <include layout="@layout/toolbar" android:id="@+id/chatlist_toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/chatlist_1to1_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/chatlist_toolbar">
+
+        <TextView
+            android:id="@+id/chatlist_1to1chat_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Senior/Junior Buddy Chat"
+            android:layout_below="@+id/chatlist_toolbar"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/bar_bg"
+            android:textColor="@color/mainFontColor"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chatlist_1to1chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chatlist_1to1chat_label"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/chatlist_group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/chatlist_1to1_layout">
+
+        <TextView
+            android:id="@+id/chatlist_groupchat_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Study Group Chat"
+            android:layout_below="@+id/chatlist_1to1chat"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/bar_bg"
+            android:textColor="@color/mainFontColor" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chatlist_groupchat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chatlist_groupchat_label"
+            android:layout_margin="10dp"/>
+
+
+    </LinearLayout>
+
+
+    <include
+        android:id="@+id/chatlist_navigation"
+        layout="@layout/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>

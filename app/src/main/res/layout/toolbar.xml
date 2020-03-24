@@ -44,7 +44,7 @@
         android:layout_gravity="right"
         android:layout_marginRight="10dp"
         tools:src="@drawable/profile_pic"
-        />
+        android:visibility="gone"/>
 
 
     <TextView
