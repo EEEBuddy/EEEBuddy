@@ -103,10 +103,12 @@ public class ChatListPage extends AppCompatActivity {
         messagesRef = firebaseDatabase.getReference("Messages").child("One to One Chat").child(userNode);
         messagesRef.keepSynced(true);
 
-        chatList_1to1_array.clear();
+        //chatList_1to1_array.clear();
         messagesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                chatList_1to1_array.clear();
 
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
 

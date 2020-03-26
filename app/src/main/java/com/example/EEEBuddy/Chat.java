@@ -49,6 +49,7 @@ public class Chat extends AppCompatActivity {
     private EditText msgEditText;
     private RecyclerView msgRecyclerView;
     private ArrayList<ChatModel> messageList = new ArrayList<>();
+    private ArrayList<String> dateKeeper = new ArrayList<>();
     private ChatAdapter chatAdapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -105,6 +106,8 @@ public class Chat extends AppCompatActivity {
                         if(dataSnapshot.exists()){
                             ChatModel messages = dataSnapshot.getValue(ChatModel.class);
                             messageList.add(messages);
+                            String date = messages.getDate();
+                            dateKeeper.add(date);
                             chatAdapter.notifyDataSetChanged();
                             rootRef.child("Messages").keepSynced(true);
                         }
@@ -255,7 +258,7 @@ public class Chat extends AppCompatActivity {
 
         messagesRef.keepSynced(true);
 
-        chatAdapter = new ChatAdapter(Chat.this, messageList);
+        chatAdapter = new ChatAdapter(Chat.this, messageList, dateKeeper);
         msgRecyclerView = (RecyclerView) findViewById(R.id.chat_recyclerview);
         linearLayoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setHasFixedSize(true);

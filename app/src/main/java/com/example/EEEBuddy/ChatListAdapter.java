@@ -80,6 +80,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                messagesRef.keepSynced(true);
                 if(dataSnapshot.exists()){
 
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
@@ -96,24 +97,16 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                         String currentDate = sdf.format(calendar.getTime());
 
-                        try {
-                            today = new Date();
-                            today = sdf.parse(sdf.format(new Date()));
-                            parsedsentDate = sdf.parse(sentDate);
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        if(today.compareTo(parsedsentDate) > 1){
+                        if(currentDate.compareTo(sentDate) > 1){
 
                             holder.lastMsgTime.setText(sentDate);
 
-                        }else if(today.compareTo(parsedsentDate) == 1){
+                        }else if(currentDate.compareTo(sentDate) == 1){
 
                             holder.lastMsgTime.setText("Yesterday");
 
-                        }else if(today.compareTo(parsedsentDate) == 0){
+                        }else if(currentDate.compareTo(sentDate) == 0){
 
                             holder.lastMsgTime.setText(sentTime);
                         }

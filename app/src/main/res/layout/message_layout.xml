@@ -5,47 +5,110 @@
     android:layout_margin="10dp"
     android:id="@+id/message_Layout">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/message_receiver_profileImg"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@drawable/profile_pic"/>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/message_sender_profileImg"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@drawable/profile_pic"
-        android:layout_alignParentEnd="true"/>
+        <TextView
+            android:id="@+id/message_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="date"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/mainFontColor"
+            android:textSize="10sp"
+            android:gravity="center"/>
 
-    <TextView
-        android:id="@+id/message_receiverMsg"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="5dp"
-        android:padding="10dp"
-        android:layout_marginRight="55dp"
-        android:layout_toEndOf="@+id/message_receiver_profileImg"
-        android:background="@drawable/receiver_message_bubble"
-        android:text="Receiver Message"
-        android:textSize="14sp"
-        android:fontFamily="@font/roboto"/>
+        android:layout_marginTop="20dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/message_receiver_profileImg"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/profile_pic"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/message_sender_profileImg"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/profile_pic"
+            android:layout_alignParentEnd="true"/>
 
 
-    <TextView
-        android:id="@+id/message_senderMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="50dp"
-        android:padding="10dp"
-        android:layout_marginLeft="55dp"
-        android:background="@drawable/sender_message_bubble"
-        android:layout_gravity="right"
-        android:text="Sender Message"
-        android:textSize="14sp"
-        android:fontFamily="@font/roboto" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/message_receiver_profileImg"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:id="@+id/message_receiverMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="5dp"
+                android:padding="10dp"
+                android:layout_marginRight="55dp"
+                android:background="@drawable/receiver_message_bubble"
+                android:text="Receiver Message"
+                android:textSize="14sp"
+                android:fontFamily="@font/roboto"/>
+
+            <TextView
+                android:id="@+id/message_receiverMsg_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="time"
+                android:fontFamily="@font/roboto"
+                android:textSize="10sp"
+                android:textColor="@color/mainFontColor"
+                android:layout_gravity="left"
+                android:layout_marginLeft="10dp"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/message_senderMsg_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentEnd="true">
+
+            <TextView
+                android:id="@+id/message_senderMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:padding="10dp"
+                android:layout_marginLeft="55dp"
+                android:background="@drawable/sender_message_bubble"
+                android:layout_gravity="right"
+                android:text="Sender Message"
+                android:textSize="14sp"
+                android:fontFamily="@font/roboto"/>
+
+            <TextView
+                android:id="@+id/message_senderMsg_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="time"
+                android:fontFamily="@font/roboto"
+                android:textSize="10sp"
+                android:textColor="@color/mainFontColor"
+                android:layout_gravity="right"
+                android:layout_marginRight="55dp"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
 
 
 
