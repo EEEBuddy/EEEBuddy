@@ -258,6 +258,7 @@
         </TableLayout>
 
         <LinearLayout
+            android:id="@+id/add_record_button_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
@@ -271,7 +272,6 @@
                 android:id="@+id/add_record_addBtn"
                 android:layout_width="120dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="30dp"
                 android:alpha="0.5"
                 android:background="@drawable/login"
                 android:fontFamily="@font/roboto"

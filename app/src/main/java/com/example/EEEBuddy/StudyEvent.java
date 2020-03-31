@@ -8,7 +8,7 @@ public class StudyEvent {
     private String task;
     private String location;
     private String date;
-    private String time;
+    private String startTime, endTime;
     private String groupSize;
     private String createdBy;
     private String eventID;
@@ -19,16 +19,19 @@ public class StudyEvent {
     }
 
 
-    public StudyEvent(String subjectCode, String subjectName, String task, String location, String date, String time, String groupSize, String createdBy) {
+    public StudyEvent(String subjectCode, String subjectName, String task, String location, String date, String startTime, String endTime, String groupSize, String createdBy) {
         this.subjectCode = subjectCode;
         this.subjectName = subjectName;
         this.task = task;
         this.location = location;
         this.date = date;
-        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.groupSize = groupSize;
         this.createdBy = createdBy;
     }
+
+
 
     public String getSubjectCode() {
         return subjectCode;
@@ -51,8 +54,20 @@ public class StudyEvent {
         return date;
     }
 
-    public String getTime() {
-        return time;
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     public String getGroupSize() {
@@ -79,10 +94,6 @@ public class StudyEvent {
         this.date = date;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public void setGroupSize(String groupSize) {
         this.groupSize = groupSize;
     }
@@ -102,4 +113,5 @@ public class StudyEvent {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
+
 }

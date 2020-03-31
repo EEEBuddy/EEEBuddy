@@ -2,11 +2,13 @@ package com.example.EEEBuddy;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,8 +49,9 @@ public class MyUpcomingEventFragment extends Fragment{
 
     private RecyclerView recyclerView;
     private ArrayList<StudyEvent> myUpcomingEventList;
+    private ArrayList<String> keyArray;
     private MyUpcomingEventAdapter adapter;
-    private TextView hint;
+    private TextView hint,updateTime;
     private ImageView gif;
 
 
@@ -75,6 +78,14 @@ public class MyUpcomingEventFragment extends Fragment{
         recyclerView = (RecyclerView) view.findViewById(R.id.my_upcoming_event_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         myUpcomingEventList = new ArrayList<StudyEvent>();
+        keyArray = new ArrayList<String>();
+
+        updateTime = (TextView) view.findViewById(R.id.my_upcoming_event_update_time);
+        Date currentTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss aa");
+        String formattedTime = simpleDateFormat.format(currentTime);
+
+        updateTime.setText("Last Updated On: " + formattedTime);
 
 
         firebaseAuth = firebaseAuth.getInstance();
@@ -82,27 +93,38 @@ public class MyUpcomingEventFragment extends Fragment{
         userNode = userEmail.substring(0,userEmail.indexOf("@"));
 
         studyEventRef = firebaseDatabase.getInstance().getReference("Study Event");
+        studyEventRef.child(userNode).keepSynced(true);
 
 
-        myUpcomingEventList.clear();
+
         studyEventRef.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                myUpcomingEventList.clear();
+                studyEventRef.keepSynced(true);
+
                 for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
 
+                    String key = dataSnapshot1.getKey();
                     StudyEvent studyEvent = dataSnapshot1.getValue(StudyEvent.class);
                     String eventDate = studyEvent.getDate();
+                    String eventTime = studyEvent.getStartTime();
+                    String eventStartTime = eventTime.substring(0,eventTime.indexOf(' ')).trim();
 
                     Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                    String eventDateTime = eventDate + " " + eventStartTime;
+
 
                     try {
                         Date now = new Date(System.currentTimeMillis());
-                        Date parsedDate = sdf.parse(eventDate);
+                        Date parsedDate = sdf.parse(eventDateTime);
 
-                        if(parsedDate.compareTo(now) > 0 ){
+
+                        if(parsedDate.compareTo(now) > 0){
                             myUpcomingEventList.add(studyEvent);
+                            keyArray.add(key);
                         }
 
                     } catch (ParseException e) {
@@ -121,8 +143,18 @@ public class MyUpcomingEventFragment extends Fragment{
 
                 }
 
-                adapter = new MyUpcomingEventAdapter(getActivity(),myUpcomingEventList);
+                adapter = new MyUpcomingEventAdapter(getActivity(),myUpcomingEventList, keyArray,userNode);
                 recyclerView.setAdapter(adapter);
+
+                // Reload current fragment
+                /*
+                Fragment currentFragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_upcoming_event_fragment);
+                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.detach(currentFragment);
+                ft.attach(currentFragment);
+                ft.commit();
+
+                 */
 
             }
 

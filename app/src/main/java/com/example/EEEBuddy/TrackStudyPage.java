@@ -19,11 +19,13 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,8 +41,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class TrackStudyPage extends AppCompatActivity {
 
@@ -56,6 +63,7 @@ public class TrackStudyPage extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ArrayList<TrackStudyModel> studyRecordList;
+    private ArrayList<String> keyArray;
     private TrackStudyAdapter trackStudyAdapter;
 
     private Toolbar toolbar;
@@ -63,7 +71,8 @@ public class TrackStudyPage extends AppCompatActivity {
     private ImageView backBtn;
     private ImageView reportBtn;
 
-    private String dateNode;
+    private String dateNode, recordID;
+    private String in_subject, in_task, in_duration, in_completion, in_satisfaction, in_groupSize, in_method, in_location, in_remarks, in_recordID, in_date, fromActivity;
 
 
     @Override
@@ -107,11 +116,23 @@ public class TrackStudyPage extends AppCompatActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddStudyRecord();
+                String source = "AddStudyRecordActivity";
+                AddStudyRecord(source);
             }
         });
 
 
+        RetrieveStudyRecords();
+
+
+        //for Update
+        GetIncomingIntent(savedInstanceState);
+
+
+
+    }
+
+    private void RetrieveStudyRecords() {
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -125,8 +146,8 @@ public class TrackStudyPage extends AppCompatActivity {
 
 
                 studyRecordList = new ArrayList<TrackStudyModel>();
+                keyArray = new ArrayList<String>();
                 recyclerView.setLayoutManager(new LinearLayoutManager(TrackStudyPage.this));
-                studyRecordList.clear();
 
                 databaseReference.keepSynced(true);
                 databaseReference.child(userNode).child(dateNode).addValueEventListener(new ValueEventListener() {
@@ -134,13 +155,16 @@ public class TrackStudyPage extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        studyRecordList.clear();
 
+                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+                            String key = ds.getKey();
                             TrackStudyModel studyRecord = ds.getValue(TrackStudyModel.class);
                             studyRecordList.add(studyRecord);
+                            keyArray.add(key);
                         }
 
-                        trackStudyAdapter = new TrackStudyAdapter(TrackStudyPage.this, studyRecordList);
+                        trackStudyAdapter = new TrackStudyAdapter(TrackStudyPage.this, studyRecordList,keyArray,userNode,dateNode);
                         recyclerView.setAdapter(trackStudyAdapter);
 
                         if(studyRecordList.size() != 0 ){
@@ -160,7 +184,30 @@ public class TrackStudyPage extends AppCompatActivity {
             }
         });
 
+    }
 
+    private void GetIncomingIntent(Bundle savedInstanceState) {
+
+        fromActivity = getIntent().getStringExtra("fromActivity");
+        if(fromActivity.equals("UpdateStudyRecordActivity")){
+
+            in_recordID = getIntent().getStringExtra("recordID");
+            in_subject = getIntent().getStringExtra("subject");
+            in_task = getIntent().getStringExtra("task");
+            in_duration = getIntent().getStringExtra("duration");
+            in_completion = getIntent().getStringExtra("completion");
+            in_satisfaction = getIntent().getStringExtra("satisfaction");
+            in_groupSize = getIntent().getStringExtra("groupSize");
+            in_method = getIntent().getStringExtra("method");
+            in_location = getIntent().getStringExtra("location");
+            in_remarks = getIntent().getStringExtra("remarks");
+            in_date = getIntent().getStringExtra("date");
+
+        }else{
+            return;
+        }
+
+        AddStudyRecord(fromActivity);
 
     }
 
@@ -169,7 +216,11 @@ public class TrackStudyPage extends AppCompatActivity {
         startActivity(new Intent(TrackStudyPage.this, StudyReportPage.class));
     }
 
-    private void AddStudyRecord(){
+    private void AddStudyRecord(final String source){
+
+        if(source.equals("UpdateStudyRecordActivity")){
+            dateNode = in_date;
+        }
 
         if (dateNode == null){
             Toast.makeText(this, "Choose a Date on the Calender", Toast.LENGTH_LONG).show();
@@ -204,18 +255,54 @@ public class TrackStudyPage extends AppCompatActivity {
 
             final ImageView dialogCloseBtn = dialog.findViewById(R.id.add_record_closeBtn);
 
-
+            LinearLayout buttonLayout = dialog.findViewById(R.id.add_record_button_layout);
             Button dialogAddBtn = dialog.findViewById(R.id.add_record_addBtn);
             Button dialogUpdateBtn = dialog.findViewById(R.id.add_record_updateBtn);
 
+            buttonLayout.removeView(dialogUpdateBtn);
+
             selectedDate.setText(dateNode);
+
+
+            if(source.equals("UpdateStudyRecordActivity")){
+                editTextSubject.setText(in_subject);
+                editTextTask.setText(in_task);
+                editTextRemarks.setText(in_remarks);
+                dialogAddBtn.setText("Update");
+
+                ArrayAdapter<CharSequence> durationAdapter = ArrayAdapter.createFromResource(this, R.array.duration, android.R.layout.simple_spinner_item);
+                durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                ArrayAdapter<CharSequence> completionAdapter = ArrayAdapter.createFromResource(this, R.array.completion, android.R.layout.simple_spinner_item);
+                durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                ArrayAdapter<CharSequence> satisfactionAdapter = ArrayAdapter.createFromResource(this, R.array.satisfactory, android.R.layout.simple_spinner_item);
+                durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                ArrayAdapter<CharSequence> groupSizeAdapter = ArrayAdapter.createFromResource(this, R.array.groupSize, android.R.layout.simple_spinner_item);
+                durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                ArrayAdapter<CharSequence> methodAdapter = ArrayAdapter.createFromResource(this, R.array.learningMethod, android.R.layout.simple_spinner_item);
+                durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                ArrayAdapter<CharSequence> locationAdapter = ArrayAdapter.createFromResource(this, R.array.studyLocation, android.R.layout.simple_spinner_item);
+                durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+                durationSpinner.setSelection(durationAdapter.getPosition(in_duration));
+                completionSpinner.setSelection(completionAdapter.getPosition(in_completion));
+                satisfactionSpinner.setSelection(satisfactionAdapter.getPosition(in_satisfaction));
+                groupSizeSpinner.setSelection(groupSizeAdapter.getPosition(in_groupSize));
+                methodSpinner.setSelection(methodAdapter.getPosition(in_method));
+                locationSpinner.setSelection(locationAdapter.getPosition(in_location));
+
+            }
 
 
             dialogAddBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    //TODO...ADD RECORDS TO DATABASE
                     String subject = editTextSubject.getText().toString().trim();
                     String task = editTextTask.getText().toString().trim();
                     String remarks = editTextRemarks.getText().toString().trim();
@@ -240,25 +327,44 @@ public class TrackStudyPage extends AppCompatActivity {
 
                     }else{
 
-                        TrackStudyModel trackStudyModel = new TrackStudyModel(subject, task, duration, completion, satisfaction, groupSize, method, location, remarks);
-                        String recordsID = databaseReference.push().getKey();
-                        databaseReference = FirebaseDatabase.getInstance().getReference("Track Study").child(userNode).child(dateNode);
-                        databaseReference.child(recordsID).setValue(trackStudyModel);
+                        if(source.equals("UpdateStudyRecordActivity")){
+                            recordID = in_recordID;
 
-                        Toast.makeText(TrackStudyPage.this, "Records Added Successfully", Toast.LENGTH_LONG).show();
+                        }else if(source.equals("AddStudyRecordActivity")){
+                            recordID = databaseReference.push().getKey();
+                        }
+
+                        TrackStudyModel trackStudyModel = new TrackStudyModel(subject, task, duration, completion, satisfaction, groupSize, method, location, remarks, dateNode);
+
+                        databaseReference = FirebaseDatabase.getInstance().getReference("Track Study").child(userNode).child(dateNode);
+                        databaseReference.child(recordID).setValue(trackStudyModel);
+
+
+                        if(source.equals("UpdateStudyRecordActivity")){
+
+                            try {
+
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                Date parsedDateNode = sdf.parse(dateNode);
+                                long millis = parsedDateNode.getTime();
+                                calendarView.setDate(millis);
+
+                                RetrieveStudyRecords();
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            Toast.makeText(TrackStudyPage.this, "Records Updated Successfully", Toast.LENGTH_LONG).show();
+
+                        }else {
+                            Toast.makeText(TrackStudyPage.this, "Records Added Successfully", Toast.LENGTH_LONG).show();
+                        }
                         dialog.dismiss();
                     }
                 }
             });
 
-            dialogUpdateBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    //TODO...update RECORDS in DATABASE
-                    Toast.makeText(TrackStudyPage.this, "TODO...", Toast.LENGTH_LONG).show();
-                }
-            });
 
             dialogCloseBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

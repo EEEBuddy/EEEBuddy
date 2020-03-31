@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -200,7 +202,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
         holder.swipeDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..DELETE", Toast.LENGTH_LONG).show();
+
+                messagesRef = firebaseDatabase.getReference("Messages").child("One to One Chat").child(userNode).child(receiverID);
+
+                messagesRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(context, "Chat Deleted", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
 
             }
         });

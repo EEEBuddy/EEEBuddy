@@ -1,6 +1,7 @@
 package com.example.EEEBuddy;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -18,11 +23,18 @@ public class TrackStudyAdapter extends RecyclerView.Adapter<TrackStudyAdapter.My
 
     Context context;
     ArrayList<TrackStudyModel> studyRecordList;
+    ArrayList<String> keyArray;
+    String userNode, dateNode;
 
-    public TrackStudyAdapter(Context context, ArrayList<TrackStudyModel> studyRecordList){
+    DatabaseReference trackStudyRef;
+
+    public TrackStudyAdapter(Context context, ArrayList<TrackStudyModel> studyRecordList, ArrayList<String> keyArray, String userNode, String dateNode){
 
         this.context = context;
         this.studyRecordList = studyRecordList;
+        this.keyArray = keyArray;
+        this.userNode = userNode;
+        this.dateNode = dateNode;
     }
 
 
@@ -35,7 +47,7 @@ public class TrackStudyAdapter extends RecyclerView.Adapter<TrackStudyAdapter.My
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TrackStudyAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TrackStudyAdapter.MyViewHolder holder, final int position) {
 
         holder.subject.setText(studyRecordList.get(position).getSubject());
         holder.task.setText("Task: " + studyRecordList.get(position).getTask());
@@ -87,14 +99,46 @@ public class TrackStudyAdapter extends RecyclerView.Adapter<TrackStudyAdapter.My
         holder.swipeEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..EDIT", Toast.LENGTH_LONG).show();
+
+                String eventID = keyArray.get(position);
+
+                Intent intent = new Intent(context, TrackStudyPage.class);
+
+                intent.putExtra("recordID", eventID);
+                intent.putExtra("fromActivity", "UpdateStudyRecordActivity");
+                intent.putExtra("subject",studyRecordList.get(position).getSubject());
+                intent.putExtra("task", studyRecordList.get(position).getTask());
+                intent.putExtra("duration", studyRecordList.get(position).getDuration());
+                intent.putExtra("completion",studyRecordList.get(position).getCompletion() );
+                intent.putExtra("satisfaction", studyRecordList.get(position).getSatisfaction() );
+                intent.putExtra("groupSize", studyRecordList.get(position).getGroupSize());
+                intent.putExtra("method", studyRecordList.get(position).getMethod());
+                intent.putExtra("location", studyRecordList.get(position).getLocation());
+                intent.putExtra("remarks", studyRecordList.get(position).getRemarks());
+                intent.putExtra("date", studyRecordList.get(position).getDate());
+
+                context.startActivity(intent);
+
             }
         });
 
         holder.swipeDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..DELETE", Toast.LENGTH_LONG).show();
+
+                String tempKey = keyArray.get(position);
+
+                trackStudyRef = FirebaseDatabase.getInstance().getReference("Track Study");
+                trackStudyRef.child(userNode).child(dateNode).child(tempKey).removeValue()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
 
             }
         });

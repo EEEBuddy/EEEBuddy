@@ -42,7 +42,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
         holder.task.setText("Task: " + studyEvents.get(position).getTask());
         holder.location.setText("Location: " + studyEvents.get(position).getLocation());
         holder.date.setText("Date: " + studyEvents.get(position).getDate());
-        holder.time.setText("Time: " + studyEvents.get(position).getTime());
+        holder.time.setText("Time: " + studyEvents.get(position).getStartTime() + " - " + studyEvents.get(position).getEndTime());
         holder.groupSize.setText("Vacancy: " + studyEvents.get(position).getGroupSize());
 
         holder.joinBtn.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +57,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
                        studyEvents.get(position).getTask(),
                        studyEvents.get(position).getLocation(),
                        studyEvents.get(position).getDate(),
-                       studyEvents.get(position).getTime()
+                       studyEvents.get(position).getStartTime() + " - " + studyEvents.get(position).getEndTime()
 
                        );
             }
@@ -88,7 +88,7 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             time = (TextView) itemView.findViewById(R.id.card_time);
             groupSize = (TextView) itemView.findViewById(R.id.card_vacancy);
             joinBtn = (Button) itemView.findViewById(R.id.card_button);
-            attendBtn = (Button) itemView.findViewById(R.id.card_button_mark);
+            attendBtn = (Button) itemView.findViewById(R.id.card_button_attended);
 
             attendBtn.setVisibility(View.GONE);
 

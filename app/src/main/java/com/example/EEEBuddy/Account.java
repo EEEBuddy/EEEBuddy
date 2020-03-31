@@ -166,22 +166,19 @@ public class Account extends AppCompatActivity {
         profilePage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GotoProfile();
+
+                startActivity(new Intent(Account.this, Profile.class));
+
             }
         });
 
-        myBuddy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GotoMySeniorBuddyInfoPage();
-            }
-        });
+
 
 
         events.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GotoRegisteredEvents();
+                startActivity(new Intent(Account.this, RegisterdEventsPage.class));
             }
         });
 
@@ -190,14 +187,19 @@ public class Account extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                GotoTrackStudy();
+                Intent intent = new Intent(Account.this, TrackStudyPage.class);
+
+                intent.putExtra("fromActivity", "AddStudyRecordActivity");
+                startActivity(intent);
             }
         });
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Logout();
+                firebaseAuth.signOut();
+                finish();
+                startActivity(new Intent(Account.this, Login.class));
             }
         });
 
@@ -207,6 +209,14 @@ public class Account extends AppCompatActivity {
             public void onClick(View v) {
 
                 ChangePassword();
+            }
+        });
+
+
+        myBuddy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GotoMySeniorBuddyInfoPage();
             }
         });
 
@@ -287,32 +297,6 @@ public class Account extends AppCompatActivity {
     }
 
 
-    private void GotoProfile(){
-        finish();
-        startActivity(new Intent(this, Profile.class));
-    }
-
-
-
-    private void GotoRegisteredEvents() {
-        //TODO
-        startActivity(new Intent(this, RegisterdEventsPage.class));
-
-    }
-
-    private void GotoTrackStudy(){
-
-        startActivity(new Intent(this, TrackStudyPage.class));
-
-    }
-
-
-
-    private void Logout(){
-        firebaseAuth.signOut();
-        finish();
-        startActivity(new Intent(this, Login.class));
-    }
 
     private void ChangePassword() {
 

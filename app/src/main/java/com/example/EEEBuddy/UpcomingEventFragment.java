@@ -1,29 +1,22 @@
 package com.example.EEEBuddy;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.Registry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,8 +38,9 @@ public class UpcomingEventFragment extends Fragment{
 
     private RecyclerView recyclerView;
     private ArrayList<StudyEvent> upcomingEventList;
-    private RegisteredEventAdapter adapter;
-    private TextView hint;
+    private ArrayList<String> keyArray;
+    private UpcomingEventAdapter adapter;
+    private TextView hint,updateTime;
     private ImageView gif;
 
 
@@ -78,24 +70,36 @@ public class UpcomingEventFragment extends Fragment{
         recyclerView = (RecyclerView) view.findViewById(R.id.upcoming_event_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         upcomingEventList = new ArrayList<StudyEvent>();
+        keyArray = new ArrayList<String>();
+
+        updateTime = (TextView) view.findViewById(R.id.upcoming_event_update_time);
+        Date currentTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss aa");
+        String formattedTime = simpleDateFormat.format(currentTime);
+
+        updateTime.setText("Last Updated On: " + formattedTime);
 
 
         firebaseAuth = firebaseAuth.getInstance();
         userEmail = firebaseAuth.getCurrentUser().getEmail();
         userNode = userEmail.substring(0,userEmail.indexOf("@"));
 
-        registeredEventRef = firebaseDatabase.getInstance().getReference("Registered Events");
+        registeredEventRef = firebaseDatabase.getInstance().getReference("Registered Event");
         studyEventRef = firebaseDatabase.getInstance().getReference("Study Event");
 
 
-        upcomingEventList.clear();
-        arraySize = 0;
-        loopCount = 0;
+
+
         registeredEventRef.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                upcomingEventList.clear();
+                registeredEventRef.keepSynced(true);
+
                 for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+
+                    final String key = dataSnapshot1.getKey();
 
                     final StudyEvent studyEvent = dataSnapshot1.getValue(StudyEvent.class);
                     String eventID = studyEvent.getEventID();
@@ -105,20 +109,25 @@ public class UpcomingEventFragment extends Fragment{
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            StudyEvent studyEventDetail = dataSnapshot.getValue(StudyEvent.class);
-                            String eventDate = studyEventDetail.getDate();
+                            StudyEvent studyEvent = dataSnapshot.getValue(StudyEvent.class);
+                            String eventDate = studyEvent.getDate();
+                            String eventTime = studyEvent.getStartTime();
+                            String eventStartTime = eventTime.substring(0,eventTime.indexOf(' ')).trim();
 
                             Calendar calendar = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                            String eventDateTime = eventDate + " " + eventStartTime;
+
 
                             try {
                                 Date now = new Date(System.currentTimeMillis());
-                                Date parsedDate = sdf.parse(eventDate);
-                                loopCount++;
+                                Date parsedDate = sdf.parse(eventDateTime);
+                                //loopCount++;
 
                                 if(parsedDate.compareTo(now) > 0 ){
-                                    upcomingEventList.add(studyEventDetail);
-                                    arraySize++;
+                                    upcomingEventList.add(studyEvent);
+                                    keyArray.add(key);
+                                    //arraySize++;
                                 }
 
                             } catch (ParseException e) {
@@ -126,7 +135,9 @@ public class UpcomingEventFragment extends Fragment{
                             }
 
                             //if no upcoming event show hints
-                            if(arraySize == 0 && loopCount != 1){
+                           // if(arraySize == 0 && loopCount != 1){
+                            registeredEventRef.keepSynced(true);
+                            if(upcomingEventList.size()==0){
                                 hint = view.findViewById(R.id.upcoming_event_hint);
                                 hint.setVisibility(View.VISIBLE);
 
@@ -135,7 +146,8 @@ public class UpcomingEventFragment extends Fragment{
                                 Glide.with(UpcomingEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
                             }
 
-                            adapter = new RegisteredEventAdapter(getActivity(), upcomingEventList);
+                            adapter = new UpcomingEventAdapter(getActivity(), upcomingEventList, keyArray, userNode);
+                            adapter.notifyDataSetChanged();
                             recyclerView.setAdapter(adapter);
                         }
 

@@ -42,9 +42,10 @@ public class MyPastEventFragment extends Fragment{
 
     private RecyclerView recyclerView;
     private ArrayList<StudyEvent> myPastEventList;
-    private PastEventAdapter adapter;
+    private ArrayList<String> keyArray;
+    private MyPastEventAdapter adapter;
 
-    private TextView hint;
+    private TextView hint,updateTime;
     private ImageView gif;
 
 
@@ -71,6 +72,14 @@ public class MyPastEventFragment extends Fragment{
         recyclerView = (RecyclerView) view.findViewById(R.id.my_past_event_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         myPastEventList = new ArrayList<StudyEvent>();
+        keyArray = new ArrayList<String>();
+
+        updateTime = (TextView) view.findViewById(R.id.my_past_event_update_time);
+        Date currentTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss aa");
+        String formattedTime = simpleDateFormat.format(currentTime);
+
+        updateTime.setText("Last Updated On: " + formattedTime);
 
 
         firebaseAuth = firebaseAuth.getInstance();
@@ -80,25 +89,36 @@ public class MyPastEventFragment extends Fragment{
         studyEventRef = firebaseDatabase.getInstance().getReference("Study Event");
 
 
-        myPastEventList.clear();
+
         studyEventRef.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                myPastEventList.clear();
+                studyEventRef.keepSynced(true);
+
                 for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
 
+                    String key = dataSnapshot1.getKey();
                      StudyEvent studyEvent = dataSnapshot1.getValue(StudyEvent.class);
                      String eventDate = studyEvent.getDate();
+                    String eventTime = studyEvent.getStartTime();
+                    String eventStartTime = eventTime.substring(0,eventTime.indexOf(' ')).trim();
 
                      Calendar calendar = Calendar.getInstance();
-                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                    String eventDateTime = eventDate + " " + eventStartTime;
 
                      try {
                          Date now = new Date(System.currentTimeMillis());
-                         Date parsedDate = sdf.parse(eventDate);
+                         Date parsedDate = sdf.parse(eventDateTime);
+                         //Date parsedCurrentTime= sdf2.parse(currentTime);
+                        // Date parsedTime = sdf2.parse(eventTime);
 
-                         if(parsedDate.compareTo(now) < 0 ){
+
+                         if(parsedDate.compareTo(now) < 0){
                              myPastEventList.add(studyEvent);
+                             keyArray.add(key);
                          }
 
                      } catch (ParseException e) {
@@ -118,7 +138,8 @@ public class MyPastEventFragment extends Fragment{
                     Glide.with(MyPastEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
                 }
 
-                adapter = new PastEventAdapter(getActivity(), myPastEventList);
+                adapter = new MyPastEventAdapter(getActivity(), myPastEventList, keyArray, userNode);
+                adapter.notifyDataSetChanged();
                 recyclerView.setAdapter(adapter);
 
             }

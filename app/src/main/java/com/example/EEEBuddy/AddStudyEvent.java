@@ -40,7 +40,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     private EditText editTextDate, editTextStartTime, editTextEndTime, editTextGroupSize;
     private Integer duration;
     private Button createBtn;
-    private String selectedStartTime, selectedEndTime;
+    private String selectedStartTime, selectedEndTime,selectedDate;
 
     //private DatePickerDialog.OnDateSetListener dateSetListener;
     private TimePickerDialog.OnTimeSetListener onStartTimeSetListener, onEndTimeSetListener;;
@@ -55,13 +55,17 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     private FirebaseUser user;
     private String userEmail, userNode;
 
-
+    //variable to store incoming intent values;
+    String in_subjectCode, in_subjectName, in_task, in_location, in_date, in_time, in_groupSize, in_startTime, in_endTime, fromActivity, in_eventID;
+    String eventID;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_study_event);
+
+
 
         //initialise elements on add_study_event layout
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -92,6 +96,9 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         toolbarRightIcon.setVisibility(View.GONE);
         //this.setSupportActionBar(toolbar);
         //this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //use to update the created event
+        GetIncomingIntent();
 
 
         //select a date
@@ -124,6 +131,29 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                 }
 
                                 editTextStartTime.setText(selectedStartTime);
+
+
+                                //time validation
+                                try {
+                                    String eventTime = "";
+                                    SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                    Date currentTime = new Date();
+                                    eventTime = selectedDate + " " + selectedStartTime.substring(0,selectedStartTime.indexOf("A")).trim();
+                                    Date formattedEventTime = sdf2.parse(eventTime);
+
+                                    if(formattedEventTime.compareTo(currentTime) < 0){
+                                        editTextStartTime.setError("Event time should be in the future");
+                                        editTextStartTime.setText("");
+                                    }else{
+                                        editTextStartTime.setText(selectedStartTime);
+                                        editTextStartTime.setError(null);
+                                    }
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+
                             }
                         }, hour, minute, true);
 
@@ -163,8 +193,8 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                     Date parsedEnd = sdf.parse(selectedEndTime);
 
                                     if(parsedEnd.compareTo(parsedStart)<0){
-                                        editTextEndTime.setError("End time cannot be early than start time");
-                                        editTextStartTime.setError("Start time cannot be later than end time");
+                                        editTextEndTime.setError("End time cannot be before start time");
+                                        editTextStartTime.setError("Start time cannot be after end time");
                                     }else{
                                         editTextEndTime.setError(null);
                                         editTextStartTime.setError(null);
@@ -173,6 +203,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
+
 
 
                             }
@@ -196,15 +227,56 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createStudyEvent();
-                startActivity(new Intent(AddStudyEvent.this, StudyBuddyPage.class));
+
+                String source = createBtn.getText().toString().toLowerCase();
+                createStudyEvent(source);
             }
         });
 
 
     }
 
-    private void createStudyEvent() {
+    private void GetIncomingIntent(){
+
+        fromActivity = getIntent().getStringExtra("from");
+
+        if(fromActivity.equals("UpdateStudyEventActivity")){
+
+            in_eventID = getIntent().getStringExtra("eventID");
+            in_subjectCode = getIntent().getStringExtra("subjectCode");
+            in_subjectName = getIntent().getStringExtra("subjectName");
+            in_task = getIntent().getStringExtra("task");
+            in_location = getIntent().getStringExtra("location");
+            in_groupSize = getIntent().getStringExtra("groupSize");
+            in_date = getIntent().getStringExtra("date");
+            in_startTime = getIntent().getStringExtra("startTime");
+            in_endTime = getIntent().getStringExtra("endTime");
+
+            UpdateStudyEvent();
+
+        }else{
+
+            return;
+        }
+
+    }
+
+    private void UpdateStudyEvent() {
+        editTextSubjectCode.setText(in_subjectCode);
+        editTextSubjectName.setText(in_subjectName);
+        editTextTask.setText(in_task);
+        editTextLocation.setText(in_location);
+        editTextDate.setText(in_date);
+        editTextStartTime.setText(in_startTime);
+        editTextEndTime.setText(in_endTime);
+        editTextGroupSize.setText(in_groupSize);
+
+        createBtn.setText("Update");
+
+    }
+
+    private void createStudyEvent(String activity) {
+
         String subjectCode = editTextSubjectCode.getText().toString().trim();
         String subjectName = editTextSubjectName.getText().toString().trim();
         String task = editTextTask.getText().toString().trim();
@@ -217,18 +289,22 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
 
 
-        if(!(TextUtils.isEmpty(subjectCode) && TextUtils.isEmpty(subjectName) && TextUtils.isEmpty(task) && TextUtils.isEmpty(location)
-                && TextUtils.isEmpty(date) && TextUtils.isEmpty(startTime) && TextUtils.isEmpty(endTime) && TextUtils.isEmpty(groupSize))){
-
-            String time = startTime + " - " + endTime;
+        if(!TextUtils.isEmpty(subjectCode) && !TextUtils.isEmpty(subjectName) && !TextUtils.isEmpty(task) && !TextUtils.isEmpty(location)
+                && !TextUtils.isEmpty(date) && !TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime) && !TextUtils.isEmpty(groupSize)){
 
 
             //getting a unique id using push().getKey() method //this unique key is the primary key for the event
             databaseReference = firebaseDatabase.getInstance().getReference("Study Event");
-            String eventID = databaseReference.push().getKey();
+
+            if(activity.equals("update")){
+                eventID = in_eventID;
+
+            }else if (activity.equals("create")){
+                eventID = databaseReference.push().getKey();
+            }
 
             //creating an StudyEvent Object
-            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, time, groupSize,userNode);
+            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, startTime, endTime, groupSize,userNode);
 
             //saving data to firebase
             //databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
@@ -245,12 +321,19 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
             editTextGroupSize.setText("");
 
 
-            Toast.makeText(this, "Study Event Created", Toast.LENGTH_LONG).show();
+            if(activity.equals("update")){
+                Toast.makeText(AddStudyEvent.this, "Study Event Updated Successfully", Toast.LENGTH_LONG).show();
 
+            }else{
+                Toast.makeText(AddStudyEvent.this, "Study Event Created Successfully", Toast.LENGTH_LONG).show();
+
+            }
+
+            startActivity(new Intent(AddStudyEvent.this, StudyBuddyPage.class));
 
         }else{
 
-            Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddStudyEvent.this, "Please fill in all the fields", Toast.LENGTH_LONG).show();
 
         }
 
@@ -278,7 +361,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day){
         month = month +1;
-        String selectedDate = day + "/" + month + "/" + year;
+        selectedDate = day + "/" + month + "/" + year;
         editTextDate.setText(selectedDate);
 
         //check if date is earlier than today

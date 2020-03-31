@@ -172,7 +172,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                 //if yes, show the current date.
                 // if not, hide the current date.
                 // previous_message_date.equals("none"), always show the date for very first message.
-                
+
                 if(previous_message_date.equals("none") || currentDate.compareTo(previousDate) > 1){
                     holder.date.setText(chatModel.getDate());
 

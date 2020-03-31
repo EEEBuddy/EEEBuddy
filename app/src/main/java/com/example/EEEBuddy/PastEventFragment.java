@@ -42,9 +42,10 @@ public class PastEventFragment extends Fragment{
 
     private RecyclerView recyclerView;
     private ArrayList<StudyEvent> pastEventList;
+    private ArrayList<String> keyArray;
     private PastEventAdapter adapter;
 
-    private TextView hint;
+    private TextView hint,updateTime;
     private ImageView gif;
 
 
@@ -73,23 +74,37 @@ public class PastEventFragment extends Fragment{
         recyclerView = (RecyclerView) view.findViewById(R.id.past_event_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         pastEventList = new ArrayList<StudyEvent>();
+        keyArray = new ArrayList<String>();
+
+        updateTime = (TextView) view.findViewById(R.id.past_event_update_time);
+        Date currentTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss aa");
+        String formattedTime = simpleDateFormat.format(currentTime);
+
+        updateTime.setText("Last Updated On: " + formattedTime);
+
+
 
 
         firebaseAuth = firebaseAuth.getInstance();
         userEmail = firebaseAuth.getCurrentUser().getEmail();
         userNode = userEmail.substring(0,userEmail.indexOf("@"));
 
-        registeredEventRef = firebaseDatabase.getInstance().getReference("Registered Events");
+        registeredEventRef = firebaseDatabase.getInstance().getReference("Registered Event");
         studyEventRef = firebaseDatabase.getInstance().getReference("Study Event");
 
 
-        pastEventList.clear();
-        arraySize=0;
+
         registeredEventRef.child(userNode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                pastEventList.clear();
+                registeredEventRef.keepSynced(true);
+
+                for(final DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+
+                    final String key = dataSnapshot1.getKey();
 
                     final StudyEvent studyEvent = dataSnapshot1.getValue(StudyEvent.class);
                     String eventID = studyEvent.getEventID();
@@ -99,20 +114,25 @@ public class PastEventFragment extends Fragment{
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            StudyEvent studyEventDetail = dataSnapshot.getValue(StudyEvent.class);
-                            String eventDate = studyEventDetail.getDate();
+                            StudyEvent studyEvent = dataSnapshot.getValue(StudyEvent.class);
+                            String eventDate = studyEvent.getDate();
+                            String eventTime = studyEvent.getStartTime();
+                            String eventStartTime = eventTime.substring(0,eventTime.indexOf(' ')).trim();
 
                             Calendar calendar = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                            loopCount++;
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                            String eventDateTime = eventDate + " " + eventStartTime;
+
+                            //loopCount++;
 
                             try {
                                 Date now = new Date(System.currentTimeMillis());
-                                Date parsedDate = sdf.parse(eventDate);
+                                Date parsedDate = sdf.parse(eventDateTime);
 
                                 if(parsedDate.compareTo(now) < 0 ){
-                                    pastEventList.add(studyEventDetail);
-                                    arraySize++;
+                                    pastEventList.add(studyEvent);
+                                    keyArray.add(key);
+                                    //arraySize++;
 
                                 }
 
@@ -121,7 +141,8 @@ public class PastEventFragment extends Fragment{
                             }
 
                             //if no upcoming event show hints
-                            if(arraySize == 0 && loopCount !=1){
+                            //if(arraySize == 0 && loopCount !=1){
+                            if(pastEventList.size() == 0){
                                 hint = view.findViewById(R.id.past_event_hint);
                                 hint.setVisibility(View.VISIBLE);
 
@@ -131,7 +152,8 @@ public class PastEventFragment extends Fragment{
                             }
 
 
-                            adapter = new PastEventAdapter(getActivity(), pastEventList);
+                            adapter = new PastEventAdapter(getActivity(), pastEventList, keyArray, userNode);
+                            adapter.notifyDataSetChanged();
                             recyclerView.setAdapter(adapter);
 
 

@@ -96,6 +96,8 @@ public class StudyReportPage extends AppCompatActivity {
     double avgTaskCompletion = 0.0;
     double avgTaskSatisfaction = 0.0;
     float avgStudyHour = 0f;
+    int count =0;
+    String month;
 
 
 
@@ -114,7 +116,10 @@ public class StudyReportPage extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(StudyReportPage.this,TrackStudyPage.class));
+                Intent intent = new Intent(getApplicationContext(), TrackStudyPage.class);
+
+                intent.putExtra("fromActivity", "NoActivity");
+                startActivity(intent);
             }
         });
 
@@ -178,7 +183,7 @@ public class StudyReportPage extends AppCompatActivity {
 
 
         //read month selected from the spinner and convert to digit
-        String month = monthSpinner.getSelectedItem().toString().trim();
+        month = monthSpinner.getSelectedItem().toString().trim();
 
         if(month.equals("January")){
             selectedMonthDigit = 1;
@@ -226,6 +231,8 @@ public class StudyReportPage extends AppCompatActivity {
             datasheet.setVisibility(View.GONE);
             Toast.makeText(StudyReportPage.this, "Report can ONLY be generated for PAST Months", Toast.LENGTH_LONG).show();
         }else{
+
+            count = 0;
             datasheet.setVisibility(View.VISIBLE);
             //get data from Track Study node
             databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
@@ -248,6 +255,9 @@ public class StudyReportPage extends AppCompatActivity {
                         }
 
                         if(selectedMonthDigit == (calendar2.get(Calendar.MONTH)+1)){
+
+                            count ++;
+
                             for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()){
 
                                 TrackStudyModel trackStudyModel = dataSnapshot2.getValue(TrackStudyModel.class);
@@ -345,6 +355,13 @@ public class StudyReportPage extends AppCompatActivity {
     }
 
     private void ShowDataAndDrawGraph() {
+
+        if(count == 0){
+            datasheet.setVisibility(View.GONE);
+            Toast.makeText(StudyReportPage.this, "No record found for " +  month, Toast.LENGTH_LONG).show();
+
+            return;
+        }
 
         avgStudyHour = 0f;
 

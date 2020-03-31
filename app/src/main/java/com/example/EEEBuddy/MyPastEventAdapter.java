@@ -23,16 +23,16 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyViewHolder> {
+public class MyPastEventAdapter extends RecyclerView.Adapter<MyPastEventAdapter.MyViewHolder> {
 
     Context context;
     ArrayList<StudyEvent> pastEventList; //StudyEvent Model
     ArrayList<String> keyArray;
-    DatabaseReference registeredEventRef;
+    DatabaseReference studyEventRef;
     String userNode;
 
 
-    public PastEventAdapter (Context context, ArrayList<StudyEvent> pastEventList, ArrayList<String> keyArray, String userNode) {
+    public MyPastEventAdapter (Context context, ArrayList<StudyEvent> pastEventList, ArrayList<String> keyArray, String userNode) {
         this.context = context;
         this.pastEventList = pastEventList;
         this.keyArray = keyArray;
@@ -109,9 +109,10 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
 
                 String tempKey = keyArray.get(position);
 
-                registeredEventRef = FirebaseDatabase.getInstance().getReference("Registered Event");
+                studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
+                studyEventRef.keepSynced(true);
 
-                registeredEventRef.child(userNode).child(tempKey).removeValue()
+                studyEventRef.child(userNode).child(tempKey).removeValue()
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
@@ -119,8 +120,6 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
                                 Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
                             }
                         });
-
-                registeredEventRef.keepSynced(true);
 
             }
         });

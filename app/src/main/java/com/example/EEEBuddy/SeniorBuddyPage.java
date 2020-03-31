@@ -98,7 +98,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
                     startActivity(new Intent(SeniorBuddyPage.this, StudyBuddyPage.class));
                 }
                 if(itemIndex == 2){//goto chat
-
+                    startActivity(new Intent(SeniorBuddyPage.this, ChatListPage.class));
                 }
                 if(itemIndex == 3){//goto profile page
                     startActivity(new Intent(SeniorBuddyPage.this, Account.class));

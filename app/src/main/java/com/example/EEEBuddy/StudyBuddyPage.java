@@ -103,7 +103,7 @@ public class StudyBuddyPage extends AppCompatActivity {
                     //void
                 }
                 if(itemIndex == 2){//goto chat
-                    //startActivity(new Intent(StudyBuddyPage.this, AddStudyEvent.class));
+                    startActivity(new Intent(StudyBuddyPage.this, ChatListPage.class));
                 }
                 if(itemIndex == 3){//goto account page
                     startActivity(new Intent(StudyBuddyPage.this, Account.class));
@@ -181,8 +181,10 @@ public class StudyBuddyPage extends AppCompatActivity {
             public void onClick(View v) {
 
                 //showDialogBox();
+                Intent intent = new Intent(StudyBuddyPage.this, AddStudyEvent.class);
+                intent.putExtra("from", "AddStudyEventActivity");
 
-                startActivity(new Intent(StudyBuddyPage.this, AddStudyEvent.class));
+                startActivity(intent);
 
             }
         });

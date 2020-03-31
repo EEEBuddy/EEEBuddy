@@ -3,6 +3,8 @@ package com.example.EEEBuddy;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +13,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
 
@@ -23,11 +31,16 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
 
     Context context;
     ArrayList<StudyEvent> myUpcomingEventList; //StudyEvent Model
+    ArrayList<String> keyArray;
+    DatabaseReference studyEventRef;
+    String userNode;
 
 
-    public MyUpcomingEventAdapter (Context context, ArrayList<StudyEvent> myUpcomingEventList) {
+    public MyUpcomingEventAdapter (Context context, ArrayList<StudyEvent> myUpcomingEventList, ArrayList<String> keyArray, String userNode) {
         this.context = context;
         this.myUpcomingEventList = myUpcomingEventList;
+        this.keyArray = keyArray;
+        this.userNode = userNode;
     }
 
 
@@ -41,12 +54,14 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
+
+
         holder.subjectCode.setText(myUpcomingEventList.get(position).getSubjectCode());
         holder.subjectName.setText(myUpcomingEventList.get(position).getSubjectName());
         holder.task.setText("Task: " + myUpcomingEventList.get(position).getTask());
         holder.location.setText("Location: " + myUpcomingEventList.get(position).getLocation());
         holder.date.setText("Date: " + myUpcomingEventList.get(position).getDate());
-        holder.time.setText("Time: " + myUpcomingEventList.get(position).getTime());
+        holder.time.setText("Time: " + myUpcomingEventList.get(position).getStartTime() + " - " + myUpcomingEventList.get(position).getEndTime());
         holder.groupSize.setText("Vacancy: " + myUpcomingEventList.get(position).getGroupSize());
 
         holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -88,14 +103,42 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
         holder.swipeEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..EDIT", Toast.LENGTH_LONG).show();
+
+                String eventID = keyArray.get(position);
+
+                Intent intent = new Intent (context, AddStudyEvent.class);
+                intent.putExtra("eventID", eventID);
+                intent.putExtra("from", "UpdateStudyEventActivity");
+                intent.putExtra("subjectCode", myUpcomingEventList.get(position).getSubjectCode());
+                intent.putExtra("subjectName", myUpcomingEventList.get(position).getSubjectName());
+                intent.putExtra("task", myUpcomingEventList.get(position).getTask());
+                intent.putExtra("location", myUpcomingEventList.get(position).getLocation());
+                intent.putExtra("date", myUpcomingEventList.get(position).getDate());
+                intent.putExtra("startTime", myUpcomingEventList.get(position).getStartTime());
+                intent.putExtra("endTime", myUpcomingEventList.get(position).getEndTime());
+                intent.putExtra("groupSize", myUpcomingEventList.get(position).getGroupSize());
+
+                context.startActivity(intent);
+
             }
         });
 
         holder.swipeDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..DELETE", Toast.LENGTH_LONG).show();
+
+                String tempKey = keyArray.get(position);
+
+                studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
+
+                studyEventRef.child(userNode).child(tempKey).removeValue()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+                                Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
+                            }
+                        });
 
             }
         });

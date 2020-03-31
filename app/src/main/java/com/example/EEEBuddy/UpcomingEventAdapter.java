@@ -1,12 +1,11 @@
 package com.example.EEEBuddy;
 
-import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,22 +18,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyViewHolder> {
+public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdapter.MyViewHolder> {
 
     Context context;
-    ArrayList<StudyEvent> pastEventList; //StudyEvent Model
+    ArrayList<StudyEvent> upcomingEventList; //StudyEvent Model
     ArrayList<String> keyArray;
-    DatabaseReference registeredEventRef;
     String userNode;
+    DatabaseReference registeredEventRef;
 
-
-    public PastEventAdapter (Context context, ArrayList<StudyEvent> pastEventList, ArrayList<String> keyArray, String userNode) {
+    public UpcomingEventAdapter(Context context, ArrayList<StudyEvent> upcomingEventList, ArrayList<String> keyArray, String userNode) {
         this.context = context;
-        this.pastEventList = pastEventList;
+        this.upcomingEventList = upcomingEventList;
         this.keyArray = keyArray;
         this.userNode = userNode;
     }
@@ -50,15 +46,13 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
-
-
-        holder.subjectCode.setText(pastEventList.get(position).getSubjectCode());
-        holder.subjectName.setText(pastEventList.get(position).getSubjectName());
-        holder.task.setText("Task: " + pastEventList.get(position).getTask());
-        holder.location.setText("Location: " + pastEventList.get(position).getLocation());
-        holder.date.setText("Date: " + pastEventList.get(position).getDate());
-        holder.time.setText("Time: " + pastEventList.get(position).getStartTime() + " - " + pastEventList.get(position).getEndTime());
-        holder.groupSize.setText("Vacancy: " + pastEventList.get(position).getGroupSize());
+        holder.subjectCode.setText(upcomingEventList.get(position).getSubjectCode());
+        holder.subjectName.setText(upcomingEventList.get(position).getSubjectName());
+        holder.task.setText("Task: " + upcomingEventList.get(position).getTask());
+        holder.location.setText("Location: " + upcomingEventList.get(position).getLocation());
+        holder.date.setText("Date: " + upcomingEventList.get(position).getDate());
+        holder.time.setText("Time: " + upcomingEventList.get(position).getStartTime() + " - " + upcomingEventList.get(position).getEndTime());
+        holder.groupSize.setText("Vacancy: " + upcomingEventList.get(position).getGroupSize());
 
         holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
 
@@ -96,12 +90,6 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
             }
         });
 
-        holder.swipeEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..ADD TO TRACK", Toast.LENGTH_LONG).show();
-            }
-        });
 
         holder.swipeDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,13 +112,11 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
 
             }
         });
-
-
     }
 
     @Override
     public int getItemCount() {
-        return pastEventList.size();
+        return upcomingEventList.size();
     }
 
 
@@ -139,6 +125,9 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
         TextView subjectCode, subjectName, task, location, date, time, groupSize;
         SwipeLayout swipeLayout;
         TextView swipeEdit, swipeDelete;
+        LinearLayout eventSwipeContainer;
+        ViewGroup.LayoutParams params;
+
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -156,7 +145,12 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
             swipeEdit = (TextView) itemView.findViewById(R.id.my_event_swipe_edit);
             swipeDelete = (TextView) itemView.findViewById(R.id.my_event_swipe_delete);
 
-            swipeEdit.setText("Add to Study Track");
+            eventSwipeContainer = (LinearLayout) itemView.findViewById(R.id.my_event_swipe_content);
+            eventSwipeContainer.removeView(swipeEdit);
+
+            params = eventSwipeContainer.getLayoutParams();
+            params.width =200;
+            eventSwipeContainer.setLayoutParams(params);
 
         }
     }

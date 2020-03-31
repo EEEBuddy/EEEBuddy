@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/my_event_swipe_content"
         android:layout_width="160dp"
-        android:weightSum="2"
+        android:layout_weight="2"
         android:orientation="horizontal"
         android:layout_height="match_parent">
 
@@ -54,7 +54,8 @@
             android:paddingRight="20dp"
             android:paddingTop="20dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp">
+            android:layout_marginRight="5dp"
+            android:background="@drawable/borderline">
 
             <TextView
                 android:id="@+id/my_event_subjectCode"
@@ -128,7 +129,6 @@
                 android:textColor="@color/mainFontColor"
                 android:textSize="18sp"
                 android:layout_below="@id/my_event_time"
-                android:background="@drawable/borderline"
                 android:paddingBottom="20dp"/>
 
         </RelativeLayout>

@@ -10,12 +10,13 @@ public class TrackStudyModel {
     private String method;
     private String location;
     private String remarks;
+    private String date;
 
     public TrackStudyModel(){
 
     }
 
-    public TrackStudyModel(String subject, String task, String duration, String completion, String satisfaction, String groupSize, String method, String location, String remarks) {
+    public TrackStudyModel(String subject, String task, String duration, String completion, String satisfaction, String groupSize, String method, String location, String remarks, String date) {
         this.subject = subject;
         this.task = task;
         this.duration = duration;
@@ -25,6 +26,7 @@ public class TrackStudyModel {
         this.method = method;
         this.location = location;
         this.remarks = remarks;
+        this.date = date;
     }
 
     public String getSubject() {
@@ -97,5 +99,13 @@ public class TrackStudyModel {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
