@@ -43,6 +43,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Account extends AppCompatActivity {
 
+    private ImageView backBtn, rightIcon;
+    private TextView title;
+
     private CircleImageView profileImage;
     private String profileImageUrl;
     private TextView profileName;
@@ -118,6 +121,15 @@ public class Account extends AppCompatActivity {
         });
 
         //customise bottom navigation above
+
+        title = (TextView) findViewById(R.id.toolbar_title);
+        backBtn = (ImageView) findViewById(R.id.toolbar_back);
+        rightIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
+
+        title.setText("My Account");
+        backBtn.setVisibility(View.GONE);
+        rightIcon.setVisibility(View.GONE);
+
 
         profileName = (TextView) findViewById(R.id. profile_name);
         profileImage = (CircleImageView) findViewById(R.id.profile_image);

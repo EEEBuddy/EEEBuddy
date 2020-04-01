@@ -43,6 +43,7 @@ import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -72,7 +73,7 @@ public class TrackStudyPage extends AppCompatActivity {
     private ImageView reportBtn;
 
     private String dateNode, recordID;
-    private String in_subject, in_task, in_duration, in_completion, in_satisfaction, in_groupSize, in_method, in_location, in_remarks, in_recordID, in_date, fromActivity;
+    private String in_subject, in_task, in_duration, in_completion, in_satisfaction, in_groupSize, in_method, in_location, in_remarks, in_recordID, in_date, in_startTime, in_endTime, fromActivity;
 
 
     @Override
@@ -109,7 +110,7 @@ public class TrackStudyPage extends AppCompatActivity {
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GenerateReport();
+                startActivity(new Intent(TrackStudyPage.this, StudyReportPage.class));
             }
         });
 
@@ -122,15 +123,15 @@ public class TrackStudyPage extends AppCompatActivity {
         });
 
 
-        RetrieveStudyRecords();
-
-
         //for Update
-        GetIncomingIntent(savedInstanceState);
+        GetIncomingIntent();
+
+        RetrieveStudyRecords();
 
 
 
     }
+
 
     private void RetrieveStudyRecords() {
 
@@ -167,9 +168,7 @@ public class TrackStudyPage extends AppCompatActivity {
                         trackStudyAdapter = new TrackStudyAdapter(TrackStudyPage.this, studyRecordList,keyArray,userNode,dateNode);
                         recyclerView.setAdapter(trackStudyAdapter);
 
-                        if(studyRecordList.size() != 0 ){
-                            //calendarView.setSelectedDateVerticalBar(R.color.blue);
-                        }
+
                     }
 
                     @Override
@@ -186,7 +185,7 @@ public class TrackStudyPage extends AppCompatActivity {
 
     }
 
-    private void GetIncomingIntent(Bundle savedInstanceState) {
+    private void GetIncomingIntent() {
 
         fromActivity = getIntent().getStringExtra("fromActivity");
         if(fromActivity.equals("UpdateStudyRecordActivity")){
@@ -203,7 +202,20 @@ public class TrackStudyPage extends AppCompatActivity {
             in_remarks = getIntent().getStringExtra("remarks");
             in_date = getIntent().getStringExtra("date");
 
+        }else if(fromActivity.equals("NewStudyBuddyRecord")){
+
+            in_recordID = getIntent().getStringExtra("recordID");
+            in_subject = getIntent().getStringExtra("subject");
+            in_task = getIntent().getStringExtra("task");
+            in_location = getIntent().getStringExtra("location");
+            in_date = getIntent().getStringExtra("date");
+            in_startTime = getIntent().getStringExtra("startTime");
+            in_endTime = getIntent().getStringExtra("endTime");
+            in_groupSize = getIntent().getStringExtra("groupSize");
+
+
         }else{
+
             return;
         }
 
@@ -211,14 +223,10 @@ public class TrackStudyPage extends AppCompatActivity {
 
     }
 
-    private void GenerateReport() {
-
-        startActivity(new Intent(TrackStudyPage.this, StudyReportPage.class));
-    }
 
     private void AddStudyRecord(final String source){
 
-        if(source.equals("UpdateStudyRecordActivity")){
+        if(source.equals("UpdateStudyRecordActivity") || source.equals("NewStudyBuddyRecord")){
             dateNode = in_date;
         }
 
@@ -237,7 +245,7 @@ public class TrackStudyPage extends AppCompatActivity {
 
             final AlertDialog dialog = dialogBuilder.create();
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
 
             TextView selectedDate = dialog.findViewById(R.id.add_record_date);
@@ -260,6 +268,7 @@ public class TrackStudyPage extends AppCompatActivity {
             Button dialogUpdateBtn = dialog.findViewById(R.id.add_record_updateBtn);
 
             buttonLayout.removeView(dialogUpdateBtn);
+
 
             selectedDate.setText(dateNode);
 
@@ -296,6 +305,79 @@ public class TrackStudyPage extends AppCompatActivity {
                 methodSpinner.setSelection(methodAdapter.getPosition(in_method));
                 locationSpinner.setSelection(locationAdapter.getPosition(in_location));
 
+            }else if(source.equals("NewStudyBuddyRecord")){
+
+                editTextSubject.setText(in_subject);
+                editTextTask.setText(in_task);
+                methodSpinner.setSelection(3);
+
+                if(in_groupSize.equals("1")){
+                    groupSizeSpinner.setSelection(1);
+
+                }else if(in_groupSize.equals("2") || in_groupSize.equals("3")){
+                    groupSizeSpinner.setSelection(2);
+
+                }else if(in_groupSize.equals("4") || in_groupSize.equals("4") || in_groupSize.equals("6")){
+                    groupSizeSpinner.setSelection(3);
+
+                }else if(in_groupSize.equals("7") || in_groupSize.equals("8") || in_groupSize.equals("9") || in_groupSize.equals("10")){
+                    groupSizeSpinner.setSelection(4);
+
+                }else if(Integer.parseInt(in_groupSize) > 10){
+                    groupSizeSpinner.setSelection(5);
+
+                }else{
+                    groupSizeSpinner.setSelection(0);
+                }
+
+
+
+                try {
+                    SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm aa");
+                    Date start = sdf2.parse(in_startTime);
+                    Date end = sdf2.parse(in_endTime);
+                    long diff = end.getTime() - start.getTime();
+                    int diffHours = (int) Math.ceil(diff / (60 * 60 * 1000) % 24);
+
+                    if(diffHours == 1){
+                        durationSpinner.setSelection(1);
+
+                    }else if(diffHours == 2){
+                        durationSpinner.setSelection(2);
+
+                    }else if(diffHours == 3){
+                        durationSpinner.setSelection(3);
+
+                    }else if(diffHours == 4){
+                        durationSpinner.setSelection(4);
+
+                    }else if(diffHours == 5){
+                        durationSpinner.setSelection(5);
+
+                    }else if(diffHours == 6){
+                        durationSpinner.setSelection(6);
+
+                    }else if(diffHours == 7){
+                        durationSpinner.setSelection(7);
+
+                    }else if(diffHours == 8){
+                        durationSpinner.setSelection(8);
+
+                    }else if(diffHours == 9){
+                        durationSpinner.setSelection(9);
+
+                    }else if(diffHours == 10){
+                        durationSpinner.setSelection(10);
+
+                    }else{
+                        durationSpinner.setSelection(0);
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
             }
 
 
@@ -327,7 +409,7 @@ public class TrackStudyPage extends AppCompatActivity {
 
                     }else{
 
-                        if(source.equals("UpdateStudyRecordActivity")){
+                        if(source.equals("UpdateStudyRecordActivity") || source.equals("NewStudyBuddyRecord")){
                             recordID = in_recordID;
 
                         }else if(source.equals("AddStudyRecordActivity")){
@@ -348,14 +430,31 @@ public class TrackStudyPage extends AppCompatActivity {
                                 Date parsedDateNode = sdf.parse(dateNode);
                                 long millis = parsedDateNode.getTime();
                                 calendarView.setDate(millis);
+                                finish();//refresh the page to load the updated data
+                                //startActivity(getIntent());
+                                Toast.makeText(TrackStudyPage.this, "Records Updated Successfully", Toast.LENGTH_LONG).show();
 
-                                RetrieveStudyRecords();
 
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
 
-                            Toast.makeText(TrackStudyPage.this, "Records Updated Successfully", Toast.LENGTH_LONG).show();
+                        }else if(source.equals("NewStudyBuddyRecord")){
+
+                            try {
+
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                Date parsedDateNode = sdf.parse(dateNode);
+                                long millis = parsedDateNode.getTime();
+                                calendarView.setDate(millis);
+                                finish();
+                                Toast.makeText(TrackStudyPage.this, "Records Added Successfully", Toast.LENGTH_LONG).show();
+
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
 
                         }else {
                             Toast.makeText(TrackStudyPage.this, "Records Added Successfully", Toast.LENGTH_LONG).show();

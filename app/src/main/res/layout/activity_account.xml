@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Account">
 
+    <include layout="@layout/toolbar"/>
 
     <include
         android:id="@+id/acct_nav"
@@ -15,9 +16,9 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="50dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="85dp"
         app:civ_border_color="#FFFFFF"
 
         app:civ_border_width="2dp"
@@ -35,22 +36,25 @@
         android:fontFamily="@font/roboto"
         android:text="@string/name"
         android:textColor="#4C4B5E"
-        android:textSize="30sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
+
+
     <ImageView
         android:id="@+id/acct_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="276dp"
+        android:layout_marginTop="300dp"
         android:contentDescription="@string/element"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/choose_profile" />
+
 
     <ImageView
         android:id="@+id/acct_mybuddy"
@@ -73,24 +77,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/acct_mybuddy"
-        app:srcCompat="@drawable/choose_event" />
+        app:srcCompat="@drawable/choose_track_study"/>
 
     <ImageView
         android:id="@+id/acct_study"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="58dp"
+        android:layout_marginTop="60dp"
         android:contentDescription="@string/element"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/acct_event"
-        app:srcCompat="@drawable/choose_track_study" />
+        app:srcCompat="@drawable/choose_event"/>
 
     <ImageView
         android:id="@+id/acct_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="57dp"
         android:contentDescription="@string/element"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -103,11 +107,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="130dp"
+        android:layout_marginEnd="125dp"
         android:fontFamily="@font/roboto"
         android:text="@string/acct_profile"
         android:textColor="#666666"
         android:textSize="18sp"
+        app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintEnd_toEndOf="@+id/acct_profile"
         app:layout_constraintStart_toStartOf="@+id/acct_profile"
         app:layout_constraintTop_toTopOf="@+id/acct_profile" />
@@ -122,7 +127,7 @@
         android:textColor="#666666"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/acct_mybuddy"
-        app:layout_constraintHorizontal_bias="0.474"
+        app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintStart_toStartOf="@+id/acct_mybuddy"
         app:layout_constraintTop_toTopOf="@+id/acct_mybuddy" />
 
@@ -133,11 +138,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="40dp"
         android:fontFamily="@font/roboto"
-        android:text="STUDY EVENTS"
+        android:text="MY STUDY EVENTS"
         android:textColor="#666666"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/acct_event"
-        app:layout_constraintHorizontal_bias="0.42"
+        app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintStart_toStartOf="@+id/acct_event"
         app:layout_constraintTop_toTopOf="@+id/acct_event" />
 
@@ -174,16 +179,15 @@
 
     <ImageView
         android:id="@+id/acct_change_pw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:rotation="-45"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         app:layout_constraintBottom_toTopOf="@+id/profile_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.955"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/key" />
+        app:layout_constraintVertical_bias="0.4"
+        app:srcCompat="@drawable/ic_key" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

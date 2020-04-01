@@ -115,7 +115,7 @@ public class UpcomingEventFragment extends Fragment{
                             String eventStartTime = eventTime.substring(0,eventTime.indexOf(' ')).trim();
 
                             Calendar calendar = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                             String eventDateTime = eventDate + " " + eventStartTime;
 
 

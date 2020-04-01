@@ -3,6 +3,8 @@ package com.example.EEEBuddy;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -30,6 +35,7 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
     ArrayList<String> keyArray;
     DatabaseReference registeredEventRef;
     String userNode;
+    String button_state = "not_added";
 
 
     public PastEventAdapter (Context context, ArrayList<StudyEvent> pastEventList, ArrayList<String> keyArray, String userNode) {
@@ -48,9 +54,12 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
 
+        String tempKey = keyArray.get(position);
+        String tempDate = pastEventList.get(position).getDate();
+        MaintenanceOfButton(tempKey, tempDate, holder);
 
         holder.subjectCode.setText(pastEventList.get(position).getSubjectCode());
         holder.subjectName.setText(pastEventList.get(position).getSubjectName());
@@ -96,10 +105,40 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
             }
         });
 
-        holder.swipeEdit.setOnClickListener(new View.OnClickListener() {
+        holder.swipeAddToRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "TODO..ADD TO TRACK", Toast.LENGTH_LONG).show();
+
+                String tempKey = keyArray.get(position);
+
+                if(button_state.equals("not_added")){
+
+                    Intent intent = new Intent(context, TrackStudyPage.class);
+
+                    intent.putExtra("recordID", tempKey);
+                    intent.putExtra("fromActivity", "NewStudyBuddyRecord");
+                    intent.putExtra("subject", pastEventList.get(position).getSubjectName());
+                    intent.putExtra("task", pastEventList.get(position).getTask());
+                    intent.putExtra("location", pastEventList.get(position).getLocation());
+                    intent.putExtra("date", pastEventList.get(position).getDate());
+                    intent.putExtra("startTime", pastEventList.get(position).getStartTime());
+                    intent.putExtra("endTime", pastEventList.get(position).getEndTime());
+                    intent.putExtra("groupSize", pastEventList.get(position).getGroupSize());
+
+                    context.startActivity(intent);
+
+                    button_state = "added";
+                    holder.swipeAddToRecord.setBackgroundResource(R.color.gray);
+                    holder.swipeAddToRecord.setText("Added");
+                }else if(button_state.equals("added")){
+
+                    holder.swipeAddToRecord.setBackgroundResource(R.color.gray);
+                    holder.swipeAddToRecord.setText("Added");
+                    holder.swipeAddToRecord.setEnabled(false);
+                }
+
+
+
             }
         });
 
@@ -138,7 +177,7 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
 
         TextView subjectCode, subjectName, task, location, date, time, groupSize;
         SwipeLayout swipeLayout;
-        TextView swipeEdit, swipeDelete;
+        TextView swipeAddToRecord, swipeDelete;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -153,12 +192,41 @@ public class PastEventAdapter extends RecyclerView.Adapter<PastEventAdapter.MyVi
             groupSize = (TextView) itemView.findViewById(R.id.my_event_vacancy);
 
             swipeLayout = (SwipeLayout) itemView.findViewById(R.id.my_event_swipeLayout);
-            swipeEdit = (TextView) itemView.findViewById(R.id.my_event_swipe_edit);
+            swipeAddToRecord = (TextView) itemView.findViewById(R.id.my_event_swipe_edit);
             swipeDelete = (TextView) itemView.findViewById(R.id.my_event_swipe_delete);
 
-            swipeEdit.setText("Add to Study Track");
+            swipeAddToRecord.setText("Add to Study Track");
 
         }
+    }
+
+
+    public void MaintenanceOfButton(final String tempKey, String tempDate, final MyViewHolder holder){
+
+        DatabaseReference trackStudyRef;
+        trackStudyRef = FirebaseDatabase.getInstance().getReference("Track Study").child(userNode).child(tempDate);
+
+        trackStudyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChild(tempKey)){
+                    button_state = "added";
+                    holder.swipeAddToRecord.setBackgroundResource(R.color.gray);
+                    holder.swipeAddToRecord.setText("Added");
+                    holder.swipeAddToRecord.setEnabled(false);
+
+                }else{
+                    button_state = "not_added";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 

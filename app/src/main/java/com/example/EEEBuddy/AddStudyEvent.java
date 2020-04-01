@@ -135,10 +135,9 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
                                 //time validation
                                 try {
-                                    String eventTime = "";
-                                    SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                    SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
                                     Date currentTime = new Date();
-                                    eventTime = selectedDate + " " + selectedStartTime.substring(0,selectedStartTime.indexOf("A")).trim();
+                                    String eventTime = selectedDate + " " + selectedStartTime.substring(0,selectedStartTime.lastIndexOf(" ")).trim();
                                     Date formattedEventTime = sdf2.parse(eventTime);
 
                                     if(formattedEventTime.compareTo(currentTime) < 0){
@@ -187,7 +186,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
                                 editTextEndTime.setText(selectedEndTime);
 
                                 //time validation
-                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm aa");
                                 try {
                                     Date parsedStart = sdf.parse(selectedStartTime);
                                     Date parsedEnd = sdf.parse(selectedEndTime);
@@ -361,16 +360,16 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day){
         month = month +1;
-        selectedDate = day + "/" + month + "/" + year;
+        selectedDate = year + "-" + month + "-" + day;
         editTextDate.setText(selectedDate);
 
         //check if date is earlier than today
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
             day = day+1;
-            String modifiedDate = day + "/" + month + "/" + year;//allow to select the current date.
+            String modifiedDate = year + "-" + month + "-" + day;//allow to select the current date.
             Date now = new Date(System.currentTimeMillis());
             Date parsedDate = sdf.parse(modifiedDate);
             if (parsedDate.compareTo(now) < 0 ){ //parsedDate.compareTo(now) returns -1 if selected date is earlier than today, otherwise, returns 1.

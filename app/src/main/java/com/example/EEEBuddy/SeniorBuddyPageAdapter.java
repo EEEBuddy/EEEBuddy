@@ -24,11 +24,11 @@ public class SeniorBuddyPageAdapter extends FragmentPagerAdapter {
 
         switch (position){
             case 0:
-                fragment = new RecommFragment();
+                fragment = new AllFragment();
                 break;
 
             case 1:
-                fragment =  new AllFragment();
+                fragment =  new RecommFragment();
                 break;
 
         }

@@ -144,6 +144,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
         pageAdapter = new SeniorBuddyPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
 
+        /*
         seniorBuddyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -158,6 +159,8 @@ public class SeniorBuddyPage extends AppCompatActivity {
             }
         });
 
+         */
+
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(final TabLayout.Tab tab) {
@@ -165,11 +168,12 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
                 if(tab.getPosition() == 0){
                     pageAdapter.notifyDataSetChanged();
-                    filterIcon.setVisibility(View.GONE);
+                    filterIcon.setVisibility(View.VISIBLE);
 
                 }else if(tab.getPosition() == 1){
                     pageAdapter.notifyDataSetChanged();
-                    filterIcon.setVisibility(View.VISIBLE);
+                    filterIcon.setVisibility(View.GONE);
+
 
                 }
 
