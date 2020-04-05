@@ -3,12 +3,14 @@ package com.example.EEEBuddy;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,7 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,31 +38,33 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class StudyBuddyPage extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private SearchView searchView;
     private ArrayList<StudyEvent> studyEventsList, searchResultList;
+    private ArrayList<String> keyArray;
     private StudyEventAdapter adapter;
 
     private TextView toolbarTitle;
     private ImageView addIcon, backBtn;
 
     //declare database stuff
-    private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
-    private String userID;
+    private DatabaseReference studyEventRef, registeredEventRef;
     private String userEmail, userNode;
 
     private SpaceNavigationView spaceNavigationView;
 
 
     private TextView message1, message2, note;
-    private Button cancleBtn, confirmBtn;
-
+    private Button cancleBtn, confirmBtn, joinBtn;
+    private String button_state = "not_joined";
 
 
     @Override
@@ -65,15 +72,20 @@ public class StudyBuddyPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_buddy_page);
 
-        firebaseAuth = FirebaseAuth.getInstance();
 
-        if(firebaseAuth.getCurrentUser() == null){
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+
+        if (firebaseAuth.getCurrentUser() == null) {
             //if user has already logged out
             finish();
-            startActivity(new Intent(this,Login.class));
+            startActivity(new Intent(this, Login.class));
         }
 
-      //customise bottom navigation
+        //customise bottom navigation
         spaceNavigationView = findViewById(R.id.navigation);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
         spaceNavigationView.addSpaceItem(new SpaceItem("Senior Buddy", R.drawable.ic_buddy_grey));
@@ -88,7 +100,7 @@ public class StudyBuddyPage extends AppCompatActivity {
         spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
             @Override
             public void onCentreButtonClick() {
-                Toast.makeText(StudyBuddyPage.this,"onCentreButtonClick", Toast.LENGTH_SHORT).show();
+                Toast.makeText(StudyBuddyPage.this, "onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 spaceNavigationView.setCentreButtonSelectable(true);
             }
 
@@ -96,16 +108,16 @@ public class StudyBuddyPage extends AppCompatActivity {
             public void onItemClick(int itemIndex, String itemName) {
                 Toast.makeText(StudyBuddyPage.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
 
-                if(itemIndex == 0){//goto senior buddy page
+                if (itemIndex == 0) {//goto senior buddy page
                     startActivity(new Intent(StudyBuddyPage.this, SeniorBuddyPage.class));
                 }
-                if(itemIndex == 1){//goto study buddy page
+                if (itemIndex == 1) {//goto study buddy page
                     //void
                 }
-                if(itemIndex == 2){//goto chat
+                if (itemIndex == 2) {//goto chat
                     startActivity(new Intent(StudyBuddyPage.this, ChatListPage.class));
                 }
-                if(itemIndex == 3){//goto account page
+                if (itemIndex == 3) {//goto account page
                     startActivity(new Intent(StudyBuddyPage.this, Account.class));
                 }
             }
@@ -119,8 +131,6 @@ public class StudyBuddyPage extends AppCompatActivity {
         //customise bottom navigation above
 
 
-
-
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         addIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
@@ -129,6 +139,7 @@ public class StudyBuddyPage extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         studyEventsList = new ArrayList<StudyEvent>();
         searchResultList = new ArrayList<StudyEvent>();
+        keyArray = new ArrayList<String>();
         searchView = (SearchView) findViewById(R.id.studybuddy_searchview);
 
         backBtn.setVisibility(View.GONE);
@@ -136,20 +147,44 @@ public class StudyBuddyPage extends AppCompatActivity {
         addIcon.setImageResource(R.drawable.ic_add);
 
 
-        studyEventsList.clear();
-        databaseReference = firebaseDatabase.getInstance().getReference("Study Event");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        //retrieve list of study event
+        studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
+        studyEventRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                    for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()){
-                        StudyEvent studyEvent = dataSnapshot2.getValue(StudyEvent.class);
-                        studyEventsList.add(studyEvent);
+                studyEventsList.clear();
+
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    for (DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
+
+                        StudyEvent getEventDateTime = dataSnapshot2.getValue(StudyEvent.class);
+                        String eventDate = getEventDateTime.getDate();
+                        String eventStartTime = getEventDateTime.getStartTime();
+
+                        //time validation
+                        try {
+                            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            Date currentTime = new Date();
+                            String eventDateTime = eventDate + " " + eventStartTime.substring(0, eventStartTime.lastIndexOf(" ")).trim();
+                            Date formattedEventTime = sdf2.parse(eventDateTime);
+
+                            if (formattedEventTime.compareTo(currentTime) > 0) {
+
+                                String tempKey = dataSnapshot2.getKey();
+                                StudyEvent studyEvent = dataSnapshot2.getValue(StudyEvent.class);
+                                studyEventsList.add(studyEvent);
+                                keyArray.add(tempKey);
+                            }
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                     }
 
                 }
-                adapter = new StudyEventAdapter(StudyBuddyPage.this, studyEventsList);
+                adapter = new StudyEventAdapter(StudyBuddyPage.this, studyEventsList, keyArray);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -159,7 +194,9 @@ public class StudyBuddyPage extends AppCompatActivity {
             }
         });
 
-        if(searchView != null){
+
+        //search is initiated when text changes
+        if (searchView != null) {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -175,7 +212,6 @@ public class StudyBuddyPage extends AppCompatActivity {
         }
 
 
-
         addIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,6 +225,7 @@ public class StudyBuddyPage extends AppCompatActivity {
             }
         });
 
+
     }
 
 
@@ -196,25 +233,25 @@ public class StudyBuddyPage extends AppCompatActivity {
 
         searchResultList.clear();
 
-        for(StudyEvent object : studyEventsList){
-            if(object.getSubjectCode().toLowerCase().contains(searchString.toLowerCase()) ||
+        for (StudyEvent object : studyEventsList) {
+            if (object.getSubjectCode().toLowerCase().contains(searchString.toLowerCase()) ||
                     object.getSubjectName().toLowerCase().contains(searchString.toLowerCase()) ||
-                    object.getCreatedBy().toLowerCase().contains(searchString.toLowerCase())){
+                    object.getCreatedBy().toLowerCase().contains(searchString.toLowerCase())) {
 
                 searchResultList.add(object);
             }
         }
 
-        adapter = new StudyEventAdapter(this, searchResultList);
+        adapter = new StudyEventAdapter(this, searchResultList, keyArray);
         recyclerView.setAdapter(adapter);
     }
 
-    public void showDialogBox(final Context context, String code, String subject, String task, String location, String date, String time){
+    public void showDialogBox(final Context context, final String eventID, final StudyEventAdapter.MyViewHolder holder, final String createdBy, String code, String subject, String task, String location, String date, String groupSize, String time) {
 
         //need to pass the context from the class calling this method.
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //LayoutInflater inflater = getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.join_studyevent_dialog, null);
         dialogBuilder.setView(dialogView);
@@ -232,6 +269,16 @@ public class StudyBuddyPage extends AppCompatActivity {
         confirmBtn = (Button) dialog.findViewById(R.id.join_cfmBtn);
 
 
+        //message content
+        message1.setText(code + " " + subject);
+        message2.setText(
+                "Task: " + task + "\n"
+                        + "Location: " + location + "\n"
+                        + "Date: " + date + "\n"
+                        + "Time: " + time);
+        note.setText("Note: Goto 'Account > Study Events' to manage your registered events.");
+
+
         cancleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,18 +289,76 @@ public class StudyBuddyPage extends AppCompatActivity {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"TODO.......", Toast.LENGTH_LONG).show();
+
+
+                RegisterStudyEvent(context, createdBy, eventID, holder);
+                AddToStudyGroupChat();
+                dialog.dismiss();
+            }
+        });
+    }
+
+
+    private void RegisterStudyEvent(final Context context, final String createdBy, final String eventID, final StudyEventAdapter.MyViewHolder holder) {
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+        registeredEventRef = FirebaseDatabase.getInstance().getReference("Registered Event");
+        studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
+
+
+        final StudyEvent studyEvent = new StudyEvent(createdBy, eventID);
+        registeredEventRef.child(userNode).child(eventID).setValue(studyEvent).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if (task.isSuccessful()) {
+
+                    holder.joinBtn.setBackgroundResource(R.drawable.btn_disabled);
+                    holder.joinBtn.setText("Joined");
+                    holder.joinBtn.setEnabled(false);
+
+                    //update event vacancy
+                    studyEventRef.child(createdBy).child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if (dataSnapshot.exists()) {
+                                String getGroupSize = dataSnapshot.getValue(StudyEvent.class).getGroupSize();
+                                int groupSize = Integer.parseInt(getGroupSize);
+                                if (groupSize > 0) {
+
+                                    String newVacancy = String.valueOf(groupSize - 1);
+                                    studyEventRef.child(createdBy).child(eventID).child("groupSize").setValue(newVacancy);
+
+                                    if (groupSize <= 3) {
+                                        holder.groupSize.setTextColor(Color.parseColor("#cc0000"));
+                                    }
+                                    holder.groupSize.setText(newVacancy);
+
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    Toast.makeText(context, "Event Registered", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        //message content
-        message1.setText(code + " " + subject);
-        message2.setText(
-                "Task: " + task + "\n"
-                + "Location: " + location + "\n"
-                        + "Date: " + date + "\n"
-                        + "Time: " + time);
-        note.setText("Note: Goto 'Account > Study Events' to manage your registered events.");
+
     }
+
+    private void AddToStudyGroupChat() {
+    }
+
 
 }

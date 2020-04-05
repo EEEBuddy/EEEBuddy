@@ -19,6 +19,12 @@ public class StudyEvent {
     }
 
 
+    public StudyEvent(String createdBy, String eventID){
+        this.createdBy = createdBy;
+        this.eventID = eventID;
+    }
+
+
     public StudyEvent(String subjectCode, String subjectName, String task, String location, String date, String startTime, String endTime, String groupSize, String createdBy) {
         this.subjectCode = subjectCode;
         this.subjectName = subjectName;
@@ -113,5 +119,6 @@ public class StudyEvent {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
+
 
 }

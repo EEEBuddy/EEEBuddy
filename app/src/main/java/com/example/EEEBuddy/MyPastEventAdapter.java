@@ -130,6 +130,7 @@ public class MyPastEventAdapter extends RecyclerView.Adapter<MyPastEventAdapter.
                     button_state = "added";
                     holder.swipeAddToRecord.setBackgroundResource(R.color.gray);
                     holder.swipeAddToRecord.setText("Added");
+
                 }else if(button_state.equals("added")){
 
                     holder.swipeAddToRecord.setBackgroundResource(R.color.gray);

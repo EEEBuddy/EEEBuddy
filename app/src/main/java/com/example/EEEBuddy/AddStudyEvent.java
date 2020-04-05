@@ -135,14 +135,14 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
                                 //time validation
                                 try {
-                                    SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
+                                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                     Date currentTime = new Date();
                                     String eventTime = selectedDate + " " + selectedStartTime.substring(0,selectedStartTime.lastIndexOf(" ")).trim();
                                     Date formattedEventTime = sdf2.parse(eventTime);
 
                                     if(formattedEventTime.compareTo(currentTime) < 0){
                                         editTextStartTime.setError("Event time should be in the future");
-                                        editTextStartTime.setText("");
+                                        //editTextStartTime.setText("");
                                     }else{
                                         editTextStartTime.setText(selectedStartTime);
                                         editTextStartTime.setError(null);
@@ -290,6 +290,12 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
         if(!TextUtils.isEmpty(subjectCode) && !TextUtils.isEmpty(subjectName) && !TextUtils.isEmpty(task) && !TextUtils.isEmpty(location)
                 && !TextUtils.isEmpty(date) && !TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime) && !TextUtils.isEmpty(groupSize)){
+
+
+            if(Integer.parseInt(groupSize) < 2){
+                editTextGroupSize.setError("Group Size must be more than 2 people");
+                return;
+            }
 
 
             //getting a unique id using push().getKey() method //this unique key is the primary key for the event

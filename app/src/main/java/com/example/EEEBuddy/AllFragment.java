@@ -172,6 +172,7 @@ public class AllFragment extends Fragment {
 
                             //creating adapter
                             adapter1 = new SeniorBuddyAdapter(getActivity(), seniorBuddyList);
+                            adapter1.notifyDataSetChanged();
                             //attaching adapter to recycler-view
                             recyclerView.setAdapter(adapter1);
 

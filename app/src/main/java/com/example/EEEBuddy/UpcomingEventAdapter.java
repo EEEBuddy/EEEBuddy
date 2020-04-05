@@ -1,6 +1,8 @@
 package com.example.EEEBuddy;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -25,8 +30,8 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
     Context context;
     ArrayList<StudyEvent> upcomingEventList; //StudyEvent Model
     ArrayList<String> keyArray;
-    String userNode;
-    DatabaseReference registeredEventRef;
+    String userNode, createdBy;
+    DatabaseReference registeredEventRef, studyEventRef;
 
     public UpcomingEventAdapter(Context context, ArrayList<StudyEvent> upcomingEventList, ArrayList<String> keyArray, String userNode) {
         this.context = context;
@@ -44,7 +49,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
         holder.subjectCode.setText(upcomingEventList.get(position).getSubjectCode());
         holder.subjectName.setText(upcomingEventList.get(position).getSubjectName());
@@ -95,7 +100,8 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
             @Override
             public void onClick(View v) {
 
-                String tempKey = keyArray.get(position);
+                final String tempKey = keyArray.get(position);
+
 
                 registeredEventRef = FirebaseDatabase.getInstance().getReference("Registered Event");
 
@@ -104,11 +110,38 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
 
-                                Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
+                                if(task.isSuccessful()){
+                                    Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
+                                }
                             }
                         });
 
-                registeredEventRef.keepSynced(true);
+               // registeredEventRef.keepSynced(true);
+
+                createdBy = upcomingEventList.get(position).getCreatedBy();
+
+                studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
+                //update event vacancy
+                studyEventRef.child(createdBy).child(tempKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.exists()){
+                            String getGroupSize = dataSnapshot.getValue(StudyEvent.class).getGroupSize();
+                            int groupSize = Integer.parseInt(getGroupSize);
+
+                                String newVacancy = String.valueOf(groupSize + 1);
+                                studyEventRef.child(createdBy).child(tempKey).child("groupSize").setValue(newVacancy);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
 
             }
         });
