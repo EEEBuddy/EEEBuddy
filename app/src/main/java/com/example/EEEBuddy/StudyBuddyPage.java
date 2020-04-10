@@ -56,7 +56,7 @@ public class StudyBuddyPage extends AppCompatActivity {
 
     //declare database stuff
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference studyEventRef, registeredEventRef;
+    private DatabaseReference studyEventRef, registeredEventRef, messagesRef;
     private String userEmail, userNode;
 
     private SpaceNavigationView spaceNavigationView;
@@ -64,7 +64,8 @@ public class StudyBuddyPage extends AppCompatActivity {
 
     private TextView message1, message2, note;
     private Button cancleBtn, confirmBtn, joinBtn;
-    private String button_state = "not_joined";
+    private String groupChatID;
+    private Context in_context;
 
 
     @Override
@@ -306,6 +307,9 @@ public class StudyBuddyPage extends AppCompatActivity {
         userEmail = user.getEmail();
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
 
+        groupChatID = eventID;
+        in_context = context;
+
         registeredEventRef = FirebaseDatabase.getInstance().getReference("Registered Event");
         studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
 
@@ -358,6 +362,16 @@ public class StudyBuddyPage extends AppCompatActivity {
     }
 
     private void AddToStudyGroupChat() {
+
+        messagesRef = FirebaseDatabase.getInstance().getReference("Messages").child("Group Chat").child(groupChatID);
+        messagesRef.child("members").child(userNode).child("identity").setValue("member")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(in_context, "You have been added to the study group chat", Toast.LENGTH_LONG).show();
+                    }
+                });
+
     }
 
 

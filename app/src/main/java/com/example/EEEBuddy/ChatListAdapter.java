@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,7 +47,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
     private DatabaseReference messagesRef, studentProfileRef;
     private String userEmail, userNode,getName,getProfileImageUrl, profileImageUrl;
 
-    private Date today, parsedsentDate;
+    private Date parsedCurrentDate, parsedSentDate;
+    private long diffDays;
 
 
     public ChatListAdapter(Context context,ArrayList<ChatModel> chatList_1to1_array, ArrayList<String> receiverID_array ){
@@ -99,16 +101,27 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                         String currentDate = sdf.format(calendar.getTime());
 
+                        try {
+                            parsedCurrentDate = sdf.parse(currentDate);
+                            parsedSentDate = sdf.parse(sentDate);
 
-                        if(currentDate.compareTo(sentDate) > 1){
+                            long diff = Math.abs(parsedCurrentDate.getTime() - parsedSentDate.getTime());
+                            diffDays = TimeUnit.MILLISECONDS.toDays(diff);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        if(diffDays > 0 && diffDays != 1){
 
                             holder.lastMsgTime.setText(sentDate);
 
-                        }else if(currentDate.compareTo(sentDate) == 1){
+                        }else if(diffDays == 1){
 
                             holder.lastMsgTime.setText("Yesterday");
 
-                        }else if(currentDate.compareTo(sentDate) == 0){
+                        }else if(diffDays == 0){
 
                             holder.lastMsgTime.setText(sentTime);
                         }
@@ -152,6 +165,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
 
 
                 Intent chatIntent = new Intent(context, Chat.class);
+
+                chatIntent.putExtra("from", "1to1Chat");
                 chatIntent.putExtra("senderUserID", userNode);
                 chatIntent.putExtra("receiverUserID", receiverID_array.get(position));
                 chatIntent.putExtra("receiverName", holder.receiverName.getText().toString());

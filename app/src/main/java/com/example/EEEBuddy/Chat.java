@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -38,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Source;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Chat extends AppCompatActivity {
@@ -51,9 +54,12 @@ public class Chat extends AppCompatActivity {
     private ArrayList<ChatModel> messageList = new ArrayList<>();
     private ArrayList<String> dateKeeper = new ArrayList<>();
     private ChatAdapter chatAdapter;
+    private GroupChatAdapter groupChatAdapter;
     private LinearLayoutManager linearLayoutManager;
 
-    private String receiverUserID, receiverName, receiverProfileImgUrl,senderUserID;
+    private String receiverUserID, receiverName, receiverProfileImgUrl, senderUserID;
+    private String groupChatID, groupName, groupProfileImgUrl;
+    private String source;
 
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
@@ -72,7 +78,7 @@ public class Chat extends AppCompatActivity {
 
         GetIncomingIntents();
 
-        DisplayReceiverInfo();
+        DisplayReceiverInfo(source);
 
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -86,129 +92,54 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                SendTextMessage();
+                SendTextMessage(source);
             }
         });
 
 
-        FetchMessages();
+        FetchMessages(source);
 
 
     }
 
-    private void FetchMessages() {
+    private void FetchMessages(String source) {
 
-        rootRef.child("Messages").child("One to One Chat").child(senderUserID).child(receiverUserID)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        if(source.equals("1to1Chat")){
 
-                        if(dataSnapshot.exists()){
-                            ChatModel messages = dataSnapshot.getValue(ChatModel.class);
-                            messageList.add(messages);
-                            String date = messages.getDate();
-                            dateKeeper.add(date);
-                            chatAdapter.notifyDataSetChanged();
-                            rootRef.child("Messages").keepSynced(true);
-                        }
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-    private void SendTextMessage() {
-
-        String messageText = msgEditText.getText().toString().trim();
-
-        if(TextUtils.isEmpty(messageText)){
-            Toast.makeText(Chat.this,"You can't send an empty message", Toast.LENGTH_LONG).show();
-        }
-        else{
-
-            //path to store the message
-            String message_sender_ref = "Messages/" + "One to One Chat/" + senderUserID + "/" + receiverUserID;
-            String message_receiver_ref = "Messages/" + "One to One Chat/" + receiverUserID +"/" + senderUserID;
-
-            //message unique key for each message
-
-            DatabaseReference user_message_key = rootRef.child("Messages").child("One to One Chat").child(senderUserID).child(receiverUserID).push();
-            String message_push_id = user_message_key.getKey();
-
-            //time when message is sent
-            Calendar calendarForDate = Calendar.getInstance();
-            SimpleDateFormat currentDate = new SimpleDateFormat("yyyy/MM/dd");
-            messageSentDate = currentDate.format(calendarForDate.getTime());
-
-            Calendar calendarForTime = Calendar.getInstance();
-            SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm aa"); //aa for AM/PM
-            messageSentTime = currentTime.format(calendarForTime.getTime());
-
-            Map messageTextBody = new HashMap();
-            messageTextBody.put("message", messageText);
-            messageTextBody.put("time", messageSentTime);
-            messageTextBody.put("date", messageSentDate);
-            messageTextBody.put("type", "text");
-            messageTextBody.put("from", senderUserID);
-
-            Map messageBodyDetails = new HashMap();
-            messageBodyDetails.put(message_sender_ref + "/" + message_push_id, messageTextBody);
-            messageBodyDetails.put(message_receiver_ref + "/" + message_push_id, messageTextBody);
-
-            rootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-
-                    if(task.isSuccessful()){
-                        Toast.makeText(Chat.this,"Sent", Toast.LENGTH_LONG).show();
-                        msgEditText.setText("");
-
-                    }
-                    else{
-                        Toast.makeText(Chat.this,"Error:" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-
-                    }
-                }
-            });
-
-
-
-        }
-
-    }
-
-    private void DisplayReceiverInfo() {
-
-        if(receiverProfileImgUrl.equals("none")){
-            studentProfileRef = firebaseDatabase.getReference("Student Profile");
-            studentProfileRef.child(receiverUserID)
-                    .addValueEventListener(new ValueEventListener() {
+            rootRef.child("Messages").child("One to One Chat").child(senderUserID).child(receiverUserID)
+                    .addChildEventListener(new ChildEventListener() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
-                            profileImageUrl = userInfo.getProfileImageUrl();
-                            receiverProfileImgUrl = profileImageUrl;
-                            toolbarTitle.setText(receiverName);
-                            Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+                            if (dataSnapshot.exists()) {
+                                ChatModel messages = dataSnapshot.getValue(ChatModel.class);
+                                messageList.add(messages);
+                                String date = messages.getDate();
+                                dateKeeper.add(date);
+
+                                chatAdapter = new ChatAdapter(Chat.this, messageList, dateKeeper);
+                                msgRecyclerView.setAdapter(chatAdapter);
+                                chatAdapter.notifyDataSetChanged();
+                                rootRef.child("Messages").keepSynced(true);
+
+                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                         }
 
                         @Override
@@ -216,19 +147,240 @@ public class Chat extends AppCompatActivity {
 
                         }
                     });
-        }else{
-            toolbarTitle.setText(receiverName);
-            Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+
+        }else if(source.equals("groupChat")){
+
+            rootRef.child("Messages").child("Group Chat").child(groupChatID).child("messages")
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            if(dataSnapshot.exists()){
+                                ChatModel messages = dataSnapshot.getValue(ChatModel.class);
+                                messageList.add(messages);
+                                String date = messages.getDate();
+                                dateKeeper.add(date);
+
+                                groupChatAdapter = new GroupChatAdapter(Chat.this, messageList, dateKeeper);
+                                msgRecyclerView.setAdapter(groupChatAdapter);
+                                groupChatAdapter.notifyDataSetChanged();
+                                rootRef.child("Messages").keepSynced(true);
+
+                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
         }
+
+
+    }
+
+    private void SendTextMessage(String source) {
+
+        if(source.equals("1to1Chat")){
+
+            String messageText = msgEditText.getText().toString().trim();
+
+            if (TextUtils.isEmpty(messageText)) {
+                Toast.makeText(Chat.this, "You can't send an empty message", Toast.LENGTH_LONG).show();
+            } else {
+
+                //path to store the message
+                String message_sender_ref = "Messages/" + "One to One Chat/" + senderUserID + "/" + receiverUserID;
+                String message_receiver_ref = "Messages/" + "One to One Chat/" + receiverUserID + "/" + senderUserID;
+
+                //message unique key for each message
+
+                DatabaseReference user_message_key = rootRef.child("Messages").child("One to One Chat").child(senderUserID).child(receiverUserID).push();
+                String message_push_id = user_message_key.getKey();
+
+                //time when message is sent
+                Calendar calendarForDate = Calendar.getInstance();
+                SimpleDateFormat currentDate = new SimpleDateFormat("yyyy/MM/dd");
+                messageSentDate = currentDate.format(calendarForDate.getTime());
+
+                Calendar calendarForTime = Calendar.getInstance();
+                SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm aa"); //aa for AM/PM
+                messageSentTime = currentTime.format(calendarForTime.getTime());
+
+                Map messageTextBody = new HashMap();
+                messageTextBody.put("message", messageText);
+                messageTextBody.put("time", messageSentTime);
+                messageTextBody.put("date", messageSentDate);
+                messageTextBody.put("type", "text");
+                messageTextBody.put("from", senderUserID);
+
+                Map messageBodyDetails = new HashMap();
+                messageBodyDetails.put(message_sender_ref + "/" + message_push_id, messageTextBody);
+                messageBodyDetails.put(message_receiver_ref + "/" + message_push_id, messageTextBody);
+
+                rootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+
+                        if (task.isSuccessful()) {
+                            Toast.makeText(Chat.this, "Sent", Toast.LENGTH_LONG).show();
+                            msgEditText.setText("");
+
+                            msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+
+                        } else {
+                            Toast.makeText(Chat.this, "Error:" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                            msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+
+                        }
+                    }
+                });
+
+
+            }
+
+        } else if(source.equals("groupChat")){
+
+            String messageText = msgEditText.getText().toString().trim();
+
+            if (TextUtils.isEmpty(messageText)) {
+                Toast.makeText(Chat.this, "You can't send an empty message", Toast.LENGTH_LONG).show();
+            } else {
+
+                //path to store the message
+                String message_ref = "Messages/" + "Group Chat/"+ groupChatID +"/" + "messages";
+
+                //message unique key for each message
+
+                DatabaseReference user_message_key = rootRef.child("Messages").child("Group Chat").child(groupChatID).child("messages").push();
+                String message_push_id = user_message_key.getKey();
+
+                //time when message is sent
+                Calendar calendarForDate = Calendar.getInstance();
+                SimpleDateFormat currentDate = new SimpleDateFormat("yyyy/MM/dd");
+                messageSentDate = currentDate.format(calendarForDate.getTime());
+
+                Calendar calendarForTime = Calendar.getInstance();
+                SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm aa"); //aa for AM/PM
+                messageSentTime = currentTime.format(calendarForTime.getTime());
+
+                Map messageTextBody = new HashMap();
+                messageTextBody.put("message", messageText);
+                messageTextBody.put("time", messageSentTime);
+                messageTextBody.put("date", messageSentDate);
+                messageTextBody.put("type", "text");
+                messageTextBody.put("from", senderUserID);
+
+                Map messageBodyDetails = new HashMap();
+                messageBodyDetails.put(message_ref + "/" + message_push_id, messageTextBody);
+
+                rootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+
+                        if (task.isSuccessful()) {
+                            Toast.makeText(Chat.this, "Sent", Toast.LENGTH_LONG).show();
+                            msgEditText.setText("");
+
+                           // msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+
+                        } else {
+                            Toast.makeText(Chat.this, "Error:" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                            //msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+
+                        }
+                    }
+                });
+
+
+            }
+        }
+
+
+
+    }
+
+    private void DisplayReceiverInfo(String source) {
+
+        if(source.equals("1to1Chat")){
+
+            if (receiverProfileImgUrl.equals("none")) {
+                studentProfileRef = firebaseDatabase.getReference("Student Profile");
+                studentProfileRef.child(receiverUserID)
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
+                                profileImageUrl = userInfo.getProfileImageUrl();
+                                receiverProfileImgUrl = profileImageUrl;
+                                toolbarTitle.setText(receiverName);
+                                Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+            } else {
+                toolbarTitle.setText(receiverName);
+                Picasso.get().load(receiverProfileImgUrl).into(profilePic);
+            }
+
+        }else if(source.equals("groupChat")){
+
+            toolbarTitle.setText(groupName);
+
+            if(groupProfileImgUrl.equals("default")){
+                profilePic.setImageResource(R.drawable.group);
+            }
+        }
+
+
 
     }
 
     private void GetIncomingIntents() {
 
-        receiverUserID = getIntent().getStringExtra("receiverUserID").trim();
-        receiverName = getIntent().getStringExtra("receiverName").trim();
-        receiverProfileImgUrl = getIntent().getStringExtra("receiverProfileImgUrl");
-        senderUserID = getIntent().getStringExtra("senderUserID");
+        source = getIntent().getStringExtra("from");
+
+        if(source.equals("1to1Chat")){
+
+            receiverUserID = getIntent().getStringExtra("receiverUserID").trim();
+            receiverName = getIntent().getStringExtra("receiverName").trim();
+            receiverProfileImgUrl = getIntent().getStringExtra("receiverProfileImgUrl");
+            senderUserID = getIntent().getStringExtra("senderUserID");
+
+        }else if(source.equals("groupChat")){
+
+            groupChatID = getIntent().getStringExtra("groupChatID");
+            groupName = getIntent().getStringExtra("groupName");
+            groupProfileImgUrl = getIntent().getStringExtra("groupProfileImgUrl");
+            senderUserID = getIntent().getStringExtra("senderUserID");
+
+        }
+
 
     }
 
@@ -258,12 +410,11 @@ public class Chat extends AppCompatActivity {
 
         messagesRef.keepSynced(true);
 
-        chatAdapter = new ChatAdapter(Chat.this, messageList, dateKeeper);
+
         msgRecyclerView = (RecyclerView) findViewById(R.id.chat_recyclerview);
         linearLayoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setHasFixedSize(true);
         msgRecyclerView.setLayoutManager(linearLayoutManager);
-        msgRecyclerView.setAdapter(chatAdapter);
 
 
     }

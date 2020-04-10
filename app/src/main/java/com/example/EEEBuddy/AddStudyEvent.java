@@ -1,5 +1,6 @@
 package com.example.EEEBuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -51,7 +54,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
     //declare firebase stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
+    private DatabaseReference studyEventRef, messagesRef;
     private FirebaseUser user;
     private String userEmail, userNode;
 
@@ -229,6 +232,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
                 String source = createBtn.getText().toString().toLowerCase();
                 createStudyEvent(source);
+
             }
         });
 
@@ -274,75 +278,6 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
 
     }
 
-    private void createStudyEvent(String activity) {
-
-        String subjectCode = editTextSubjectCode.getText().toString().trim();
-        String subjectName = editTextSubjectName.getText().toString().trim();
-        String task = editTextTask.getText().toString().trim();
-        String location = editTextLocation.getText().toString().trim();
-        String date = editTextDate.getText().toString().trim();
-        String startTime = editTextStartTime.getText().toString().trim();
-        String endTime = editTextEndTime.getText().toString().trim();
-        String groupSize = editTextGroupSize.getText().toString().trim();
-
-
-
-
-        if(!TextUtils.isEmpty(subjectCode) && !TextUtils.isEmpty(subjectName) && !TextUtils.isEmpty(task) && !TextUtils.isEmpty(location)
-                && !TextUtils.isEmpty(date) && !TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime) && !TextUtils.isEmpty(groupSize)){
-
-
-            if(Integer.parseInt(groupSize) < 2){
-                editTextGroupSize.setError("Group Size must be more than 2 people");
-                return;
-            }
-
-
-            //getting a unique id using push().getKey() method //this unique key is the primary key for the event
-            databaseReference = firebaseDatabase.getInstance().getReference("Study Event");
-
-            if(activity.equals("update")){
-                eventID = in_eventID;
-
-            }else if (activity.equals("create")){
-                eventID = databaseReference.push().getKey();
-            }
-
-            //creating an StudyEvent Object
-            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, startTime, endTime, groupSize,userNode);
-
-            //saving data to firebase
-            //databaseReference = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
-            databaseReference.child(userNode).child(eventID).setValue(studyEvent);
-
-            //empty all text field
-            editTextSubjectCode.setText("");
-            editTextSubjectName.setText("");
-            editTextTask.setText("");
-            editTextLocation.setText("");
-            editTextDate.setText("");
-            editTextStartTime.setText("");
-            editTextEndTime.setText("");
-            editTextGroupSize.setText("");
-
-
-            if(activity.equals("update")){
-                Toast.makeText(AddStudyEvent.this, "Study Event Updated Successfully", Toast.LENGTH_LONG).show();
-
-            }else{
-                Toast.makeText(AddStudyEvent.this, "Study Event Created Successfully", Toast.LENGTH_LONG).show();
-
-            }
-
-            startActivity(new Intent(AddStudyEvent.this, StudyBuddyPage.class));
-
-        }else{
-
-            Toast.makeText(AddStudyEvent.this, "Please fill in all the fields", Toast.LENGTH_LONG).show();
-
-        }
-
-    }
 
 
     //show Date Pick Dialog
@@ -388,6 +323,112 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+    }
+
+
+    private void createStudyEvent(String activity) {
+
+        String subjectCode = editTextSubjectCode.getText().toString().trim();
+        String subjectName = editTextSubjectName.getText().toString().trim();
+        String task = editTextTask.getText().toString().trim();
+        String location = editTextLocation.getText().toString().trim();
+        String date = editTextDate.getText().toString().trim();
+        String startTime = editTextStartTime.getText().toString().trim();
+        String endTime = editTextEndTime.getText().toString().trim();
+        String groupSize = editTextGroupSize.getText().toString().trim();
+
+
+
+
+        if(!TextUtils.isEmpty(subjectCode) && !TextUtils.isEmpty(subjectName) && !TextUtils.isEmpty(task) && !TextUtils.isEmpty(location)
+                && !TextUtils.isEmpty(date) && !TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime) && !TextUtils.isEmpty(groupSize)){
+
+
+            if(Integer.parseInt(groupSize) < 2){
+                editTextGroupSize.setError("Group Size must be more than 2 people");
+                return;
+            }
+
+
+            //getting a unique id using push().getKey() method //this unique key is the primary key for the event
+            studyEventRef = firebaseDatabase.getInstance().getReference("Study Event");
+
+            if(activity.equals("update")){
+                eventID = in_eventID;
+
+            }else if (activity.equals("create")){
+                eventID = studyEventRef.push().getKey();
+            }
+
+            //creating an StudyEvent Object
+            StudyEvent studyEvent = new StudyEvent(subjectCode, subjectName, task, location, date, startTime, endTime, groupSize,userNode);
+
+            //saving data to firebase
+            //studyEventRef = firebaseDatabase.getInstance().getReference("Study Event").child(userNode);
+            studyEventRef.child(userNode).child(eventID).setValue(studyEvent);
+
+            //empty all text field
+            editTextSubjectCode.setText("");
+            editTextSubjectName.setText("");
+            editTextTask.setText("");
+            editTextLocation.setText("");
+            editTextDate.setText("");
+            editTextStartTime.setText("");
+            editTextEndTime.setText("");
+            editTextGroupSize.setText("");
+
+
+            if(activity.equals("update")){
+                Toast.makeText(AddStudyEvent.this, "Study Event Updated Successfully", Toast.LENGTH_LONG).show();
+
+            }else if(activity.equals("create")){
+                Toast.makeText(AddStudyEvent.this, "Study Event Created Successfully", Toast.LENGTH_LONG).show();
+
+                CreateStudyGroupChat(subjectCode, subjectName, date);
+
+            }
+
+            startActivity(new Intent(AddStudyEvent.this, StudyBuddyPage.class));
+
+        }else{
+
+            Toast.makeText(AddStudyEvent.this, "Please fill in all the fields", Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+
+    private void CreateStudyGroupChat(String subjectCode, String subjectName, String date) {
+
+        messagesRef = firebaseDatabase.getInstance().getReference("Messages").child("Group Chat").child(eventID);
+        messagesRef.child("groupInfo").child("groupName").setValue(subjectCode + " "  + subjectName + " " + date);
+        messagesRef.child("members").child(userNode).child("identity").setValue("admin")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        Toast.makeText(AddStudyEvent.this, "Study Group Chat is Created", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        //event creator creates the first message
+
+        //time when message is sent
+        Calendar calendarForDate = Calendar.getInstance();
+        SimpleDateFormat currentDate = new SimpleDateFormat("yyyy/MM/dd");
+        String messageSentDate = currentDate.format(calendarForDate.getTime());
+
+        Calendar calendarForTime = Calendar.getInstance();
+        SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm aa"); //aa for AM/PM
+        String messageSentTime = currentTime.format(calendarForTime.getTime());
+
+        String messageKey = messagesRef.child("messages").push().getKey();
+        messagesRef.child("messages").child(messageKey).child("date").setValue(messageSentDate);
+        messagesRef.child("messages").child(messageKey).child("time").setValue(messageSentTime);
+        messagesRef.child("messages").child(messageKey).child("message").setValue("Welcome to '" + subjectCode + " " + subjectName + "'Group Study Event!");
+        messagesRef.child("messages").child(messageKey).child("from").setValue(userNode);
+        messagesRef.child("messages").child(messageKey).child("type").setValue("text");
 
     }
 

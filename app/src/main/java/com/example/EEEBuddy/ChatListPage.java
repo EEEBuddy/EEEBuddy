@@ -26,6 +26,7 @@ import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,14 +40,15 @@ public class ChatListPage extends AppCompatActivity {
     private CircleImageView profileImage;
     private RecyclerView chatList_1to1_recycler, chatList_group_recycler;
     private ArrayList<ChatModel> chatList_1to1_array, chatList_group_array;
-    private ArrayList<String> receiverID_array;
+    private ArrayList<String> receiverID_array, all_groupID_array, selected_groupID_array;
     private ChatListAdapter adapter;
+    private GroupChatListAdapter groupChatListAdapter;
     //private HashMap<ArrayList<String>, ArrayList<ChatModel>> chatListHashMap = new HashMap<ArrayList<String>, ArrayList<ChatModel>>();
 
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference studentProfileRef, messagesRef;
+    private DatabaseReference studentProfileRef, messagesRef, studyEventRef, registeredEventRef;
     private String userEmail, userNode, receiverID;
 
     private SpaceNavigationView spaceNavigationView;
@@ -62,6 +64,8 @@ public class ChatListPage extends AppCompatActivity {
 
         Initialization();
         NavigationSetUp(savedInstanceState);
+        PrivateChatList();
+        GroupChatList();
 
         /*
 
@@ -91,11 +95,131 @@ public class ChatListPage extends AppCompatActivity {
 
          */
 
-        chatList_1to1_array = new ArrayList<ChatModel>();
-        chatList_1to1_recycler.setLayoutManager(new LinearLayoutManager(ChatListPage.this));
+
+
+    }
+
+    private void GroupChatList() {
 
         chatList_group_array = new ArrayList<ChatModel>();
         chatList_group_recycler.setLayoutManager(new LinearLayoutManager(ChatListPage.this));
+
+        all_groupID_array = new ArrayList<String>();
+
+
+        messagesRef = firebaseDatabase.getReference("Messages").child("Group Chat");
+        registeredEventRef = firebaseDatabase.getReference("Registered Event").child(userNode);
+        studyEventRef = firebaseDatabase.getReference("Study Event").child(userNode);
+
+        messagesRef.keepSynced(true);
+        registeredEventRef.keepSynced(true);
+        studyEventRef.keepSynced(true);
+
+        studyEventRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+
+                    all_groupID_array.clear();
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                        String groupID = ds.getKey();
+                        all_groupID_array.add(groupID);
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        registeredEventRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot ds2 : dataSnapshot.getChildren()){
+
+                        String groupID = ds2.getKey();
+                        all_groupID_array.add(groupID);
+
+                        MyGroupChat();
+                    }
+                }else{
+
+                    MyGroupChat();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void MyGroupChat(){
+
+        selected_groupID_array = new ArrayList<String>();
+
+        chatList_group_array.clear();
+        selected_groupID_array.clear();
+
+        for(final String item : all_groupID_array){
+
+            messagesRef.keepSynced(true);
+            messagesRef = firebaseDatabase.getReference("Messages").child("Group Chat");
+            messagesRef.child(item).child("members").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    if(dataSnapshot.hasChild(userNode)){
+
+                        messagesRef.child(item).child("messages").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                    selected_groupID_array.add(item);
+
+                                    ChatModel chatModel_groupChat = dataSnapshot.getValue(ChatModel.class);
+                                    chatList_group_array.add(chatModel_groupChat);
+
+                                //adapter here
+                                groupChatListAdapter = new GroupChatListAdapter(ChatListPage.this, chatList_group_array, selected_groupID_array);
+                                chatList_group_recycler.setAdapter(groupChatListAdapter);
+
+                                //groupChatListAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    private void PrivateChatList() {
+
+        chatList_1to1_array = new ArrayList<ChatModel>();
+        chatList_1to1_recycler.setLayoutManager(new LinearLayoutManager(ChatListPage.this));
+
 
         receiverID_array = new ArrayList<String>();
 
@@ -123,6 +247,7 @@ public class ChatListPage extends AppCompatActivity {
                 adapter = new ChatListAdapter(ChatListPage.this,chatList_1to1_array,receiverID_array);
                 chatList_1to1_recycler.setAdapter(adapter);
 
+                //adapter.notifyDataSetChanged();
             }
 
 
@@ -131,9 +256,6 @@ public class ChatListPage extends AppCompatActivity {
 
             }
         });
-
-
-
     }
 
     private void NavigationSetUp(Bundle savedInstanceState) {

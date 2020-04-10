@@ -218,15 +218,19 @@ public class StudyEventAdapter extends RecyclerView.Adapter<StudyEventAdapter.My
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                StudyEvent studyEvent = dataSnapshot.getValue(StudyEvent.class);
-                int groupSize = Integer.parseInt(studyEvent.getGroupSize());
+                if(dataSnapshot.exists()) {
 
-                if(groupSize == 0){
 
-                    holder.joinBtn.setText("FULL");
-                    holder.joinBtn.setEnabled(false);
-                    holder.joinBtn.setBackgroundResource(R.drawable.btn_disabled);
+                    StudyEvent studyEvent = dataSnapshot.getValue(StudyEvent.class);
+                    int groupSize = Integer.parseInt(studyEvent.getGroupSize());
 
+                    if (groupSize == 0) {
+
+                        holder.joinBtn.setText("FULL");
+                        holder.joinBtn.setEnabled(false);
+                        holder.joinBtn.setBackgroundResource(R.drawable.btn_disabled);
+
+                    }
                 }
             }
 

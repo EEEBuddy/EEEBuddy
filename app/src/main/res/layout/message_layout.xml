@@ -17,6 +17,7 @@
             android:gravity="center"/>
 
     <RelativeLayout
+        android:id="@+id/message_innerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp">
@@ -27,6 +28,7 @@
             android:layout_height="45dp"
             android:background="@drawable/profile_pic"/>
 
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/message_sender_profileImg"
             android:layout_width="45dp"
@@ -35,12 +37,26 @@
             android:layout_alignParentEnd="true"/>
 
 
+
         <LinearLayout
+            android:id="@+id/message_receiverMsg_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/message_receiver_profileImg"
             android:orientation="vertical">
 
+
+            <TextView
+                android:id="@+id/message_receiverName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="name"
+                android:fontFamily="@font/roboto"
+                android:textSize="14sp"
+                android:textColor="@color/mainFontColor"
+                android:layout_gravity="left"
+                android:layout_marginLeft="10dp"
+                android:visibility="gone"/>
 
 
             <TextView

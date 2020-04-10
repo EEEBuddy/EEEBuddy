@@ -3,9 +3,15 @@ package com.example.EEEBuddy;
 
 public class ChatModel {
     public String date, time, type, message, from;
+    public String groupName, groupProfileImage;
 
     public ChatModel(){
 
+    }
+
+    public ChatModel(String groupName, String groupProfileImage){
+        this.groupName = groupName;
+        this.groupProfileImage = groupProfileImage;
     }
 
     public ChatModel(String date, String time, String type, String message, String from) {
@@ -54,5 +60,21 @@ public class ChatModel {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getGroupProfileImage() {
+        return groupProfileImage;
+    }
+
+    public void setGroupProfileImage(String groupProfileImage) {
+        this.groupProfileImage = groupProfileImage;
     }
 }

@@ -32,7 +32,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder> {
+public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.MessageViewHolder> {
 
     Context context;
     ArrayList<ChatModel> messageList;
@@ -46,7 +46,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     Date previousDate, currentDate;
 
 
-    public ChatAdapter(Context context, ArrayList<ChatModel> messageList, ArrayList<String> dateKeeper){
+    public GroupChatAdapter(Context context, ArrayList<ChatModel> messageList, ArrayList<String> dateKeeper){
         this.context = context;
         this.messageList = messageList;
         this.dateKeeper = dateKeeper;
@@ -101,6 +101,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
             previous_message_date = "none";
         }
 
+
+
         holder.receiverMsgView.setVisibility(View.INVISIBLE);
         holder.receiverProfileImg.setVisibility(View.INVISIBLE);
         holder.senderMsgView.setVisibility(View.INVISIBLE);
@@ -108,46 +110,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         holder.receiverMsgView_time.setVisibility(View.INVISIBLE);
         holder.senderMsgView_time.setVisibility(View.INVISIBLE);
         holder.date.setVisibility(View.INVISIBLE);
+        holder.receiverName.setVisibility(View.INVISIBLE);
 
-
-        studentProfileRef = firebaseDatabase.getReference().child("Student Profile");
-        studentProfileRef.child(senderID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.exists()){
-
-                    String profileImgUrl = dataSnapshot.child("profileImageUrl").getValue().toString().trim();
-                    Picasso.get().load(profileImgUrl).into(holder.senderProfileImg);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-        studentProfileRef.child(messageFrom).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.exists()){
-
-                    String profileImgUrl = dataSnapshot.child("profileImageUrl").getValue().toString().trim();
-                    Picasso.get().load(profileImgUrl).into(holder.receiverProfileImg);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
 
 
@@ -157,11 +121,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
                 holder.date.setVisibility(View.VISIBLE);
                 holder.receiverMsgView.setVisibility(View.INVISIBLE);
-                holder.receiverProfileImg.setVisibility(View.INVISIBLE);
+                //holder.receiverProfileImg.setVisibility(View.INVISIBLE);
                 holder.receiverMsgView_time.setVisibility(View.INVISIBLE);
+
                 holder.senderMsgView.setVisibility(View.VISIBLE);
-                holder.senderProfileImg.setVisibility(View.VISIBLE);
                 holder.senderMsgView_time.setVisibility(View.VISIBLE);
+                //holder.senderProfileImg.setVisibility(View.VISIBLE);
+
 
 
                 holder.senderMsgView.setBackgroundResource(R.drawable.sender_message_bubble);
@@ -188,16 +154,40 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
                 holder.date.setVisibility(View.VISIBLE);
                 holder.receiverMsgView.setVisibility(View.VISIBLE);
-                holder.receiverProfileImg.setVisibility(View.VISIBLE);
+                //holder.receiverProfileImg.setVisibility(View.VISIBLE);
                 holder.receiverMsgView_time.setVisibility(View.VISIBLE);
+                holder.receiverName.setVisibility(View.VISIBLE);
+
                 holder.senderMsgView.setVisibility(View.INVISIBLE);
-                holder.senderProfileImg.setVisibility(View.INVISIBLE);
+                //holder.senderProfileImg.setVisibility(View.INVISIBLE);
                 holder.senderMsgView_time.setVisibility(View.INVISIBLE);
+
+
 
                 holder.receiverMsgView.setBackgroundResource(R.drawable.receiver_message_bubble);
                 holder.receiverMsgView.setGravity(Gravity.LEFT);
                 holder.receiverMsgView.setText(chatModel.getMessage());
                 holder.receiverMsgView_time.setText(chatModel.getTime());
+
+                studentProfileRef = FirebaseDatabase.getInstance().getReference("Student Profile");
+
+                studentProfileRef.child(messageFrom).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.exists()){
+
+                            String name = dataSnapshot.child("name").getValue().toString().trim();
+                            holder.receiverName.setText(name);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
 
                 if(previous_message_date.equals("none") || currentDate.compareTo(previousDate) > 0){
@@ -221,9 +211,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
     public class MessageViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView senderMsgView, receiverMsgView, senderMsgView_time, receiverMsgView_time, date;
+        public TextView senderMsgView, receiverMsgView, senderMsgView_time, receiverMsgView_time, date, receiverName;
         public CircleImageView senderProfileImg, receiverProfileImg;
         public  ScrollView msgScrollView;
+        public RelativeLayout messageLayout;
 
 
         public MessageViewHolder(@NonNull View itemView) {
@@ -239,6 +230,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
             senderProfileImg = (CircleImageView) itemView.findViewById(R.id.message_sender_profileImg);
             receiverProfileImg = (CircleImageView) itemView.findViewById(R.id.message_receiver_profileImg);
+
+
+            receiverName = (TextView) itemView.findViewById(R.id.message_receiverName);
+
+            messageLayout = (RelativeLayout) itemView.findViewById(R.id.message_innerLayout);
+
+            messageLayout.removeView(receiverProfileImg);
+            messageLayout.removeView(senderProfileImg);
+
+            //reset the margin of sender text bubble
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)senderMsgView.getLayoutParams();
+            params.setMargins(55, 0, 5, 0); 
+            senderMsgView.setLayoutParams(params);
 
 
         }
