@@ -1,5 +1,6 @@
 package com.example.EEEBuddy;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -32,11 +37,11 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
     Context context;
     ArrayList<StudyEvent> myUpcomingEventList; //StudyEvent Model
     ArrayList<String> keyArray;
-    DatabaseReference studyEventRef;
-    String userNode;
+    DatabaseReference studyEventRef, messageRef, registerdEventRef;
+    String userNode, button_state, status;
 
 
-    public MyUpcomingEventAdapter (Context context, ArrayList<StudyEvent> myUpcomingEventList, ArrayList<String> keyArray, String userNode) {
+    public MyUpcomingEventAdapter(Context context, ArrayList<StudyEvent> myUpcomingEventList, ArrayList<String> keyArray, String userNode) {
         this.context = context;
         this.myUpcomingEventList = myUpcomingEventList;
         this.keyArray = keyArray;
@@ -48,12 +53,14 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.card_my_upcoming_event,parent, false));
+        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.card_my_upcoming_event, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
+        String tempKey = keyArray.get(position);
+        MaintenanceOfButton(tempKey, holder);
 
 
         holder.subjectCode.setText(myUpcomingEventList.get(position).getSubjectCode());
@@ -106,7 +113,7 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
 
                 String eventID = keyArray.get(position);
 
-                Intent intent = new Intent (context, AddStudyEvent.class);
+                Intent intent = new Intent(context, AddStudyEvent.class);
                 intent.putExtra("eventID", eventID);
                 intent.putExtra("from", "UpdateStudyEventActivity");
                 intent.putExtra("subjectCode", myUpcomingEventList.get(position).getSubjectCode());
@@ -123,22 +130,38 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
             }
         });
 
-        holder.swipeDelete.setOnClickListener(new View.OnClickListener() {
+        holder.swipeWithdraw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String tempKey = keyArray.get(position);
+                final String tempKey = keyArray.get(position);
 
-                studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
 
-                studyEventRef.child(userNode).child(tempKey).removeValue()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
+                messageRef = FirebaseDatabase.getInstance().getReference("Messages").child("Group Chat").child(tempKey).child("members");
 
-                                Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
-                            }
-                        });
+                status = holder.swipeWithdraw.getText().toString().toLowerCase();
+
+                if (status.equals("withdraw")) {
+                    //event creators can withdraw themselves
+                    holder.contentLayout.setBackgroundResource(R.color.gray);
+                    holder.hint.setVisibility(View.VISIBLE);
+                    holder.swipeWithdraw.setText("Join");
+
+                    messageRef.child(userNode).removeValue();
+
+
+                } else if (status.equals("join")) {
+
+                    //event creators can add themselves back after withdrawal
+
+                    holder.contentLayout.setBackgroundResource(R.color.white_with_alpha);
+                    holder.hint.setVisibility(View.INVISIBLE);
+                    holder.swipeWithdraw.setText("Withdraw");
+
+                    messageRef.child(userNode).child("identity").setValue("admin");
+
+
+                }
 
             }
         });
@@ -151,11 +174,12 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
     }
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView subjectCode, subjectName, task, location, date, time, groupSize;
+        TextView subjectCode, subjectName, task, location, date, time, groupSize, hint;
         SwipeLayout swipeLayout;
-        TextView swipeEdit, swipeDelete;
+        TextView swipeEdit, swipeWithdraw;
+        RelativeLayout contentLayout;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -171,9 +195,47 @@ public class MyUpcomingEventAdapter extends RecyclerView.Adapter<MyUpcomingEvent
 
             swipeLayout = (SwipeLayout) itemView.findViewById(R.id.my_event_swipeLayout);
             swipeEdit = (TextView) itemView.findViewById(R.id.my_event_swipe_edit);
-            swipeDelete = (TextView) itemView.findViewById(R.id.my_event_swipe_delete);
+            swipeWithdraw = (TextView) itemView.findViewById(R.id.my_event_swipe_delete);
+
+            contentLayout = (RelativeLayout) itemView.findViewById(R.id.my_event_contentLayout);
+            hint = (TextView) itemView.findViewById(R.id.my_event_hint);
+
+            swipeWithdraw.setText("Withdraw");
 
         }
+    }
+
+
+    public void MaintenanceOfButton(final String tempKey, final MyUpcomingEventAdapter.MyViewHolder holder) {
+
+        DatabaseReference messageRef;
+        messageRef = FirebaseDatabase.getInstance().getReference("Messages").child("Group Chat").child(tempKey).child("members");
+
+        messageRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                if (dataSnapshot.hasChild(userNode)) {
+                    button_state = "joined";
+                    holder.swipeWithdraw.setText("Withdraw");
+                    holder.swipeWithdraw.setTextSize(16f);
+
+
+                } else {
+                    button_state = "withdrawn";
+                    holder.swipeWithdraw.setText("Join");
+                    holder.contentLayout.setBackgroundResource(R.color.gray);
+                    holder.hint.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 

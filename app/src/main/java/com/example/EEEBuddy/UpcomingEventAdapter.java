@@ -31,7 +31,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
     ArrayList<StudyEvent> upcomingEventList; //StudyEvent Model
     ArrayList<String> keyArray;
     String userNode, createdBy;
-    DatabaseReference registeredEventRef, studyEventRef;
+    DatabaseReference registeredEventRef, studyEventRef, messageRef;
 
     public UpcomingEventAdapter(Context context, ArrayList<StudyEvent> upcomingEventList, ArrayList<String> keyArray, String userNode) {
         this.context = context;
@@ -112,6 +112,18 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 
                                 if(task.isSuccessful()){
                                     Toast.makeText(context, "Event Deleted", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                messageRef = FirebaseDatabase.getInstance().getReference("Messages");
+                messageRef.child("Group Chat").child(tempKey).child("members").child(userNode).removeValue()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+                                if(task.isSuccessful()){
+                                    Toast.makeText(context,"group chat deleted", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });

@@ -4,6 +4,7 @@ package com.example.EEEBuddy;
 public class ChatModel {
     public String date, time, type, message, from;
     public String groupName, groupProfileImage;
+    public String status, identity;
 
     public ChatModel(){
 
@@ -76,5 +77,21 @@ public class ChatModel {
 
     public void setGroupProfileImage(String groupProfileImage) {
         this.groupProfileImage = groupProfileImage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 }

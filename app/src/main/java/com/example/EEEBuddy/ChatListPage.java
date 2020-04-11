@@ -149,12 +149,15 @@ public class ChatListPage extends AppCompatActivity {
                         String groupID = ds2.getKey();
                         all_groupID_array.add(groupID);
 
-                        MyGroupChat();
                     }
+
+                    MyGroupChat();
+
                 }else{
 
                     MyGroupChat();
                 }
+
             }
 
             @Override
@@ -195,7 +198,6 @@ public class ChatListPage extends AppCompatActivity {
                                 groupChatListAdapter = new GroupChatListAdapter(ChatListPage.this, chatList_group_array, selected_groupID_array);
                                 chatList_group_recycler.setAdapter(groupChatListAdapter);
 
-                                //groupChatListAdapter.notifyDataSetChanged();
                             }
 
                             @Override

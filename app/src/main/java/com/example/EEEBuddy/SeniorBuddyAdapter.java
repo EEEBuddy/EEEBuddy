@@ -71,6 +71,8 @@ public class SeniorBuddyAdapter extends RecyclerView.Adapter<SeniorBuddyAdapter.
                 intent.putExtra("gender", seniorBuddyList.get(position).getGender());
                 intent.putExtra("year", seniorBuddyList.get(position).getYear());
                 intent.putExtra("profileImg", imageUrl);
+                intent.putExtra("seniorBuddyPage", "yes");
+
 
                 context.startActivity(intent);
             }

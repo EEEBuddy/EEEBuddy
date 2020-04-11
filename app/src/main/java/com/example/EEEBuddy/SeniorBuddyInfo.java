@@ -313,6 +313,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                     messageBtn.setEnabled(true);
 
                     Intent chatIntent = new Intent(SeniorBuddyInfo.this, Chat.class);
+                    chatIntent.putExtra("from", "1to1Chat");
                     chatIntent.putExtra("senderUserID", userNode);
                     chatIntent.putExtra("receiverUserID", chat_receiverUserID);
                     chatIntent.putExtra("receiverName", chat_receiverName);
@@ -1023,7 +1024,16 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             chat_receiverProfileImgUrl = reImgUrl;
             chat_senderID = userNode;
 
-        } else {
+        } else if (getIntent().hasExtra("email")
+                && getIntent().hasExtra("name")
+                && getIntent().hasExtra("course")
+                && getIntent().hasExtra("hall")
+                && getIntent().hasExtra("gender")
+                && getIntent().hasExtra("profileImg")
+                && getIntent().hasExtra("year")
+                && getIntent().hasExtra("seniorBuddyPage")
+
+        ) {
 
             reEmail = getIntent().getStringExtra("email");
             reName = getIntent().getStringExtra("name");
@@ -1032,6 +1042,12 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             reGender = getIntent().getStringExtra("gender");
             reImgUrl = getIntent().getStringExtra("profileImg");
             reYear = getIntent().getStringExtra("year");
+
+            chat_receiverUserID = reEmail.substring(0, reEmail.indexOf("@"));
+            chat_receiverName = reName;
+            chat_receiverProfileImgUrl = reImgUrl;
+            chat_senderID = userNode;
+
 
         }
 

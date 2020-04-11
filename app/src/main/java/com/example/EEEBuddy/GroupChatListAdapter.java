@@ -1,5 +1,6 @@
 package com.example.EEEBuddy;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -49,7 +50,7 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
 
     private Date parsedCurrentDate, parsedSentDate;
     private long diffDays;
-    private String button_state = "upcoming";
+    private boolean button_state;
 
 
     public GroupChatListAdapter(Context context, ArrayList<ChatModel> chatList_group_array, ArrayList<String> selected_groupID_array) {
@@ -222,7 +223,9 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
             @Override
             public void onClick(View v) {
 
-                if (button_state.equals("passed")) {
+                button_state = holder.swipeDelete.isEnabled();
+
+                if (button_state == true) {
 
                     holder.swipeDelete.setEnabled(true);
 
@@ -234,15 +237,11 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
                             if (task.isSuccessful()) {
 
                                 Toast.makeText(context, "Chat Deleted", Toast.LENGTH_LONG).show();
-                                messagesRef = messagesRef = firebaseDatabase.getReference("Messages");
-                                messagesRef.keepSynced(true);
+
+                                context.startActivity(new Intent(context, ChatListPage.class));
                             }
                         }
                     });
-                } else if (button_state.equals("upcoming")) {
-
-                    holder.swipeDelete.setEnabled(false);
-                    holder.swipeDelete.setBackgroundResource(R.color.gray);
                 }
 
             }
@@ -303,12 +302,10 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
 
                         if (formattedEventTime.compareTo(currentTime) > 0) {
 
-                            button_state = "upcoming";
                             holder.swipeDelete.setEnabled(false);
                             holder.swipeDelete.setBackgroundResource(R.color.gray);
                         } else {
 
-                            button_state = "passed";
                             holder.swipeDelete.setEnabled(true);
 
                         }
@@ -354,12 +351,10 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
 
                                 if (formattedEventTime.compareTo(currentTime) > 0) {
 
-                                    button_state = "upcoming";
                                     holder.swipeDelete.setEnabled(false);
                                     holder.swipeDelete.setBackgroundResource(R.color.gray);
                                 } else {
 
-                                    button_state = "passed";
                                     holder.swipeDelete.setEnabled(true);
 
                                 }

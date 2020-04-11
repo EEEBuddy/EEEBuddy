@@ -212,6 +212,8 @@ public class BuddyManagementPage extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             Intent chatIntent = new Intent(BuddyManagementPage.this, Chat.class);
+
+                            chatIntent.putExtra("from", "1to1Chat");
                             chatIntent.putExtra("senderUserID", userNode);
                             chatIntent.putExtra("receiverUserID", receiverUserID);
                             chatIntent.putExtra("receiverName", receiverName);

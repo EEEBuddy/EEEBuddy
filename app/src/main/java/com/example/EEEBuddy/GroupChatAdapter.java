@@ -241,8 +241,9 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.Mess
 
             //reset the margin of sender text bubble
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)senderMsgView.getLayoutParams();
-            params.setMargins(55, 0, 5, 0); 
+            params.setMargins(55, 0, 5, 0);
             senderMsgView.setLayoutParams(params);
+            senderMsgView_time.setLayoutParams(params);
 
 
         }

@@ -130,20 +130,23 @@ public class UpcomingEventFragment extends Fragment{
                                     //arraySize++;
                                 }
 
+                                //if no upcoming event show hints
+                                // if(arraySize == 0 && loopCount != 1){
+                                registeredEventRef.keepSynced(true);
+                                /*
+                                if(upcomingEventList.size()==0){
+                                    hint = view.findViewById(R.id.upcoming_event_hint);
+                                    hint.setVisibility(View.VISIBLE);
+
+                                    gif = view.findViewById(R.id.upcoming_event_gif);
+                                    gif.setVisibility(View.VISIBLE);
+                                    Glide.with(UpcomingEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
+                                }
+
+                                 */
+
                             } catch (ParseException e) {
                                 e.printStackTrace();
-                            }
-
-                            //if no upcoming event show hints
-                           // if(arraySize == 0 && loopCount != 1){
-                            registeredEventRef.keepSynced(true);
-                            if(upcomingEventList.size()==0){
-                                hint = view.findViewById(R.id.upcoming_event_hint);
-                                hint.setVisibility(View.VISIBLE);
-
-                                gif = view.findViewById(R.id.upcoming_event_gif);
-                                gif.setVisibility(View.VISIBLE);
-                                Glide.with(UpcomingEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
                             }
 
                             adapter = new UpcomingEventAdapter(getActivity(), upcomingEventList, keyArray, userNode);
