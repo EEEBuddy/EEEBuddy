@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".SeniorBuddyPage">
-
-
-
 
 
     <!--
@@ -62,59 +58,74 @@
     </androidx.appcompat.widget.Toolbar>
     -->
 
-    <include layout="@layout/toolbar" android:id="@+id/seniorbuddy_toolbar"/>
+    <include
+        android:id="@+id/seniorbuddy_toolbar"
+        layout="@layout/toolbar" />
 
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+        android:layout_height="wrap_content">
+    </androidx.viewpager.widget.ViewPager>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/seniorbuddy_tablayout"
+        app:tabInlineLabel="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/seniorbuddy_toolbar"
         android:background="#fff"
-        app:tabSelectedTextColor="@color/purple"
-        app:tabTextColor="#4D7152f2"
         app:tabIndicatorColor="@color/purple"
-        android:layout_below="@+id/seniorbuddy_toolbar">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/seniorbuddy_recomm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ALL Senior Buddy"
-            android:fontFamily="@font/roboto"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+        app:tabSelectedTextColor="@color/purple"
+        app:tabTextColor="#4D7152f2">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/seniorbuddy_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Buddy Requests"
             android:fontFamily="@font/roboto"
+            android:text="ALL Senior Buddy"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
-       <!-- <com.google.android.material.tabs.TabItem
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/seniorbuddy_request"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Senior Buddy"
             android:fontFamily="@font/roboto"
+            android:text="Buddy Requests"
             android:textSize="18sp"
-            android:textStyle="bold"/> -->
+            android:textStyle="bold">
+
+
+        </com.google.android.material.tabs.TabItem>
+
+        <!-- <com.google.android.material.tabs.TabItem
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="My Senior Buddy"
+             android:fontFamily="@font/roboto"
+             android:textSize="18sp"
+             android:textStyle="bold"/> -->
 
     </com.google.android.material.tabs.TabLayout>
 
+    <ImageView
+        android:id="@+id/seniorbuddy_reminder"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:srcCompat="@drawable/bell"
+        android:layout_marginLeft="365dp"
+        android:layout_marginTop="88dp"
+        android:visibility="gone"/>
+
     <include
-        layout="@layout/navigation"
         android:id="@+id/seniorbuddy_nav"
+        layout="@layout/navigation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/seniorbuddy_tablayout"
-        />
+        android:layout_below="@+id/seniorbuddy_tablayout" />
 
 </RelativeLayout>

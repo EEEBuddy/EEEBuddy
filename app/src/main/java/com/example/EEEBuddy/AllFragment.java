@@ -10,23 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Spinner;
@@ -34,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,17 +37,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -69,6 +58,7 @@ public class AllFragment extends Fragment {
     private ImageView backBtn, filterIcon;
     private TextView title;
     private TextView clearFilter, applyText;
+    boolean yearOne, hasSeniorBuddy;
 
 
     //declare database stuff
@@ -92,6 +82,9 @@ public class AllFragment extends Fragment {
     private String calExp = "";
 
 
+    //dialogbox
+    private TextView message1, message2, note;
+    private Button cancleBtn, confirmBtn;
 
 
     public AllFragment() {
@@ -127,7 +120,14 @@ public class AllFragment extends Fragment {
         applyText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SeniorBuddyApplication();
+
+                String text = applyText.getText().toString().toLowerCase();
+                if (text.equals("apply")) {
+                    SeniorBuddyApplication();
+
+                } else if (text.equals("withdraw")) {
+                    SeniorBuddyWithdraw();
+                }
             }
         });
 
@@ -152,6 +152,7 @@ public class AllFragment extends Fragment {
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
 
 
+        MaintenanceOfButton();
 
 
         seniorBuddyRef.addValueEventListener(new ValueEventListener() {
@@ -212,7 +213,6 @@ public class AllFragment extends Fragment {
 
         return view;
     }
-
 
 
     private void Search(String searchString) {
@@ -300,127 +300,126 @@ public class AllFragment extends Fragment {
 
         for (final SeniorBuddyModel object : seniorBuddyList) {
 
-                //get date joined as senior buddy, calculate experience
-                userEmail = object.getEmail();
-                String ID = userEmail.substring(0, userEmail.indexOf("@"));
+            //get date joined as senior buddy, calculate experience
+            userEmail = object.getEmail();
+            String ID = userEmail.substring(0, userEmail.indexOf("@"));
 
-                seniorBuddyRef.child(ID).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
-                        joinDate = seniorBuddyModel.getJoinedDate();
+            seniorBuddyRef.child(ID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
+                    joinDate = seniorBuddyModel.getJoinedDate();
 
-                        try {
-                            if(exp != "no preference"){
+                    try {
+                        if (exp != "no preference") {
 
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                Date today = sdf.parse(sdf.format(new Date()));
-                                Date parsedJoindedDate = sdf.parse(joinDate);
-                                long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
-                                long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
-                                long diffMonth = diffDays/30;
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            Date today = sdf.parse(sdf.format(new Date()));
+                            Date parsedJoindedDate = sdf.parse(joinDate);
+                            long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
+                            long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
+                            long diffMonth = diffDays / 30;
 
-                                if (diffMonth <= 12) {
-                                    calExp = "freshy";
+                            if (diffMonth <= 12) {
+                                calExp = "freshy";
 
-                                } else if (diffMonth > 12 && diffMonth <= 24) {
-                                    calExp = "senior";
-                                } else{
-                                    calExp = "expert";
-                                }
-                            }else {
-                                calExp = exp;
+                            } else if (diffMonth > 12 && diffMonth <= 24) {
+                                calExp = "senior";
+                            } else {
+                                calExp = "expert";
                             }
-
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+                        } else {
+                            calExp = exp;
                         }
 
-                        if(course.equals("") &&
-                                object.getHall().toLowerCase().equals(hall) &&
-                                object.getGender().toLowerCase().equals(gender) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
 
-                        }else if(hall.equals("no preference") &&
-                                object.getCourse().toLowerCase().equals(course) &&
-                                object.getGender().toLowerCase().equals(gender) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-
-                        }else if(gender.equals("no preference") &&
-                                object.getCourse().toLowerCase().equals(course) &&
-                                object.getHall().toLowerCase().equals(hall) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-
-                        }else if(course.equals("") && hall.equals("no preference") &&
-                                object.getGender().toLowerCase().equals(gender) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-
-                        }else if(course.equals("") && gender.equals("no preference") &&
-                                object.getHall().toLowerCase().equals(hall) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-
-                        }else if(course.equals("") && exp.equals("no preference") &&
-                                object.getHall().toLowerCase().equals(hall) &&
-                                object.getGender().toLowerCase().equals(gender)){
-                            filterResultList.add(object);
-
-                        }else if(hall.equals("no preference") && gender.equals("no preference") &&
-                                object.getCourse().toLowerCase().equals(course) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-
-                        }else if(hall.equals("no preference") && exp.equals("no preference")&&
-                                object.getCourse().toLowerCase().equals(course) &&
-                                object.getGender().toLowerCase().equals(gender)){
-                            filterResultList.add(object);
-
-                        }else if(gender.equals("no preference") && exp.equals("no preference") &&
-                                object.getCourse().toLowerCase().equals(course) &&
-                                object.getHall().toLowerCase().equals(hall)){
-
-                            filterResultList.add(object);
-                        }else if(course.equals("") && hall.equals("no preference") && gender.equals("no preference") &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-
-                        }else if(course.equals("") && hall.equals("no preference") && exp.equals("no preference") &&
-                                object.getGender().toLowerCase().equals(gender)){
-                            filterResultList.add(object);
-
-                        }else if(course.equals("") && gender.equals("no preference") && exp.equals("no preference") &&
-                                object.getHall().toLowerCase().equals(hall)){
-                            filterResultList.add(object);
-
-                        }else if(hall.equals("no preference") && gender.equals("no preference")  && exp.equals("no preference")  &&
-                                object.getCourse().toLowerCase().equals(course)){
-                            filterResultList.add(object);
-
-                        }else if(course.equals("") && hall.equals("no preference") && gender.equals("no preference") && exp.equals("no preference")){
-                            Toast.makeText(getActivity(), "indicate at least one field", Toast.LENGTH_LONG).show();
-
-                        }else if(object.getCourse().toLowerCase().equals(course) &&
-                                object.getHall().toLowerCase().equals(hall) &&
-                                object.getGender().toLowerCase().equals(gender) &&
-                                calExp.equals(exp)){
-                            filterResultList.add(object);
-                        }
-
-                        adapter2 = new SeniorBuddyAdapter(getActivity(), filterResultList);
-                        recyclerView.setAdapter(adapter2);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    if (course.equals("") &&
+                            object.getHall().toLowerCase().equals(hall) &&
+                            object.getGender().toLowerCase().equals(gender) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
 
+                    } else if (hall.equals("no preference") &&
+                            object.getCourse().toLowerCase().equals(course) &&
+                            object.getGender().toLowerCase().equals(gender) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
+
+                    } else if (gender.equals("no preference") &&
+                            object.getCourse().toLowerCase().equals(course) &&
+                            object.getHall().toLowerCase().equals(hall) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
+
+                    } else if (course.equals("") && hall.equals("no preference") &&
+                            object.getGender().toLowerCase().equals(gender) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
+
+                    } else if (course.equals("") && gender.equals("no preference") &&
+                            object.getHall().toLowerCase().equals(hall) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
+
+                    } else if (course.equals("") && exp.equals("no preference") &&
+                            object.getHall().toLowerCase().equals(hall) &&
+                            object.getGender().toLowerCase().equals(gender)) {
+                        filterResultList.add(object);
+
+                    } else if (hall.equals("no preference") && gender.equals("no preference") &&
+                            object.getCourse().toLowerCase().equals(course) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
+
+                    } else if (hall.equals("no preference") && exp.equals("no preference") &&
+                            object.getCourse().toLowerCase().equals(course) &&
+                            object.getGender().toLowerCase().equals(gender)) {
+                        filterResultList.add(object);
+
+                    } else if (gender.equals("no preference") && exp.equals("no preference") &&
+                            object.getCourse().toLowerCase().equals(course) &&
+                            object.getHall().toLowerCase().equals(hall)) {
+
+                        filterResultList.add(object);
+                    } else if (course.equals("") && hall.equals("no preference") && gender.equals("no preference") &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
+
+                    } else if (course.equals("") && hall.equals("no preference") && exp.equals("no preference") &&
+                            object.getGender().toLowerCase().equals(gender)) {
+                        filterResultList.add(object);
+
+                    } else if (course.equals("") && gender.equals("no preference") && exp.equals("no preference") &&
+                            object.getHall().toLowerCase().equals(hall)) {
+                        filterResultList.add(object);
+
+                    } else if (hall.equals("no preference") && gender.equals("no preference") && exp.equals("no preference") &&
+                            object.getCourse().toLowerCase().equals(course)) {
+                        filterResultList.add(object);
+
+                    } else if (course.equals("") && hall.equals("no preference") && gender.equals("no preference") && exp.equals("no preference")) {
+                        Toast.makeText(getActivity(), "indicate at least one field", Toast.LENGTH_LONG).show();
+
+                    } else if (object.getCourse().toLowerCase().equals(course) &&
+                            object.getHall().toLowerCase().equals(hall) &&
+                            object.getGender().toLowerCase().equals(gender) &&
+                            calExp.equals(exp)) {
+                        filterResultList.add(object);
                     }
-                });
 
+                    adapter2 = new SeniorBuddyAdapter(getActivity(), filterResultList);
+                    recyclerView.setAdapter(adapter2);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
 
 
         }
@@ -431,87 +430,99 @@ public class AllFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         final FirebaseUser user = firebaseAuth.getCurrentUser();
-        final String userKey = user.getEmail().substring(0,user.getEmail().indexOf("@"));
-        final boolean[] yearOne = {false};
+        final String userKey = user.getEmail().substring(0, user.getEmail().indexOf("@"));
 
-            studentProfileRef = firebaseDatabase.getInstance().getReference("Student Profile");
-            studentProfileRef.child(userKey).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
-                    Integer year = Integer.parseInt(seniorBuddyModel.getYear());
 
-                    if(year.equals(1)){
-                        yearOne[0] = true;
-                    }
+
+        studentProfileRef = firebaseDatabase.getInstance().getReference("Student Profile");
+        studentProfileRef.child(userKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
+                Integer year = Integer.parseInt(seniorBuddyModel.getYear());
+
+                if (year.equals(1)) {
+                    yearOne = true;
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                if(dataSnapshot.child("seniorBuddy").exists()){
+
+                    hasSeniorBuddy = true;
                 }
-            });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
         seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
+
         seniorBuddyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    if(dataSnapshot.hasChild(userKey)){
-                        Toast.makeText(getActivity(), "You have already registered as senior buddy, check out at Account page", Toast.LENGTH_LONG).show();
+                if (dataSnapshot.hasChild(userKey)) {
+                    Toast.makeText(getActivity(), "You have already registered as senior buddy, check out at Account page", Toast.LENGTH_LONG).show();
 
-                    }else if(yearOne[0]){
-                        Toast.makeText(getActivity(), "Only Year 2 or above are allowed to apply as senior buddy", Toast.LENGTH_LONG).show();
+                }else if(hasSeniorBuddy == true){
+                    Toast.makeText(getActivity(), "Only students WITHOUT Senior buddy can apply as a Senior Buddy", Toast.LENGTH_LONG).show();
 
-                    } else{
+                }else if (yearOne == true) {
+                    Toast.makeText(getActivity(), "Only Year 2 or above are allowed to apply as senior buddy", Toast.LENGTH_LONG).show();
 
-                        Date date = new Date();
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        final String applicationDate = sdf.format(date);
+                }else if(!(dataSnapshot.hasChild(userNode))){
 
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        //LayoutInflater inflater = getLayoutInflater();
-                        final View dialogView = inflater.inflate(R.layout.card_applicaition_form, null);
-                        dialogBuilder.setView(dialogView);
+                    Date date = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                    final String applicationDate = sdf.format(date);
 
-                        final AlertDialog applicationDialog = dialogBuilder.create();
-                        applicationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        applicationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        applicationDialog.show();
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    //LayoutInflater inflater = getLayoutInflater();
+                    final View dialogView = inflater.inflate(R.layout.card_applicaition_form, null);
+                    dialogBuilder.setView(dialogView);
 
-                        final EditText editTextSelfIntro = dialogView.findViewById(R.id.apply_intro);
-                        Button applyBtn = dialogView.findViewById(R.id.apply_applybtn);
-                        ImageView closeBtn = dialogView.findViewById(R.id.apply_closeBtn);
+                    final AlertDialog applicationDialog = dialogBuilder.create();
+                    applicationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    applicationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    applicationDialog.show();
 
-                        //add record into database
-                        applyBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                    final EditText editTextSelfIntro = dialogView.findViewById(R.id.apply_intro);
+                    Button applyBtn = dialogView.findViewById(R.id.apply_applybtn);
+                    ImageView closeBtn = dialogView.findViewById(R.id.apply_closeBtn);
 
-                                String selfIntro = editTextSelfIntro.getText().toString();
+                    //add record into database
+                    applyBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                                if(!TextUtils.isEmpty(selfIntro)){
-                                    seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
-                                    SeniorBuddyModel registration = new SeniorBuddyModel(selfIntro, applicationDate);
-                                    seniorBuddyRef.child(userKey).setValue(registration);
-                                    Toast.makeText(getActivity(), "Successfully Registered", Toast.LENGTH_LONG).show();
-                                    applicationDialog.dismiss();
+                            String selfIntro = editTextSelfIntro.getText().toString();
 
-                                }else{
-                                    Toast.makeText(getActivity(), "Introduction cannot be empty", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                        closeBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                            if (!TextUtils.isEmpty(selfIntro)) {
+                                seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
+                                SeniorBuddyModel registration = new SeniorBuddyModel(selfIntro, applicationDate);
+                                seniorBuddyRef.child(userKey).setValue(registration);
+                                Toast.makeText(getActivity(), "Successfully Registered", Toast.LENGTH_LONG).show();
                                 applicationDialog.dismiss();
+                                applyText.setText("Withdraw");
+
+                            } else {
+                                Toast.makeText(getActivity(), "Introduction cannot be empty", Toast.LENGTH_LONG).show();
                             }
-                        });
-                    }
+                        }
+                    });
+
+                    closeBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            applicationDialog.dismiss();
+                        }
+                    });
                 }
+            }
 
 
             @Override
@@ -520,6 +531,106 @@ public class AllFragment extends Fragment {
             }
         });
 
+    }
+
+
+    private void SeniorBuddyWithdraw() {
+
+        seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
+
+        seniorBuddyRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.hasChild("juniorBuddy")) {
+
+                    Toast.makeText(getActivity(), "Please remove all your junior buddy before withdrawal", Toast.LENGTH_LONG).show();
+                } else {
+
+                    //need to pass the context from the class calling this method.
+
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    //LayoutInflater inflater = getLayoutInflater();
+                    final View dialogView = inflater.inflate(R.layout.join_studyevent_dialog, null);
+                    dialogBuilder.setView(dialogView);
+
+                    final AlertDialog dialog = dialogBuilder.create();
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    dialog.show();
+
+                    //dialog.setContentView(R.layout.join_studyevent_dialog);
+                    message1 = (TextView) dialog.findViewById(R.id.join_msg1);
+                    message2 = (TextView) dialog.findViewById(R.id.join_msg2);
+                    note = (TextView) dialog.findViewById(R.id.join_note);
+                    cancleBtn = (Button) dialog.findViewById(R.id.join_cancleBtn);
+                    confirmBtn = (Button) dialog.findViewById(R.id.join_cfmBtn);
+
+                    note.setVisibility(View.GONE);
+                    confirmBtn.setText("Withdraw");
+
+
+                    message1.setText("Senior Buddy Withdrawal");
+                    message2.setText("Are your sure you want to withdraw from Senior Buddy Team?");
+
+
+                    cancleBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    confirmBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            seniorBuddyRef.child(userNode).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if(task.isSuccessful()){
+                                        Toast.makeText(getActivity(), "Withdraw Successfully, Hope to see you back again", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                            applyText.setText("Apply");
+                            dialog.dismiss();
+                            startActivity(new Intent(getContext(), SeniorBuddyPage.class));
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public void MaintenanceOfButton(){
+
+        seniorBuddyRef = firebaseDatabase.getInstance().getReference("Senior Buddy");
+
+        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChild(userNode)){
+                    applyText.setText("Withdraw");
+                }else{
+                    applyText.setText("Apply");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

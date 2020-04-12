@@ -33,7 +33,7 @@
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="1dp"
             tools:layout_editor_absoluteY="134dp"
-            android:layout_below="@+id/past_event_update_time"/>
+            android:layout_below="@+id/upcoming_event_update_time"/>
 
         <TextView
             android:id="@+id/upcoming_event_hint"

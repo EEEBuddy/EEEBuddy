@@ -33,7 +33,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.view.View.GONE;
 
@@ -47,7 +49,7 @@ public class RecommFragment extends Fragment {
     private ArrayList<UserInfo> juniorBuddyList;
     private JuniorBuddyAdapter adapter;
     private String request_type;
-    private TextView noRequest;
+    private TextView last_update;
 
 
     //declare database stuff
@@ -75,7 +77,6 @@ public class RecommFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         juniorBuddyList = new ArrayList<UserInfo>();
 
-        noRequest = (TextView) view.findViewById(R.id.seniorbuddy_noBuddy);
 
 
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -88,9 +89,16 @@ public class RecommFragment extends Fragment {
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
 
 
+        last_update = (TextView) view.findViewById(R.id.seniorbuddy_buddyRequest_update_time);
+        Date currentTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss aa");
+        String formattedTime = simpleDateFormat.format(currentTime);
+
+        last_update.setText("Last Updated On: " + formattedTime);
 
 
 
+        buddyRequestRef.keepSynced(true);
         buddyRequestRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -106,7 +114,7 @@ public class RecommFragment extends Fragment {
                                 juniorBuddyList.clear();
                                 String juniorID = dataSnapshot1.getKey();
 
-                                BuddyRequestModel buddyRequestModel = dataSnapshot1.getValue(BuddyRequestModel.class);
+                                final BuddyRequestModel buddyRequestModel = dataSnapshot1.getValue(BuddyRequestModel.class);
                                 request_type = buddyRequestModel.getRequest_type();
 
                                 if(request_type.equals("buddy_request_received") || request_type.equals("remove_request_received")){
@@ -118,16 +126,16 @@ public class RecommFragment extends Fragment {
                                             UserInfo juniorInfo = dataSnapshot.getValue(UserInfo.class);
                                             juniorBuddyList.add(juniorInfo);
 
-                                            int arraySize = juniorBuddyList.size();
-                                            if (arraySize == 0) {
+                                            //int arraySize = juniorBuddyList.size();
 
-                                                noRequest.setVisibility(View.VISIBLE);
-                                            }
 
 
                                             //create adapter
                                             adapter = new JuniorBuddyAdapter(getActivity(), juniorBuddyList);
                                             recyclerView.setAdapter(adapter);
+
+                                            adapter.notifyDataSetChanged();
+
                                         }
 
                                         @Override

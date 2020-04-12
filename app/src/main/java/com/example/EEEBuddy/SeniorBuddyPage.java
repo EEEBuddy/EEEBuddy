@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
@@ -38,8 +39,8 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 public class SeniorBuddyPage extends AppCompatActivity {
 
     Toolbar toolbar;
-    TextView title,applyText;
-    ImageView backBtn, filterIcon;
+    TextView title, applyText;
+    ImageView backBtn, filterIcon, reminder_icon;
 
     TabLayout tabLayout;
     TabItem tab_recommendation, tab_all;
@@ -48,7 +49,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference seniorBuddyRef;
+    private DatabaseReference buddyRequestRef;
     private String userEmail, userNode;
     private FirebaseUser user;
 
@@ -63,10 +64,10 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if(firebaseAuth.getCurrentUser() == null){
+        if (firebaseAuth.getCurrentUser() == null) {
             //if user has already logged out
             finish();
-            startActivity(new Intent(this,Login.class));
+            startActivity(new Intent(this, Login.class));
         }
 
         //customise bottom navigation
@@ -84,23 +85,23 @@ public class SeniorBuddyPage extends AppCompatActivity {
         spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
             @Override
             public void onCentreButtonClick() {
-                Toast.makeText(SeniorBuddyPage.this,"onCentreButtonClick", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SeniorBuddyPage.this, "onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 spaceNavigationView.setCentreButtonSelectable(true);
             }
 
             @Override
             public void onItemClick(int itemIndex, String itemName) {
                 //Toast.makeText(Account.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
-                if(itemIndex == 0){//goto senior buddy page
+                if (itemIndex == 0) {//goto senior buddy page
                     //startActivity(new Intent(Account.this, SeniorBuddyPage.class));
                 }
-                if(itemIndex == 1){//goto study buddy page
+                if (itemIndex == 1) {//goto study buddy page
                     startActivity(new Intent(SeniorBuddyPage.this, StudyBuddyPage.class));
                 }
-                if(itemIndex == 2){//goto chat
+                if (itemIndex == 2) {//goto chat
                     startActivity(new Intent(SeniorBuddyPage.this, ChatListPage.class));
                 }
-                if(itemIndex == 3){//goto profile page
+                if (itemIndex == 3) {//goto profile page
                     startActivity(new Intent(SeniorBuddyPage.this, Account.class));
                 }
             }
@@ -113,27 +114,25 @@ public class SeniorBuddyPage extends AppCompatActivity {
         //customise bottom navigation above
 
 
-
-
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         title = (TextView) findViewById(R.id.toolbar_title);
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
         filterIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
+        reminder_icon = (ImageView) findViewById(R.id.seniorbuddy_reminder);
+
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         tabLayout = (TabLayout) findViewById(R.id.seniorbuddy_tablayout);
-        tab_recommendation = (TabItem) findViewById(R.id.seniorbuddy_recomm);
+        tab_recommendation = (TabItem) findViewById(R.id.seniorbuddy_request);
         tab_all = (TabItem) findViewById(R.id.seniorbuddy_all);
 
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
+        buddyRequestRef = firebaseDatabase.getReference("Buddy Requests");
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         userEmail = user.getEmail();
         userNode = userEmail.substring(0, userEmail.indexOf("@"));
-
 
 
         backBtn.setVisibility(View.GONE);
@@ -144,13 +143,28 @@ public class SeniorBuddyPage extends AppCompatActivity {
         pageAdapter = new SeniorBuddyPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
 
-        /*
-        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+        buddyRequestRef.keepSynced(true);
+        buddyRequestRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild(userNode)){
 
-                    tabLayout.getTabAt(0).setText("Buddy Requests");                        }
+                int tempCount = 0;
+                if (dataSnapshot.hasChild(userNode)) {
+
+                    for (DataSnapshot ds : dataSnapshot.child(userNode).getChildren()) {
+
+                        String request_type = ds.getValue(BuddyRequestModel.class).getRequest_type();
+
+                        if (request_type.equals("buddy_request_received") || request_type.equals("remove_request_received")) {
+                            tempCount ++;
+                        }
+                    }
+
+                    if(tempCount>0){
+                        reminder_icon.setVisibility(View.VISIBLE);
+                    }
+
+                }
             }
 
             @Override
@@ -159,24 +173,23 @@ public class SeniorBuddyPage extends AppCompatActivity {
             }
         });
 
-         */
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(final TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
 
-                if(tab.getPosition() == 0){
+                if (tab.getPosition() == 0) {
+                    //All Senior Buddy Fragment
                     pageAdapter.notifyDataSetChanged();
                     filterIcon.setVisibility(View.VISIBLE);
 
-                }else if(tab.getPosition() == 1){
+                } else if (tab.getPosition() == 1) {
+                    //Buddy Request Fragment
                     pageAdapter.notifyDataSetChanged();
                     filterIcon.setVisibility(View.GONE);
 
-
                 }
-
 
 
             }
@@ -195,11 +208,10 @@ public class SeniorBuddyPage extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
 
-
     }
 
     private void SeniorBuddyApplication() {
-        Toast.makeText(SeniorBuddyPage.this,"TODO...", Toast.LENGTH_LONG).show();
+        Toast.makeText(SeniorBuddyPage.this, "TODO...", Toast.LENGTH_LONG).show();
     }
 
 }

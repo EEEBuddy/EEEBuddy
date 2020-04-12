@@ -1,14 +1,21 @@
 package com.example.EEEBuddy;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -31,6 +38,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -57,7 +66,8 @@ public class BuddyManagementPage extends AppCompatActivity {
     private CircleImageView profilePic;
     private TextView infoName, infoEmail;
     private Button requestBtn, declineBtn,commentBtn, appointBtn;
-    private TextView infoCourse, infoHall, infoGender, infoExperience, infoBuddyRelationDate, removeBuddyRequestHint;
+    private TextView infoCourse, infoHall, infoGender, infoExperience, infoBuddyRelationDate, removeBuddyRequestHint, commentFromSeniorBuddy;
+    private View underline;
 
     private ArrayList<UserInfo> juniorBuddyList;
     private MyJuniorBuddyAdapter adapter;
@@ -105,6 +115,8 @@ public class BuddyManagementPage extends AppCompatActivity {
         infoGender = (TextView) findViewById(R.id.info_gender);
         infoExperience = (TextView) findViewById(R.id.info_exp);
         infoBuddyRelationDate = (TextView) findViewById(R.id.info_buddyDate);
+        commentFromSeniorBuddy = (TextView) findViewById(R.id.info_gotoJuniorCommentPage);
+        underline = (View) findViewById(R.id.underline);
 
         pageLayout = (LinearLayout) findViewById(R.id.seniorbuddy_linearLayout);
         intro_section = (LinearLayout) findViewById(R.id.seniorbuddy_intro_section);
@@ -155,16 +167,11 @@ public class BuddyManagementPage extends AppCompatActivity {
                     requestBtn.setText("Remove Buddy");
                     pageLayout.removeView(scrollView);
                     commentBtn.setVisibility(View.VISIBLE);
+                    commentFromSeniorBuddy.setVisibility(View.VISIBLE);
+                    underline.setVisibility(View.VISIBLE);
 
                     senderUserID = userNode;
-                    //define receiverUserID = seniorBuddy at method ShowSeniorBuddyInfo;
 
-                    /*
-                    if(!CURRENT_STATE.equals("not_buddy")){
-                        ShowSeniorBuddyInfo();
-                    }
-
-                     */
                     ShowSeniorBuddyInfo();
 
                     MaintenanceOfButtons();
@@ -194,8 +201,16 @@ public class BuddyManagementPage extends AppCompatActivity {
                     commentBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //TODO...
-                            CommentSeniorBuddy();
+                            PostCommentForSenior();
+                        }
+                    });
+
+                    commentFromSeniorBuddy.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO
+                            // goto junior comment page
+                            Toast.makeText(BuddyManagementPage.this, "TODO.....", Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -237,10 +252,87 @@ public class BuddyManagementPage extends AppCompatActivity {
 
     }
 
-    private void CommentSeniorBuddy() {
+    private void PostCommentForSenior() {
 
-        //TODO
-        Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        final String commentDate = sdf.format(date);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.card_applicaition_form, null);
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog postCommentDialog = dialogBuilder.create();
+        postCommentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        postCommentDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        postCommentDialog.show();
+
+
+        final EditText editTextComment = dialogView.findViewById(R.id.apply_intro);
+        final Button postCommentBtn = dialogView.findViewById(R.id.apply_applybtn);
+        ImageView closeBtn = dialogView.findViewById(R.id.apply_closeBtn);
+        TextView title = dialogView.findViewById(R.id.apply_title1);
+        TextView subTitle = dialogView.findViewById(R.id.apply_title2);
+
+        title.setText("Comment your Senior");
+        subTitle.setText("Comment for: " + receiverName);
+        postCommentBtn.setText("Comment");
+        postCommentBtn.setTextSize(16f);
+
+
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                postCommentDialog.dismiss();
+            }
+        });
+
+        postCommentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String seniorBuddyID = seniorBuddy;
+                seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
+                String comment = editTextComment.getText().toString();
+
+                if(!TextUtils.isEmpty(comment)){
+
+                    String commentKey = seniorBuddyRef.child(seniorBuddyID).push().getKey();
+                    String commentRef = seniorBuddyID + "/juniorBuddyComment/" + commentKey;
+
+                    Map commentBody = new HashMap();
+                    commentBody.put("comment", comment);
+                    commentBody.put("date", commentDate);
+                    commentBody.put("commentedBy", userNode);
+
+                    Map postComment = new HashMap();
+                    postComment.put(commentRef,commentBody);
+
+                    seniorBuddyRef.updateChildren(postComment).addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+
+                            if(task.isSuccessful()){
+                                Toast.makeText(BuddyManagementPage.this, "Comment Posted Successfully", Toast.LENGTH_SHORT).show();
+                                postCommentDialog.dismiss();
+
+                            }else{
+                                Toast.makeText(BuddyManagementPage.this, "Comment Posted Failed", Toast.LENGTH_SHORT).show();
+                                editTextComment.setError("Failed, Try Again");
+                            }
+                        }
+                    });
+
+                }else{
+
+                    editTextComment.setError("Comment cannot be empty");
+                }
+
+            }
+        });
 
     }
 
@@ -446,8 +538,8 @@ public class BuddyManagementPage extends AppCompatActivity {
 
                     if (dataSnapshot.hasChild("seniorBuddy")) {
 
-                        UserInfo seniorID = dataSnapshot.getValue(UserInfo.class);
-                        seniorBuddy = seniorID.getSeniorBuddy().trim();
+                        UserInfo seniorInfo = dataSnapshot.getValue(UserInfo.class);
+                        seniorBuddy = seniorInfo.getSeniorBuddy().trim();
                         receiverUserID = seniorBuddy;
 
                         studentProfileRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
