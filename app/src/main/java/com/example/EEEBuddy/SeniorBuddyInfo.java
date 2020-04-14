@@ -1,19 +1,13 @@
 package com.example.EEEBuddy;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +41,8 @@ import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickListener {
+public class SeniorBuddyInfo extends AppCompatActivity {
+
 
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
@@ -60,10 +55,11 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
     private ImageView backBtn, messageBtn;
     private ImageView expandBtn, collapsBtn;
     private CircleImageView profilePic;
-    private TextView infoName, infoEmail, removeBuddyRequestHint;
-    private Button requestBtn, declineBtn, commentBtn, appointmentBtn;
+    private TextView infoName, infoEmail, removeBuddyRequestHint, commentFromBuddy;
+    private Button requestBtn, declineBtn, commentBtn;
     private TextView infoCourse, infoHall, infoGender, infoExperience, infoIntro;
     private String profileImageUrl, selfIntro, dateJoined;
+    private View underline;
 
     private LinearLayout pageLayout;
     private ScrollView scrollView;
@@ -77,7 +73,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
     //for request for a senior-junior relationship
     private String senderUserID, receiverUserID, CURRENT_STATE, mySeniorBuddyID;
     private String currentDate;
-    private boolean seniorBuddyIdentity, hasSeniorBuddy, isYearOneStudent, removeRequestReceived, buddyRequestReceived, buddyRequestSent;
+    private boolean seniorBuddyIdentity, hasSeniorBuddy, isYearOneStudent, removeRequestReceived, removeRequestSent, buddyRequestReceived, buddyRequestSent;
 
 
     //pass variable to chat via intent
@@ -89,178 +85,36 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.seniorbuddy_info);
 
-        //initialise firebase attributes
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        userEmail = user.getEmail();
-        userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+        Initialisation();
+        InitialiseLayout();
 
 
-        studentProfileRef = firebaseDatabase.getReference("Student Profile");
-        seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
-        buddyRequestRef = firebaseDatabase.getReference().child("Buddy Requests");
-
-
-        profilePic = (CircleImageView) findViewById(R.id.info_profilepic);
-        infoName = (TextView) findViewById(R.id.info_name);
-        infoEmail = (TextView) findViewById(R.id.info_email);
-        infoCourse = (TextView) findViewById(R.id.info_course);
-        infoHall = (TextView) findViewById(R.id.info_Hall);
-        infoGender = (TextView) findViewById(R.id.info_gender);
-        infoExperience = (TextView) findViewById(R.id.info_exp);
-        infoIntro = (TextView) findViewById(R.id.card_intro);
-
-        btnLinearLayout = (LinearLayout) findViewById(R.id.info_buttons_layout);
-        backBtn = (ImageView) findViewById(R.id.info_back);
-        requestBtn = (Button) findViewById(R.id.info_requestBtn);
-        declineBtn = (Button) findViewById(R.id.info_declineBtn);
-        messageBtn = (ImageView) findViewById(R.id.info_msgBtn);
-        commentBtn = (Button) findViewById(R.id.info_commentBtn);
-        appointmentBtn = (Button) findViewById(R.id.info_appointmentBtn);
-        removeBuddyRequestHint = (TextView) findViewById(R.id.info_remove_buddy_request);
-
-
-        expandBtn = (ImageView) findViewById(R.id.card_expand);
-        collapsBtn = (ImageView) findViewById(R.id.card_collaps);
-
-        pageLayout = (LinearLayout) findViewById(R.id.seniorbuddy_linearLayout);
-        scrollView = (ScrollView) findViewById(R.id.info_scrollview);
-
-        myJuniorBuddyPage = "";
-        juniorBuddyPageRequestPage = "";
-
-        getIncomingIntent();
-        infoEmail.setText(reEmail);
-        infoName.setText(reName);
-        infoCourse.setText(reCourse + ", Year " + reYear);
-        infoGender.setText("Gender: " + reGender);
-        Picasso.get().load(reImgUrl).into(profilePic);
-
-        if (reHall.equals("no")) {
-            infoHall.setText("Hall: NIL");
-        } else {
-            infoHall.setText("Hall: " + reHall);
-        }
-
-
-        seniorNode = reEmail.substring(0, reEmail.indexOf("@"));
-        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //check if the person is a senior buddy in (all senior buddy tab)or a junior in (buddy request tab).
-
-                if (dataSnapshot.hasChild(seniorNode)) {
-
-                    seniorBuddyRef.child(seniorNode).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
-
-                            long diffMonth = 0;
-                            try {
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                String joinDate = seniorBuddyModel.getJoinedDate();
-                                Date today = new Date();
-                                today = sdf.parse(sdf.format(new Date()));
-                                Date parsedJoindedDate = sdf.parse(joinDate);
-                                long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
-                                long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
-                                diffMonth = diffDays / 30;
-
-                                if (diffMonth <= 12) {
-                                    exp = "Freshy";
-
-                                } else if (diffMonth > 12 && diffMonth <= 24) {
-                                    exp = "Senior";
-                                } else {
-                                    exp = "Expert";
-                                }
-
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
-
-                            //infoExperience.setSingleLine(false);
-                            infoExperience.setText("Joined Date: " + seniorBuddyModel.getJoinedDate() + "\n" + "Experience: " + diffMonth + " Months\n" + "Level: " + exp);
-                            selfIntro = seniorBuddyModel.getSelfIntro();
-
-                            MaintenanceOfButtons();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                } else if (myJuniorBuddyPage.equals("yes")) {
-
-                    pageLayout.removeView(scrollView);
-                    infoExperience.setVisibility(View.INVISIBLE);
-
-                    commentBtn.setVisibility(View.VISIBLE);
-                    commentBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            PostCommentForJunior();
-                        }
-                    });
-
-                    MaintenanceOfButtons();
-
-
-                } else if (juniorBuddyPageRequestPage.equals("yes")) {
-
-                    pageLayout.removeView(scrollView);
-                    infoExperience.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        backBtn.setOnClickListener(this);
-        expandBtn.setOnClickListener(this);
-        collapsBtn.setOnClickListener(this);
-
-
-        //request senior-junior relationship
-        //declineBtn.setEnabled(false);
+        declineBtn.setEnabled(false);
         btnLinearLayout.removeView(declineBtn);
-
 
         senderUserID = userNode;
         receiverUserID = seniorNode;
         CURRENT_STATE = "not_buddy";
-        seniorBuddyIdentity = false;
-        //hasSeniorBuddy = false;
-        removeRequestReceived = false;
-        buddyRequestReceived = false;
-        buddyRequestSent = false;
 
+        MaintenanceOfButtons();
 
+        //senior buddy cannot request for a senior buddy
         if (senderUserID.equals(receiverUserID)) {
             btnLinearLayout.removeView(requestBtn);
         }
-
-
-        MaintenanceOfButtons();
 
 
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                HasSeniorBuddy();
+                //HasSeniorBuddy();
+                //CheckSeniorBuddyIdentity();
+                //IsYearOneStudent();
+
                 //junior buddy functions, not a senior buddy and does not have a senior buddy
-                if (!senderUserID.equals(receiverUserID) && CheckSeniorBuddyIdentity() == false && hasSeniorBuddy == false) {
+                if (!senderUserID.equals(receiverUserID)) {
 
                     if (CURRENT_STATE.equals("not_buddy")) {
 
@@ -288,25 +142,6 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                     if (CURRENT_STATE.equals("remove_request_received")) {
                         AcceptRemoveBuddyRequest();
                     }
-
-                } else if (!senderUserID.equals(receiverUserID) && CheckSeniorBuddyIdentity() == true) {
-
-                    if (CURRENT_STATE.equals("buddy_request_received")) {
-                        AcceptBuddyRequest();
-                    }
-
-                    if (CURRENT_STATE.equals("buddy")) {
-                        SendRemoveBuddyRequest();
-                    }
-
-                    if (CURRENT_STATE.equals("remove_request_sent")) {
-                        CancelRemoveBuddyRequest();
-                    }
-
-                    if (CURRENT_STATE.equals("remove_request_received")) {
-                        AcceptRemoveBuddyRequest();
-                    }
-
 
                 }
 
@@ -369,7 +204,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    private boolean IsYearOneStudent() {
+    private void IsYearOneStudent() {
         //check which year is the applicant
         studentProfileRef.child(senderUserID).child("year").addValueEventListener(new ValueEventListener() {
             @Override
@@ -378,14 +213,6 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                 int year = Integer.parseInt(dataSnapshot.getValue().toString());
 
                 if (year > 1) {
-
-                    requestBtn.setBackgroundResource(R.drawable.btn_disabled);
-                    requestBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(getApplicationContext(), "Only year ONE student can apply for a senior buddy", Toast.LENGTH_LONG).show();
-                        }
-                    });
 
                     isYearOneStudent = false;
 
@@ -401,22 +228,41 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        return isYearOneStudent;
+    }
+
+
+    //senior buddy cannot apply for a senior buddy, remove the request button
+    private void CheckSeniorBuddyIdentity(final String source) {
+        seniorBuddyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.hasChild(senderUserID)) {
+
+                    if (source.equals("mySeniorBuddyPage")) {
+                        btnLinearLayout.removeView(requestBtn);
+                        requestBtn.setEnabled(true);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
     //senior buddy cannot apply for a senior buddy
-    private boolean CheckSeniorBuddyIdentity() {
+    private void CheckSeniorBuddyIdentity() {
         seniorBuddyRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.hasChild(senderUserID)) {
                     seniorBuddyIdentity = true;
-                    btnLinearLayout.removeView(requestBtn);
 
-                    //senior buddy can accept or decline the junior buddy request
-                    MaintenanceOfButtons();
                 } else {
                     seniorBuddyIdentity = false;
                 }
@@ -428,8 +274,6 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-
-        return seniorBuddyIdentity;
     }
 
 
@@ -638,7 +482,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
 
         //record the senior buddy in junior's profile
-        studentProfileRef.child(receiverUserID).child("seniorBuddy").setValue(senderUserID)
+        seniorBuddyRef.child(senderUserID).child("juniorBuddy").child(receiverUserID).child("relationDate").setValue(currentDate)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -646,7 +490,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                         if (task.isSuccessful()) {
 
                             //record the junior in senior buddy's profile
-                            seniorBuddyRef.child(senderUserID).child("juniorBuddy").child(receiverUserID).child("relationDate").setValue(currentDate)
+                            studentProfileRef.child(receiverUserID).child("seniorBuddy").setValue(senderUserID)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -706,7 +550,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
                                             if (task.isSuccessful()) {
 
-                                                if(source.equals("cancelOwnRequest")){
+                                                if (source.equals("cancelOwnRequest")) {
                                                     requestBtn.setEnabled(true);
                                                     CURRENT_STATE = "not_buddy";
                                                     requestBtn.setText("Request");
@@ -716,13 +560,11 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                                                     declineBtn.setEnabled(false);
                                                     Toast.makeText(getApplicationContext(), "Buddy Request Cancelled", Toast.LENGTH_LONG).show();
 
-                                                }else if(source.equals("declineJuniorRequest")){
+                                                } else if (source.equals("declineJuniorRequest")) {
 
                                                     CURRENT_STATE = "not_buddy";
 
-                                                    requestBtn.setEnabled(false);
                                                     btnLinearLayout.removeView(requestBtn);
-                                                    declineBtn.setVisibility(View.INVISIBLE);
                                                     btnLinearLayout.removeView(declineBtn);
                                                     declineBtn.setEnabled(false);
                                                     Toast.makeText(getApplicationContext(), "Buddy Request Declined", Toast.LENGTH_LONG).show();
@@ -773,6 +615,11 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
     private void MaintenanceOfButtons() {
 
+        removeRequestSent = false;
+        removeRequestReceived = false;
+        buddyRequestReceived = false;
+        buddyRequestSent = false;
+
         buddyRequestRef.child(senderUserID)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -786,21 +633,16 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                                 CURRENT_STATE = "buddy_request_sent";
                                 requestBtn.setText("Cancel Request");
 
-                                declineBtn.setVisibility(View.INVISIBLE);
-                                declineBtn.setEnabled(false);
+
                             } else if (request_type.equals("buddy_request_received")) {
 
                                 buddyRequestReceived = true;
                                 CURRENT_STATE = "buddy_request_received";
                                 requestBtn.setText("Accept Request");
 
-                                btnLinearLayout.removeView(requestBtn);
-                                btnLinearLayout.addView(requestBtn);
-                                btnLinearLayout.removeView(declineBtn);
+                                //btnLinearLayout.removeView(declineBtn);
                                 btnLinearLayout.addView(declineBtn);
-
                                 declineBtn.setEnabled(true);
-                                requestBtn.setEnabled(true);
 
                                 declineBtn.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -812,11 +654,9 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                                 });
                             } else if (request_type.equals("remove_request_sent")) {
 
+                                removeRequestSent = true;
                                 CURRENT_STATE = "remove_request_sent";
                                 requestBtn.setText("Cancel Request");
-
-                                declineBtn.setVisibility(View.INVISIBLE);
-                                declineBtn.setEnabled(false);
 
 
                             } else if (request_type.equals("remove_request_received")) {
@@ -825,10 +665,8 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                                 CURRENT_STATE = "remove_request_received";
                                 requestBtn.setText("Accept remove Request");
                                 requestBtn.setTextSize(14f);
-
-                                btnLinearLayout.removeView(requestBtn);
-                                btnLinearLayout.addView(requestBtn);
                                 requestBtn.setEnabled(true);
+
 
                             }
 
@@ -854,18 +692,11 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            if (dataSnapshot.hasChild(receiverUserID) && removeRequestReceived == false) {
+                            if (dataSnapshot.hasChild(receiverUserID) && removeRequestSent == false && removeRequestReceived == false) {
 
 
                                 CURRENT_STATE = "buddy";
                                 requestBtn.setText("Remove Buddy");
-
-                                btnLinearLayout.removeView(requestBtn);
-                                btnLinearLayout.addView(requestBtn);
-                                btnLinearLayout.removeView(declineBtn);
-
-                                declineBtn.setEnabled(false);
-                                requestBtn.setEnabled(true);
 
                                 pageLayout.removeView(scrollView);
                                 //commentBtn.setVisibility(View.VISIBLE);
@@ -876,18 +707,20 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                                 requestBtn.setText("Accept Remove Request");
                                 requestBtn.setTextSize(14f);
 
-                                btnLinearLayout.removeView(requestBtn);
-                                btnLinearLayout.addView(requestBtn);
-                                btnLinearLayout.removeView(declineBtn);
-
-                                declineBtn.setEnabled(false);
-                                requestBtn.setEnabled(true);
 
                                 pageLayout.removeView(scrollView);
-                                //commentBtn.setVisibility(View.VISIBLE);
                                 removeBuddyRequestHint.setVisibility(View.VISIBLE);
                                 removeBuddyRequestHint.setText("Your Junior Buddy <" + reName + "> Request to Remove Buddy Relationship");
 
+                            } else if (dataSnapshot.hasChild(receiverUserID) && removeRequestSent == true) {
+
+                                CURRENT_STATE = "remove_request_sent";
+                                requestBtn.setText("Cancel Request");
+                                requestBtn.setTextSize(14f);
+
+                                requestBtn.setEnabled(true);
+                                pageLayout.removeView(scrollView);
+                                //commentBtn.setVisibility(View.VISIBLE);
                             }
 
                         }
@@ -897,6 +730,36 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
                         }
                     });
+
+                }else{
+
+                    //check which year is the applicant， only year 1 student can apply for a senior buddy
+                    studentProfileRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            int year = Integer.parseInt(dataSnapshot.getValue(UserInfo.class).getYear());
+
+                            if(year > 1 && !dataSnapshot.hasChild("seniorBuddy") ){
+                                requestBtn.setBackgroundResource(R.drawable.btn_disabled);
+                                requestBtn.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(getApplicationContext(), "Only year ONE student can apply for a senior buddy, you may use Study Buddy Function", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
                 }
             }
 
@@ -907,14 +770,13 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
         });
 
 
-        //IsYearOneStudent();
-
 
         studentProfileRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot.hasChild("seniorBuddy") && removeRequestReceived == false) {
+
+                if (dataSnapshot.hasChild("seniorBuddy") && removeRequestReceived == false && removeRequestSent == false) {
 
                     UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
                     mySeniorBuddyID = userInfo.getSeniorBuddy().trim();
@@ -925,15 +787,8 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                         CURRENT_STATE = "buddy";
                         requestBtn.setText("Remove Buddy");
 
-                        btnLinearLayout.removeView(requestBtn);
-                        btnLinearLayout.addView(requestBtn);
-                        btnLinearLayout.removeView(declineBtn);
-
-                        declineBtn.setEnabled(false);
-                        requestBtn.setEnabled(true);
-
                         pageLayout.removeView(scrollView);
-                        //commentBtn.setVisibility(View.VISIBLE);
+
                     } else {
 
                         requestBtn.setBackgroundResource(R.drawable.btn_disabled);
@@ -947,21 +802,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                     }
 
 
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        studentProfileRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.hasChild("seniorBuddy") && removeRequestReceived == true) {
+                } else if (dataSnapshot.hasChild("seniorBuddy") && removeRequestReceived == true) {
 
                     UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
                     mySeniorBuddyID = userInfo.getSeniorBuddy().trim();
@@ -971,13 +812,6 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                         CURRENT_STATE = "remove_request_received";
                         requestBtn.setText("Accept Remove Request");
                         requestBtn.setTextSize(14f);
-
-                        btnLinearLayout.removeView(requestBtn);
-                        btnLinearLayout.addView(requestBtn);
-                        btnLinearLayout.removeView(declineBtn);
-
-                        declineBtn.setEnabled(false);
-                        requestBtn.setEnabled(true);
 
                         pageLayout.removeView(scrollView);
                         //commentBtn.setVisibility(View.VISIBLE);
@@ -994,6 +828,29 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                             }
                         });
                     }
+
+                } else if (dataSnapshot.hasChild("seniorBuddy") && removeRequestSent == true) {
+
+                    UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
+                    mySeniorBuddyID = userInfo.getSeniorBuddy().trim();
+
+                    if (mySeniorBuddyID.equals(reEmail.substring(0, reEmail.indexOf("@")))) {
+
+                        CURRENT_STATE = "remove_request_sent";
+                        requestBtn.setText("Cancel Request");
+
+                        pageLayout.removeView(scrollView);
+
+                    } else {
+
+                        requestBtn.setBackgroundResource(R.drawable.btn_disabled);
+                        requestBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getApplicationContext(), "You already have a Senior Buddy, Please check out at the Account Page", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -1002,7 +859,6 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-
 
     }
 
@@ -1051,7 +907,7 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                 studentProfileRef = firebaseDatabase.getReference("Student Profile");
                 String comment = editTextComment.getText().toString();
 
-                if(!TextUtils.isEmpty(comment)){
+                if (!TextUtils.isEmpty(comment)) {
 
                     String commentKey = studentProfileRef.child(juniorID).child("seniorBuddyComment").push().getKey();
                     String commentRef = juniorID + "/seniorBuddyComment" + "/" + commentKey;
@@ -1062,31 +918,30 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
                     commentBody.put("commentedBy", userNode);
 
                     Map postComment = new HashMap();
-                    postComment.put(commentRef,commentBody);
+                    postComment.put(commentRef, commentBody);
 
                     studentProfileRef.updateChildren(postComment).addOnCompleteListener(new OnCompleteListener() {
                         @Override
                         public void onComplete(@NonNull Task task) {
 
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Toast.makeText(SeniorBuddyInfo.this, "Comment Posted Successfully", Toast.LENGTH_SHORT).show();
                                 postCommentDialog.dismiss();
 
-                            }else{
+                            } else {
                                 Toast.makeText(SeniorBuddyInfo.this, "Comment Posted Failed", Toast.LENGTH_SHORT).show();
                                 editTextComment.setError("Failed, Try Again");
                             }
                         }
                     });
 
-                }else{
+                } else {
 
                     editTextComment.setError("Comment cannot be empty");
                 }
 
             }
         });
-
 
 
     }
@@ -1174,30 +1029,253 @@ public class SeniorBuddyInfo extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    @Override
-    public void onClick(View v) {
 
-        if (v == backBtn) {
-            startActivity(new Intent(this, SeniorBuddyPage.class));
+    private void InitialiseLayout() {
+
+        myJuniorBuddyPage = "";
+        juniorBuddyPageRequestPage = "";
+
+        getIncomingIntent();
+        infoEmail.setText(reEmail);
+        infoName.setText(reName);
+        infoCourse.setText(reCourse + ", Year " + reYear);
+        infoGender.setText("Gender: " + reGender);
+        Picasso.get().load(reImgUrl).into(profilePic);
+
+        if (reHall.equals("no")) {
+            infoHall.setText("Hall: NIL");
+        } else {
+            infoHall.setText("Hall: " + reHall);
         }
 
+        seniorNode = reEmail.substring(0, reEmail.indexOf("@"));
+        seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        if (v == expandBtn) {
-            expandBtn.setVisibility(View.GONE);
-            collapsBtn.setVisibility(View.VISIBLE);
-            infoIntro.setVisibility(View.VISIBLE);
-            infoIntro.setText(selfIntro);
-        }
+                //check if the person is a senior buddy in (all senior buddy tab)or a junior in (buddy request tab).
 
-        if (v == collapsBtn) {
-            expandBtn.setVisibility(View.VISIBLE);
-            collapsBtn.setVisibility(View.GONE);
-            infoIntro.setText("");
-            infoIntro.setVisibility(View.GONE);
-        }
+                if (dataSnapshot.hasChild(seniorNode)) {
+
+                    //layout of seniorInfo page if user(junior) go into the page from all senior buddy tab.
+
+                    seniorBuddyRef.child(seniorNode).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
+
+                            long diffMonth = 0;
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                String joinDate = seniorBuddyModel.getJoinedDate();
+                                Date today = new Date();
+                                today = sdf.parse(sdf.format(new Date()));
+                                Date parsedJoindedDate = sdf.parse(joinDate);
+                                long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
+                                long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
+                                diffMonth = diffDays / 30;
+
+                                if (diffMonth <= 12) {
+                                    exp = "Freshy";
+
+                                } else if (diffMonth > 12 && diffMonth <= 24) {
+                                    exp = "Senior";
+                                } else {
+                                    exp = "Expert";
+                                }
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+
+                            //infoExperience.setSingleLine(false);
+                            infoExperience.setText("Joined Date: " + seniorBuddyModel.getJoinedDate() + "\n" + "Experience: " + diffMonth + " Months\n" + "Level: " + exp);
+                            selfIntro = seniorBuddyModel.getSelfIntro();
+
+                            commentFromBuddy.setVisibility(View.VISIBLE);
+                            underline.setVisibility(View.VISIBLE);
+                            commentFromBuddy.setText("Comment of the Senior Buddy");
+
+
+                            commentFromBuddy.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    //see the selected senior's comment
+                                    Intent intent = new Intent(SeniorBuddyInfo.this, Comment.class);
+                                    intent.putExtra("commentOfWho", reEmail.substring(0, reEmail.indexOf("@")));
+                                    intent.putExtra("identity", "senior");//identity of the person you are going to view the comment.
+                                    startActivity(intent);
+                                }
+                            });
+
+                            backBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(SeniorBuddyInfo.this, SeniorBuddyPage.class));
+
+                                }
+                            });
+
+                            CheckSeniorBuddyIdentity("mySeniorBuddyPage");
+                            //MaintenanceOfButtons();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                } else if (myJuniorBuddyPage.equals("yes")) {
+
+                    //layout of juniorInfo page if user(senior) go into the page from buddy management page.
+
+                    pageLayout.removeView(scrollView);
+                    infoExperience.setVisibility(View.INVISIBLE);
+
+                    commentBtn.setVisibility(View.VISIBLE);
+                    commentBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PostCommentForJunior();
+                        }
+                    });
+
+                    commentFromBuddy.setVisibility(View.VISIBLE);
+                    underline.setVisibility(View.VISIBLE);
+                    commentFromBuddy.setText("Comment of the Junior Buddy");
+
+
+
+                    commentFromBuddy.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            //see the selected junior's comment
+                            Intent intent = new Intent(SeniorBuddyInfo.this, Comment.class);
+                            intent.putExtra("commentOfWho", reEmail.substring(0, reEmail.indexOf("@")));
+                            intent.putExtra("identity", "junior");//identity of the person you are going to view the comment.
+                            startActivity(intent);
+                        }
+                    });
+
+                    backBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(new Intent(SeniorBuddyInfo.this, BuddyManagementPage.class));
+
+                        }
+                    });
+
+                    //MaintenanceOfButtons();
+
+
+                } else if (juniorBuddyPageRequestPage.equals("yes")) {
+
+                    //layout of juniorInfo page if user(senior) go into the page from buddy request page.
+                    pageLayout.removeView(scrollView);
+                    infoExperience.setVisibility(View.INVISIBLE);
+
+                    backBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(new Intent(SeniorBuddyInfo.this, SeniorBuddyPage.class));
+
+                        }
+                    });
+
+                    /*
+                    commentFromBuddy.setVisibility(View.VISIBLE);
+                    underline.setVisibility(View.VISIBLE);
+
+                    commentFromBuddy.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            Intent intent = new Intent(SeniorBuddyInfo.this,Comment.class);
+                            intent.putExtra("commentOfWho", reEmail.substring(0,reEmail.indexOf("@")));
+                            intent.putExtra("identity", "junior/senior");
+                            startActivity(intent);
+                        }
+                    });
+
+                     */
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
 
+
+    private void Initialisation() {
+
+        //initialise firebase attributes
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+
+        studentProfileRef = firebaseDatabase.getReference("Student Profile");
+        seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
+        buddyRequestRef = firebaseDatabase.getReference().child("Buddy Requests");
+
+
+        profilePic = (CircleImageView) findViewById(R.id.info_profilepic);
+        infoName = (TextView) findViewById(R.id.info_name);
+        infoEmail = (TextView) findViewById(R.id.info_email);
+        infoCourse = (TextView) findViewById(R.id.info_course);
+        infoHall = (TextView) findViewById(R.id.info_Hall);
+        infoGender = (TextView) findViewById(R.id.info_gender);
+        infoExperience = (TextView) findViewById(R.id.info_exp);
+        infoIntro = (TextView) findViewById(R.id.card_intro);
+
+        btnLinearLayout = (LinearLayout) findViewById(R.id.info_buttons_layout);
+        backBtn = (ImageView) findViewById(R.id.info_back);
+        requestBtn = (Button) findViewById(R.id.info_requestBtn);
+        declineBtn = (Button) findViewById(R.id.info_declineBtn);
+        messageBtn = (ImageView) findViewById(R.id.info_msgBtn);
+        commentBtn = (Button) findViewById(R.id.info_commentBtn);
+        removeBuddyRequestHint = (TextView) findViewById(R.id.info_remove_buddy_request);
+        commentFromBuddy = (TextView) findViewById(R.id.info_gotoCommentPage);
+        underline = (View) findViewById(R.id.underline);
+
+
+        expandBtn = (ImageView) findViewById(R.id.card_expand);
+        collapsBtn = (ImageView) findViewById(R.id.card_collaps);
+
+        pageLayout = (LinearLayout) findViewById(R.id.seniorbuddy_linearLayout);
+        scrollView = (ScrollView) findViewById(R.id.info_scrollview);
+
+        expandBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                expandBtn.setVisibility(View.GONE);
+                collapsBtn.setVisibility(View.VISIBLE);
+                infoIntro.setVisibility(View.VISIBLE);
+                infoIntro.setText(selfIntro);
+            }
+        });
+
+        collapsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                expandBtn.setVisibility(View.VISIBLE);
+                collapsBtn.setVisibility(View.GONE);
+                infoIntro.setText("");
+                infoIntro.setVisibility(View.GONE);
+            }
+        });
+
+    }
 
 }

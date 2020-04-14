@@ -15,18 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_customised"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Comment"></activity>
         <activity android:name=".ChatListPage" />
         <activity android:name=".Chat" />
-        <activity android:name=".BuddyManagementPage"/>
-
+        <activity android:name=".BuddyManagementPage" />
         <activity android:name=".StudyReportPage" />
         <activity android:name=".MyStudyEvents" />
         <activity android:name=".UpcomingEventFragment" />
         <activity android:name=".PastEventFragment" />
         <activity android:name=".RegisterdEventsPage" />
         <activity android:name=".TrackStudyPage" />
-        <activity android:name=".SeniorBuddyInfo"/>
-
+        <activity android:name=".SeniorBuddyInfo" />
         <activity android:name=".SeniorBuddyPage" />
         <activity android:name=".AllFragment" />
         <activity android:name=".RecommFragment" />
@@ -59,7 +58,7 @@
 
         <meta-data
             android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts"/>
+            android:resource="@array/preloaded_fonts" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

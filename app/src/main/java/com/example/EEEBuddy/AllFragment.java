@@ -468,7 +468,7 @@ public class AllFragment extends Fragment {
                     Toast.makeText(getActivity(), "You have already registered as senior buddy, check out at Account page", Toast.LENGTH_LONG).show();
 
                 }else if(hasSeniorBuddy == true){
-                    Toast.makeText(getActivity(), "Only students WITHOUT Senior buddy can apply as a Senior Buddy", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Only students WITHOUT a Senior buddy can apply as a Senior Buddy", Toast.LENGTH_LONG).show();
 
                 }else if (yearOne == true) {
                     Toast.makeText(getActivity(), "Only Year 2 or above are allowed to apply as senior buddy", Toast.LENGTH_LONG).show();

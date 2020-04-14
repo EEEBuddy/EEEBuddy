@@ -115,7 +115,7 @@ public class BuddyManagementPage extends AppCompatActivity {
         infoGender = (TextView) findViewById(R.id.info_gender);
         infoExperience = (TextView) findViewById(R.id.info_exp);
         infoBuddyRelationDate = (TextView) findViewById(R.id.info_buddyDate);
-        commentFromSeniorBuddy = (TextView) findViewById(R.id.info_gotoJuniorCommentPage);
+        commentFromSeniorBuddy = (TextView) findViewById(R.id.info_gotoCommentPage);
         underline = (View) findViewById(R.id.underline);
 
         pageLayout = (LinearLayout) findViewById(R.id.seniorbuddy_linearLayout);
@@ -154,7 +154,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                     toolbar_backBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            startActivity(new Intent(BuddyManagementPage.this,Account.class));
+                            startActivity(new Intent(BuddyManagementPage.this, Account.class));
                         }
                     });
 
@@ -167,8 +167,10 @@ public class BuddyManagementPage extends AppCompatActivity {
                     requestBtn.setText("Remove Buddy");
                     pageLayout.removeView(scrollView);
                     commentBtn.setVisibility(View.VISIBLE);
+
                     commentFromSeniorBuddy.setVisibility(View.VISIBLE);
                     underline.setVisibility(View.VISIBLE);
+                    commentFromSeniorBuddy.setText("Comment From Junior Buddy");
 
                     senderUserID = userNode;
 
@@ -205,12 +207,16 @@ public class BuddyManagementPage extends AppCompatActivity {
                         }
                     });
 
+                    commentFromSeniorBuddy.setText("Comment From Senior Buddy");
+
                     commentFromSeniorBuddy.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //TODO
-                            // goto junior comment page
-                            Toast.makeText(BuddyManagementPage.this, "TODO.....", Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(BuddyManagementPage.this,Comment.class);
+                            intent.putExtra("commentOfWho", userNode);
+                            intent.putExtra("identity", "junior");
+                            startActivity(intent);
                         }
                     });
 
