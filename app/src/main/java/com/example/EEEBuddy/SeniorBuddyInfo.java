@@ -55,7 +55,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     private ImageView backBtn, messageBtn;
     private ImageView expandBtn, collapsBtn;
     private CircleImageView profilePic;
-    private TextView infoName, infoEmail, removeBuddyRequestHint, commentFromBuddy;
+    private TextView infoName, infoEmail, info_buddyDate, removeBuddyRequestHint, commentFromBuddy;
     private Button requestBtn, declineBtn, commentBtn;
     private TextView infoCourse, infoHall, infoGender, infoExperience, infoIntro;
     private String profileImageUrl, selfIntro, dateJoined;
@@ -1066,7 +1066,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                             long diffMonth = 0;
                             try {
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                                 String joinDate = seniorBuddyModel.getJoinedDate();
                                 Date today = new Date();
                                 today = sdf.parse(sdf.format(new Date()));
@@ -1135,6 +1135,12 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     pageLayout.removeView(scrollView);
                     infoExperience.setVisibility(View.INVISIBLE);
 
+                    //show when did the relationship establish
+                    info_buddyDate.setVisibility(View.VISIBLE);
+                    GetBuddyRelationshipDate();
+
+
+                    //show comment button, allow senior to comment on his/her junior buddy
                     commentBtn.setVisibility(View.VISIBLE);
                     commentBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1146,9 +1152,6 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     commentFromBuddy.setVisibility(View.VISIBLE);
                     underline.setVisibility(View.VISIBLE);
                     commentFromBuddy.setText("Comment of the Junior Buddy");
-
-
-
                     commentFromBuddy.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1178,6 +1181,10 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     pageLayout.removeView(scrollView);
                     infoExperience.setVisibility(View.INVISIBLE);
 
+                    //show when did the relationship establish
+                    info_buddyDate.setVisibility(View.VISIBLE);
+                    GetBuddyRelationshipDate();
+
                     backBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1203,6 +1210,32 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                      */
                 }
+            }
+
+            private void GetBuddyRelationshipDate() {
+
+                seniorBuddyRef = FirebaseDatabase.getInstance().getReference("Senior Buddy");
+                seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild(userNode)){
+
+                            String date = dataSnapshot.child(userNode).child("juniorBuddy").child(reEmail.substring(0,reEmail.indexOf("@"))).getValue(SeniorBuddyModel.class).getRelationDate();
+                            info_buddyDate.setText("Buddy Since: " + date);
+
+                        }else{
+
+                            String date = dataSnapshot.child(reEmail.substring(0,reEmail.indexOf("@"))).child("juniorBuddy").child(userNode).getValue(SeniorBuddyModel.class).getRelationDate();
+                            info_buddyDate.setText("Buddy Since: " + date);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -1238,6 +1271,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
         infoGender = (TextView) findViewById(R.id.info_gender);
         infoExperience = (TextView) findViewById(R.id.info_exp);
         infoIntro = (TextView) findViewById(R.id.card_intro);
+        info_buddyDate = (TextView) findViewById(R.id.info_buddyDate);
 
         btnLinearLayout = (LinearLayout) findViewById(R.id.info_buttons_layout);
         backBtn = (ImageView) findViewById(R.id.info_back);

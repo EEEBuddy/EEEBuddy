@@ -65,7 +65,7 @@ public class BuddyManagementPage extends AppCompatActivity {
     private ScrollView scrollView;
     private CircleImageView profilePic;
     private TextView infoName, infoEmail;
-    private Button requestBtn, declineBtn,commentBtn, appointBtn;
+    private Button requestBtn, declineBtn, commentBtn, appointBtn;
     private TextView infoCourse, infoHall, infoGender, infoExperience, infoBuddyRelationDate, removeBuddyRequestHint, commentFromSeniorBuddy;
     private View underline;
 
@@ -78,7 +78,6 @@ public class BuddyManagementPage extends AppCompatActivity {
     private String CURRENT_STATE, remove_request_type, senderUserID, receiverUserID;
     private Boolean seniorRemovedFromJuniorProfile;
     private String receiverName, receiverProfileImgUrl;
-
 
 
     @Override
@@ -135,16 +134,12 @@ public class BuddyManagementPage extends AppCompatActivity {
         seniorRemovedFromJuniorProfile = false;
 
 
-
-
-
-
         //switch between senior and junior layout of buddy management page
         seniorBuddyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.hasChild(userNode)){
+                if (dataSnapshot.hasChild(userNode)) {
                     //senior buddy layout
                     seniorBuddyLayout.setVisibility(View.VISIBLE);
                     title.setText("Junior Buddy");
@@ -161,13 +156,17 @@ public class BuddyManagementPage extends AppCompatActivity {
                     ShowJuniorBuddyList();
 
 
-                }else{ //junior's senior buddy layout
+                } else { //junior's senior buddy layout
                     juniorBuddyLayout.setVisibility(View.VISIBLE);
                     btnLinearLayout.removeView(declineBtn);
                     requestBtn.setText("Remove Buddy");
                     pageLayout.removeView(scrollView);
-                    commentBtn.setVisibility(View.VISIBLE);
 
+
+                    infoBuddyRelationDate.setVisibility(View.VISIBLE);
+
+
+                    commentBtn.setVisibility(View.VISIBLE);
                     commentFromSeniorBuddy.setVisibility(View.VISIBLE);
                     underline.setVisibility(View.VISIBLE);
                     commentFromSeniorBuddy.setText("Comment From Junior Buddy");
@@ -183,15 +182,15 @@ public class BuddyManagementPage extends AppCompatActivity {
                         public void onClick(View v) {
                             //buddy relationship
 
-                            if(CURRENT_STATE.equals("buddy")){
+                            if (CURRENT_STATE.equals("buddy")) {
                                 SendRemoveBuddyRequest();
                             }
 
-                            if(CURRENT_STATE.equals("remove_request_sent")){
+                            if (CURRENT_STATE.equals("remove_request_sent")) {
                                 CancelRemoveBuddyRequest();
                             }
 
-                            if(CURRENT_STATE.equals("remove_request_received")){
+                            if (CURRENT_STATE.equals("remove_request_received")) {
                                 AcceptRemoveBuddyRequest();
                             }
 
@@ -213,7 +212,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
 
-                            Intent intent = new Intent(BuddyManagementPage.this,Comment.class);
+                            Intent intent = new Intent(BuddyManagementPage.this, Comment.class);
                             intent.putExtra("commentOfWho", userNode);
                             intent.putExtra("identity", "junior");
                             startActivity(intent);
@@ -224,7 +223,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                     info_backBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            startActivity(new Intent(BuddyManagementPage.this,Account.class));
+                            startActivity(new Intent(BuddyManagementPage.this, Account.class));
                         }
                     });
 
@@ -257,6 +256,7 @@ public class BuddyManagementPage extends AppCompatActivity {
 
 
     }
+
 
     private void PostCommentForSenior() {
 
@@ -304,7 +304,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                 seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
                 String comment = editTextComment.getText().toString();
 
-                if(!TextUtils.isEmpty(comment)){
+                if (!TextUtils.isEmpty(comment)) {
 
                     String commentKey = seniorBuddyRef.child(seniorBuddyID).push().getKey();
                     String commentRef = seniorBuddyID + "/juniorBuddyComment/" + commentKey;
@@ -315,24 +315,24 @@ public class BuddyManagementPage extends AppCompatActivity {
                     commentBody.put("commentedBy", userNode);
 
                     Map postComment = new HashMap();
-                    postComment.put(commentRef,commentBody);
+                    postComment.put(commentRef, commentBody);
 
                     seniorBuddyRef.updateChildren(postComment).addOnCompleteListener(new OnCompleteListener() {
                         @Override
                         public void onComplete(@NonNull Task task) {
 
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Toast.makeText(BuddyManagementPage.this, "Comment Posted Successfully", Toast.LENGTH_SHORT).show();
                                 postCommentDialog.dismiss();
 
-                            }else{
+                            } else {
                                 Toast.makeText(BuddyManagementPage.this, "Comment Posted Failed", Toast.LENGTH_SHORT).show();
                                 editTextComment.setError("Failed, Try Again");
                             }
                         }
                     });
 
-                }else{
+                } else {
 
                     editTextComment.setError("Comment cannot be empty");
                 }
@@ -349,13 +349,13 @@ public class BuddyManagementPage extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").setValue("remove_request_received")
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
 
-                                            if(task.isSuccessful()){
+                                            if (task.isSuccessful()) {
 
                                                 requestBtn.setEnabled(true);
                                                 CURRENT_STATE = "remove_request_sent";
@@ -382,13 +382,13 @@ public class BuddyManagementPage extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").removeValue()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
 
-                                            if(task.isSuccessful()){
+                                            if (task.isSuccessful()) {
 
                                                 requestBtn.setEnabled(true);
                                                 CURRENT_STATE = "buddy";
@@ -417,7 +417,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
 
 
                             seniorBuddyRef.child(receiverUserID).child("juniorBuddy").child(senderUserID).child("relationDate").removeValue()
@@ -425,20 +425,20 @@ public class BuddyManagementPage extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
 
-                                            if(task.isSuccessful()){
+                                            if (task.isSuccessful()) {
 
                                                 buddyRequestRef.child(senderUserID).child(receiverUserID).child("request_type").removeValue()
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
 
-                                                                if(task.isSuccessful()){
+                                                                if (task.isSuccessful()) {
                                                                     buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").removeValue()
                                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                 @Override
                                                                                 public void onComplete(@NonNull Task<Void> task) {
 
-                                                                                    if(task.isSuccessful()){
+                                                                                    if (task.isSuccessful()) {
 
                                                                                         CURRENT_STATE = "not_buddy";
                                                                                         requestBtn.setText("Request");
@@ -446,7 +446,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                                                                                         btnLinearLayout.removeView(declineBtn);
                                                                                         declineBtn.setEnabled(false);
                                                                                         finish();
-                                                                                        startActivity(new Intent (getApplicationContext(), Account.class));
+                                                                                        startActivity(new Intent(getApplicationContext(), Account.class));
                                                                                         Toast.makeText(getApplicationContext(), "Buddy Relationship Removed successfully", Toast.LENGTH_LONG).show();
                                                                                     }
                                                                                 }
@@ -459,7 +459,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                                         }
                                     });
 
-                        }else{
+                        } else {
 
                             Toast.makeText(getApplicationContext(), "Failed to remove senior Buddy. " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
 
@@ -470,24 +470,22 @@ public class BuddyManagementPage extends AppCompatActivity {
     }
 
 
-
     private void MaintenanceOfButtons() {
 
         buddyRequestRef.child(senderUserID)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.hasChild(receiverUserID)){
+                        if (dataSnapshot.hasChild(receiverUserID)) {
 
 
                             String request_type = dataSnapshot.child(receiverUserID).child("request_type").getValue().toString().trim();
-                            if(request_type.equals("remove_request_sent")){
+                            if (request_type.equals("remove_request_sent")) {
 
                                 CURRENT_STATE = "remove_request_sent";
                                 requestBtn.setText("Cancel Request");
 
-                            }
-                            else if(request_type.equals("remove_request_received")){
+                            } else if (request_type.equals("remove_request_received")) {
 
                                 CURRENT_STATE = "remove_request_received";
                                 requestBtn.setText("Accept remove Request");
@@ -533,125 +531,105 @@ public class BuddyManagementPage extends AppCompatActivity {
     }
 
 
-
-
-
     private void ShowSeniorBuddyInfo() {
 
-            studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    if (dataSnapshot.hasChild("seniorBuddy")) {
+                if (dataSnapshot.hasChild("seniorBuddy")) {
 
-                        UserInfo seniorInfo = dataSnapshot.getValue(UserInfo.class);
-                        seniorBuddy = seniorInfo.getSeniorBuddy().trim();
-                        receiverUserID = seniorBuddy;
+                    UserInfo seniorInfo = dataSnapshot.getValue(UserInfo.class);
+                    seniorBuddy = seniorInfo.getSeniorBuddy().trim();
+                    receiverUserID = seniorBuddy;
 
-                        studentProfileRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    studentProfileRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                UserInfo seniorInfo = dataSnapshot.getValue(UserInfo.class);
+                            UserInfo seniorInfo = dataSnapshot.getValue(UserInfo.class);
 
-                                receiverName = seniorInfo.getName().trim();
-                                receiverProfileImgUrl = seniorInfo.getProfileImageUrl().trim();
+                            receiverName = seniorInfo.getName().trim();
+                            receiverProfileImgUrl = seniorInfo.getProfileImageUrl().trim();
 
-                                infoName.setText(seniorInfo.getName().trim());
-                                infoEmail.setText(seniorInfo.getEmail().trim());
-                                infoCourse.setText("Course: " + seniorInfo.getCourse().trim());
-                                infoGender.setText("Gender: " + seniorInfo.getGender().trim());
-                                infoHall.setText("Hall: " + seniorInfo.getHall().trim());
-                                Picasso.get().load(seniorInfo.getProfileImageUrl()).into(profilePic);
-                            }
+                            infoName.setText(seniorInfo.getName().trim());
+                            infoEmail.setText(seniorInfo.getEmail().trim());
+                            infoCourse.setText("Course: " + seniorInfo.getCourse().trim());
+                            infoGender.setText("Gender: " + seniorInfo.getGender().trim());
+                            infoHall.setText("Hall: " + seniorInfo.getHall().trim());
+                            Picasso.get().load(seniorInfo.getProfileImageUrl()).into(profilePic);
+                        }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
-
-
+                        }
+                    });
 
 
-                        seniorBuddyRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //calculate senior buddy experience
+                    seniorBuddyRef.child(seniorBuddy).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
 
-                                /*
-                                if(dataSnapshot.hasChild("juniorBuddy")){
-                                    seniorBuddyRef.child(seniorBuddy).child("juniorBuddy").child(userNode).addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String date = dataSnapshot.child("juniorBuddy").child(userNode).getValue(SeniorBuddyModel.class).getRelationDate();
+                            infoBuddyRelationDate.setText("Buddy Since: " + date);
 
-                                            SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
-                                            relationDate = seniorBuddyModel.getRelationDate().trim();
-                                            infoBuddyRelationDate.setText("Buddy Since: " + relationDate);
-                                            infoBuddyRelationDate.setVisibility(View.VISIBLE);
-                                        }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            SeniorBuddyModel seniorBuddyModel = dataSnapshot.getValue(SeniorBuddyModel.class);
 
-                                        }
-                                    });
+                            long diffMonth = 0;
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                                String joinDate = seniorBuddyModel.getJoinedDate();
+                                Date today = new Date();
+                                today = sdf.parse(sdf.format(new Date()));
+                                Date parsedJoindedDate = sdf.parse(joinDate);
+                                long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
+                                long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
+                                diffMonth = diffDays / 30;
+
+                                if (diffMonth <= 12) {
+                                    exp = "Freshy";
+
+                                } else if (diffMonth > 12 && diffMonth <= 24) {
+                                    exp = "Senior";
+                                } else {
+                                    exp = "Expert";
                                 }
 
-                                 */
-
-                                long diffMonth = 0;
-                                try {
-                                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                    String joinDate = seniorBuddyModel.getJoinedDate();
-                                    Date today = new Date();
-                                    today = sdf.parse(sdf.format(new Date()));
-                                    Date parsedJoindedDate = sdf.parse(joinDate);
-                                    long diff = Math.abs(today.getTime() - parsedJoindedDate.getTime());
-                                    long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
-                                    diffMonth = diffDays / 30;
-
-                                    if (diffMonth <= 12) {
-                                        exp = "Freshy";
-
-                                    } else if (diffMonth > 12 && diffMonth <= 24) {
-                                        exp = "Senior";
-                                    } else {
-                                        exp = "Expert";
-                                    }
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-
-                                infoExperience.setText("Joined Date: " + seniorBuddyModel.getJoinedDate() + "\n" + "Experience: " + diffMonth + " Months\n" + "Level: " + exp);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            infoExperience.setText("Joined Date: " + seniorBuddyModel.getJoinedDate() + "\n" + "Experience: " + diffMonth + " Months\n" + "Level: " + exp);
+                        }
 
-                            }
-                        });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                        }
+                    });
 
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
-            });
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
 
 
         info_backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(BuddyManagementPage.this,Account.class));
+                startActivity(new Intent(BuddyManagementPage.this, Account.class));
             }
         });
+
 
 
     }
@@ -666,7 +644,7 @@ public class BuddyManagementPage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String juniorID = dataSnapshot1.getKey().trim();
 
                     studentProfileRef.child(juniorID).addValueEventListener(new ValueEventListener() {
@@ -697,7 +675,7 @@ public class BuddyManagementPage extends AppCompatActivity {
         info_backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(BuddyManagementPage.this,Account.class));
+                startActivity(new Intent(BuddyManagementPage.this, Account.class));
             }
         });
 

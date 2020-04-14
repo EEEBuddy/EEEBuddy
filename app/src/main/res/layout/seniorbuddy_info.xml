@@ -197,6 +197,26 @@
             app:layout_constraintVertical_bias="1.0"
             android:visibility="gone"/>
 
+        <TextView
+            android:id="@+id/info_gotoCommentPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Comment"
+            android:textColor="@color/purple"
+            android:fontFamily="@font/roboto"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:visibility="gone"/>
+        <View
+            android:id="@+id/underline"
+            android:layout_width="245dp"
+            android:layout_height="1dp"
+            android:background="@color/purple"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
         <ScrollView
             android:id="@+id/info_scrollview"
             android:layout_width="match_parent"
@@ -269,26 +289,6 @@
                 android:visibility="gone"/>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/info_gotoCommentPage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Comment"
-            android:textColor="@color/purple"
-            android:fontFamily="@font/roboto"
-            android:textSize="18sp"
-            android:gravity="center"
-             android:visibility="gone"/>
-        <View
-            android:id="@+id/underline"
-            android:layout_width="245dp"
-            android:layout_height="1dp"
-            android:background="@color/purple"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
 
 
     </LinearLayout>

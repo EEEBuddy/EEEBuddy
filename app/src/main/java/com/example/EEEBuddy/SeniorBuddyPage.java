@@ -36,6 +36,12 @@ import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class SeniorBuddyPage extends AppCompatActivity {
 
     Toolbar toolbar;
@@ -49,9 +55,13 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference buddyRequestRef;
+    private DatabaseReference buddyRequestRef, rootRef, seniorBuddyRef, studentProfileRef;
     private String userEmail, userNode;
     private FirebaseUser user;
+
+    private String seniorBuddyID, juniorBuddyID;
+    private int year;
+    private Date parsedExpDate, today;
 
 
     SpaceNavigationView spaceNavigationView;
@@ -156,11 +166,11 @@ public class SeniorBuddyPage extends AppCompatActivity {
                         String request_type = ds.getValue(BuddyRequestModel.class).getRequest_type();
 
                         if (request_type.equals("buddy_request_received") || request_type.equals("remove_request_received")) {
-                            tempCount ++;
+                            tempCount++;
                         }
                     }
 
-                    if(tempCount>0){
+                    if (tempCount > 0) {
                         reminder_icon.setVisibility(View.VISIBLE);
                     }
 
@@ -207,11 +217,107 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
+        CheckRelationshipExpiryDate();
 
     }
 
-    private void SeniorBuddyApplication() {
-        Toast.makeText(SeniorBuddyPage.this, "TODO...", Toast.LENGTH_LONG).show();
+    private void CheckRelationshipExpiryDate() {
+
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        seniorBuddyRef = FirebaseDatabase.getInstance().getReference("Senior Buddy");
+        studentProfileRef = FirebaseDatabase.getInstance().getReference("Student Profile");
+
+        rootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                try {
+
+                    String expDate = dataSnapshot.child("BuddyRelationshipEXP").getValue().toString();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                    parsedExpDate = sdf.parse(expDate);
+                    today = new Date();
+
+                    if (today.compareTo(parsedExpDate) > 0) {
+
+                        //set new expiry date for next batch of junior.
+                        //all year 1 student will promote to year 2, no longer can apply for a senior buddy again.
+                        //need to restart the application for new round of senior/junior application to take effect.
+
+                        year = parsedExpDate.getYear() + 1900 + 1; // plus 1900 to get the current year
+                        Calendar calendar = Calendar.getInstance();
+                        Date newExp = new GregorianCalendar(year, calendar.MARCH, 31).getTime();
+                        String BuddyRelationshipEXP = sdf.format(newExp);
+
+                        rootRef.child("BuddyRelationshipEXP").setValue(BuddyRelationshipEXP);
+
+
+                        //remove all buddy relationship
+                        rootRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                if (dataSnapshot.hasChild("Senior Buddy")) {
+
+                                    DataSnapshot allSeniorBuddyDS = dataSnapshot.child("Senior Buddy");
+
+                                    for (DataSnapshot seniorBuddy : allSeniorBuddyDS.getChildren()) {
+
+                                        for (DataSnapshot juniorBuddy : seniorBuddy.child("juniorBuddy").getChildren()) {
+
+                                            seniorBuddyID = seniorBuddy.getKey();
+                                            juniorBuddyID = juniorBuddy.getKey();
+
+                                            //remove buddy relationship
+                                            seniorBuddyRef.child(seniorBuddyID).child("juniorBuddy").child(juniorBuddyID).removeValue();
+                                            studentProfileRef.child(juniorBuddyID).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                    if (dataSnapshot.hasChild("seniorBuddy")) {
+                                                        studentProfileRef.child(juniorBuddyID).child("seniorBuddy").removeValue();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+
+                                        }
+
+
+                                    }
+
+                                }
+
+                            }
+
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
+
 
 }
