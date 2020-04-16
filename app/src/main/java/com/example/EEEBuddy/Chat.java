@@ -65,7 +65,7 @@ public class Chat extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private DatabaseReference rootRef, studentProfileRef, messagesRef;
+    private DatabaseReference rootRef, studentProfileRef, messagesRef, notificationRef;
     private String userEmail, userNode, messageSentDate, messageSentTime, profileImageUrl;
 
 
@@ -104,7 +104,7 @@ public class Chat extends AppCompatActivity {
 
     private void FetchMessages(String source) {
 
-        if(source.equals("1to1Chat")){
+        if (source.equals("1to1Chat")) {
 
             rootRef.child("Messages").child("One to One Chat").child(senderUserID).child(receiverUserID)
                     .addChildEventListener(new ChildEventListener() {
@@ -122,7 +122,7 @@ public class Chat extends AppCompatActivity {
                                 chatAdapter.notifyDataSetChanged();
                                 rootRef.child("Messages").keepSynced(true);
 
-                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount() - 1);
 
                             }
                         }
@@ -148,14 +148,14 @@ public class Chat extends AppCompatActivity {
                         }
                     });
 
-        }else if(source.equals("groupChat")){
+        } else if (source.equals("groupChat")) {
 
             rootRef.child("Messages").child("Group Chat").child(groupChatID).child("messages")
                     .addChildEventListener(new ChildEventListener() {
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            if(dataSnapshot.exists()){
+                            if (dataSnapshot.exists()) {
                                 ChatModel messages = dataSnapshot.getValue(ChatModel.class);
                                 messageList.add(messages);
                                 String date = messages.getDate();
@@ -166,7 +166,7 @@ public class Chat extends AppCompatActivity {
                                 groupChatAdapter.notifyDataSetChanged();
                                 rootRef.child("Messages").keepSynced(true);
 
-                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount() - 1);
 
                             }
                         }
@@ -199,7 +199,7 @@ public class Chat extends AppCompatActivity {
 
     private void SendTextMessage(String source) {
 
-        if(source.equals("1to1Chat")){
+        if (source.equals("1to1Chat")) {
 
             String messageText = msgEditText.getText().toString().trim();
 
@@ -241,15 +241,27 @@ public class Chat extends AppCompatActivity {
                     public void onComplete(@NonNull Task task) {
 
                         if (task.isSuccessful()) {
-                            Toast.makeText(Chat.this, "Sent", Toast.LENGTH_LONG).show();
-                            msgEditText.setText("");
 
-                            msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+                            HashMap<String, String> chatNotificationMap = new HashMap<>();
+                            chatNotificationMap.put("from", senderUserID);
+                            chatNotificationMap.put("type", "message");
+
+                            notificationRef.child(receiverUserID).push().setValue(chatNotificationMap)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(Chat.this, "Sent", Toast.LENGTH_LONG).show();
+                                                msgEditText.setText("");
+                                                msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount() - 1);
+                                            }
+
+                                        }
+                                    });
 
                         } else {
                             Toast.makeText(Chat.this, "Error:" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-
-                            msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+                            msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount() - 1);
 
                         }
                     }
@@ -258,7 +270,7 @@ public class Chat extends AppCompatActivity {
 
             }
 
-        } else if(source.equals("groupChat")){
+        } else if (source.equals("groupChat")) {
 
             String messageText = msgEditText.getText().toString().trim();
 
@@ -267,7 +279,7 @@ public class Chat extends AppCompatActivity {
             } else {
 
                 //path to store the message
-                String message_ref = "Messages/" + "Group Chat/"+ groupChatID +"/" + "messages";
+                String message_ref = "Messages/" + "Group Chat/" + groupChatID + "/" + "messages";
 
                 //message unique key for each message
 
@@ -298,10 +310,43 @@ public class Chat extends AppCompatActivity {
                     public void onComplete(@NonNull Task task) {
 
                         if (task.isSuccessful()) {
-                            Toast.makeText(Chat.this, "Sent", Toast.LENGTH_LONG).show();
-                            msgEditText.setText("");
 
-                           // msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
+                            messagesRef = FirebaseDatabase.getInstance().getReference("Messages");
+                            messagesRef.child("Group Chat").child(groupChatID).child("members")
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                                                HashMap<String, String> chatNotificationMap = new HashMap<>();
+                                                chatNotificationMap.put("from", senderUserID);
+                                                chatNotificationMap.put("type", "group_message");
+                                                chatNotificationMap.put("groupChatID", groupChatID);
+
+                                                String receiverUserID = ds.getKey();
+                                                notificationRef.child(receiverUserID).push().setValue(chatNotificationMap)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+
+                                                                    Toast.makeText(Chat.this, "Sent", Toast.LENGTH_LONG).show();
+                                                                    msgEditText.setText("");
+                                                                }
+
+                                                            }
+                                                        });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+
+                            // msgRecyclerView.smoothScrollToPosition(msgRecyclerView.getAdapter().getItemCount()-1);
 
                         } else {
                             Toast.makeText(Chat.this, "Error:" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -317,12 +362,11 @@ public class Chat extends AppCompatActivity {
         }
 
 
-
     }
 
     private void DisplayReceiverInfo(String source) {
 
-        if(source.equals("1to1Chat")){
+        if (source.equals("1to1Chat")) {
 
             if (receiverProfileImgUrl.equals("none")) {
                 studentProfileRef = firebaseDatabase.getReference("Student Profile");
@@ -348,15 +392,14 @@ public class Chat extends AppCompatActivity {
                 Picasso.get().load(receiverProfileImgUrl).into(profilePic);
             }
 
-        }else if(source.equals("groupChat")){
+        } else if (source.equals("groupChat")) {
 
             toolbarTitle.setText(groupName);
 
-            if(groupProfileImgUrl.equals("default")){
+            if (groupProfileImgUrl.equals("default")) {
                 profilePic.setImageResource(R.drawable.group);
             }
         }
-
 
 
     }
@@ -365,14 +408,14 @@ public class Chat extends AppCompatActivity {
 
         source = getIntent().getStringExtra("from");
 
-        if(source.equals("1to1Chat")){
+        if (source.equals("1to1Chat")) {
 
             receiverUserID = getIntent().getStringExtra("receiverUserID").trim();
             receiverName = getIntent().getStringExtra("receiverName").trim();
             receiverProfileImgUrl = getIntent().getStringExtra("receiverProfileImgUrl");
             senderUserID = getIntent().getStringExtra("senderUserID");
 
-        }else if(source.equals("groupChat")){
+        } else if (source.equals("groupChat")) {
 
             groupChatID = getIntent().getStringExtra("groupChatID");
             groupName = getIntent().getStringExtra("groupName");
@@ -406,6 +449,7 @@ public class Chat extends AppCompatActivity {
         studentProfileRef = firebaseDatabase.getReference("Student Profile");
         messagesRef = firebaseDatabase.getReference("Messages");
         rootRef = firebaseDatabase.getReference();
+        notificationRef = firebaseDatabase.getReference("Notification");
         firebaseAuth = FirebaseAuth.getInstance();
 
         messagesRef.keepSynced(true);

@@ -17,11 +17,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.regex.Matcher;
@@ -37,7 +39,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private ProgressBar progressBar;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
+    private DatabaseReference studentProfileRef;
     private boolean emailValidationResult;
 
 
@@ -47,7 +49,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         setContentView(R.layout.activity_register);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Student Profile");
+        studentProfileRef = FirebaseDatabase.getInstance().getReference("Student Profile");
 
         if(firebaseAuth.getCurrentUser() !=null){
             //if user has already logged in
@@ -142,10 +144,27 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressBar.setVisibility(View.GONE);
                         if(task.isSuccessful()){
-                            //user is successfully registered
-                            Toast.makeText(Register.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
-                            finish();
-                            startActivity(new Intent(getApplicationContext(), Account.class));
+
+                            //get device token
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            String email = user.getEmail();
+                            String userNode = email.substring(0, email.indexOf("@"));
+                            String deviceToken = FirebaseInstanceId.getInstance().getToken();
+
+                            studentProfileRef = FirebaseDatabase.getInstance().getReference("Student Profile");
+                            studentProfileRef.child(userNode).child("deviceToken").setValue(deviceToken)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                            if (task.isSuccessful()) {
+                                                //user is successfully registered
+                                                Toast.makeText(Register.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                                                finish();;
+                                                //startActivity(new Intent(getApplicationContext(), Account.class));
+                                            }
+                                        }
+                                    });
 
                         }else{
                             Toast.makeText(Register.this, "Registration Failed." + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -161,7 +180,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
         final String childName = email.substring(0, email.indexOf("@"));
         //databaseReference.child(childName);
-        databaseReference.child(childName).addListenerForSingleValueEvent(new ValueEventListener() {
+        studentProfileRef.child(childName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 

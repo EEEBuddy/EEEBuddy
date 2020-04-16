@@ -48,7 +48,7 @@ public class ChatListPage extends AppCompatActivity {
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference studentProfileRef, messagesRef, studyEventRef, registeredEventRef;
+    private DatabaseReference studentProfileRef, messagesRef, studyEventRef, registeredEventRef, notificationRef;
     private String userEmail, userNode, receiverID;
 
     private SpaceNavigationView spaceNavigationView;
@@ -98,6 +98,7 @@ public class ChatListPage extends AppCompatActivity {
 
 
     }
+
 
     private void GroupChatList() {
 

@@ -24,4 +24,15 @@
         app:space_item_text_size="@dimen/space_item_text_default_size" />
 
 
+    <ImageView
+        android:id="@+id/navigation_notification"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginStart="270dp"
+        android:src="@drawable/bell"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
+
+
 </RelativeLayout>

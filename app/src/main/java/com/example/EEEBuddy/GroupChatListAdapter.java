@@ -45,12 +45,13 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference messagesRef, studentProfileRef, studyEventRef, registeredEventRef;
+    private DatabaseReference messagesRef, studentProfileRef, studyEventRef, registeredEventRef, notificationRef;
     private String userEmail, userNode, getName, getProfileImageUrl, profileImageUrl;
 
     private Date parsedCurrentDate, parsedSentDate;
     private long diffDays;
     private boolean button_state;
+    private int request_code = 0;
 
 
     public GroupChatListAdapter(Context context, ArrayList<ChatModel> chatList_group_array, ArrayList<String> selected_groupID_array) {
@@ -83,6 +84,7 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
         groupChatID = selected_groupID_array.get(position);
 
         MaintenanceOfButton(groupChatID, holder);
+        UnreadMessageNotification(holder, groupChatID);
 
         messagesRef = firebaseDatabase.getReference("Messages").child("Group Chat").child(groupChatID).child("messages");
 
@@ -169,6 +171,8 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
             @Override
             public void onClick(View v) {
 
+                int count = 0;
+                count ++;
 
                 Intent groupChatIntent = new Intent(context, Chat.class);
 
@@ -177,8 +181,10 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
                 groupChatIntent.putExtra("groupChatID", selected_groupID_array.get(position));
                 groupChatIntent.putExtra("groupName", holder.receiverName.getText().toString());
                 groupChatIntent.putExtra("groupProfileImgUrl", "default");
-
                 context.startActivity(groupChatIntent);
+
+                DeleteNotification(holder, selected_groupID_array.get(position), 1);
+
             }
         });
 
@@ -257,7 +263,7 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView receiverName, lastMsgTextView, lastMsgTime;
+        TextView receiverName, lastMsgTextView, lastMsgTime, notificationIcon;
         TextView swipeDelete;
         SwipeLayout swipeLayout;
         CircleImageView profileImage;
@@ -269,6 +275,7 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
             lastMsgTextView = (TextView) itemView.findViewById(R.id.chatlist_last_msg);
             profileImage = (CircleImageView) itemView.findViewById(R.id.chatlist_profilepic);
             lastMsgTime = (TextView) itemView.findViewById(R.id.chatlist_msg_time);
+            notificationIcon = (TextView) itemView.findViewById(R.id.chatlist_notification);
 
 
             swipeLayout = (SwipeLayout) itemView.findViewById(R.id.chatlist_swipeLayout);
@@ -382,6 +389,92 @@ public class GroupChatListAdapter extends RecyclerView.Adapter<GroupChatListAdap
             }
         });
 
+
+    }
+
+    private void UnreadMessageNotification(final GroupChatListAdapter.MyViewHolder holder, final String groupChatID) {
+
+        notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+        notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    int count = 0;
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                        String chatID = ds.getValue(NotificationModel.class).getGroupChatID();
+                        String type = ds.getValue(NotificationModel.class).getType();
+
+                        if(type.equals("group_message") && groupChatID.equals(chatID)){
+
+                            count ++;
+                        }
+
+                    }
+
+                    if(count>0){
+
+                        holder.notificationIcon.setVisibility(View.VISIBLE);
+                        holder.notificationIcon.setText(String.valueOf(count));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void DeleteNotification(final GroupChatListAdapter.MyViewHolder holder, final String groupChatID, final int request_code) {
+        //delete the notification
+
+        if(request_code == 1){
+
+            final ArrayList<String> tempIDArray = new ArrayList<>();
+
+            notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+            notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    if(dataSnapshot.exists()){
+
+                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                            String notificationKey = ds.getKey();
+                            String chatID = ds.getValue(NotificationModel.class).getGroupChatID();
+                            String type = ds.getValue(NotificationModel.class).getType();
+
+                            if(type.equals("group_message") && groupChatID.equals(chatID)){
+                                tempIDArray.add(groupChatID);
+                            }
+
+                        }
+
+                        for(String notificationKey : tempIDArray){
+
+                            notificationRef.child(userNode).child(notificationKey).removeValue();
+                        }
+
+                        holder.notificationIcon.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }else{
+
+            return;
+        }
 
     }
 }

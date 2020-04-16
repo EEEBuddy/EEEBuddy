@@ -227,7 +227,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
         seniorBuddyRef = FirebaseDatabase.getInstance().getReference("Senior Buddy");
         studentProfileRef = FirebaseDatabase.getInstance().getReference("Student Profile");
 
-        rootRef.addValueEventListener(new ValueEventListener() {
+        rootRef.child("Admin").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -246,10 +246,10 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
                         year = parsedExpDate.getYear() + 1900 + 1; // plus 1900 to get the current year
                         Calendar calendar = Calendar.getInstance();
-                        Date newExp = new GregorianCalendar(year, calendar.MARCH, 31).getTime();
+                        Date newExp = new GregorianCalendar(year, calendar.JUNE, 31).getTime();
                         String BuddyRelationshipEXP = sdf.format(newExp);
 
-                        rootRef.child("BuddyRelationshipEXP").setValue(BuddyRelationshipEXP);
+                        rootRef.child("Admin").child("BuddyRelationshipEXP").setValue(BuddyRelationshipEXP);
 
 
                         //remove all buddy relationship

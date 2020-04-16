@@ -48,7 +48,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private DatabaseReference seniorBuddyRef, studentProfileRef, buddyRequestRef;
+    private DatabaseReference seniorBuddyRef, studentProfileRef, buddyRequestRef, notificationRef;
     private String userEmail, userNode, seniorNode;
 
 
@@ -292,6 +292,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                             if (task.isSuccessful()) {
 
+                                                GenerateNotification(senderUserID, receiverUserID,"remove_buddy_request");
+
                                                 requestBtn.setEnabled(true);
                                                 CURRENT_STATE = "remove_request_sent";
                                                 requestBtn.setText("Cancel Request");
@@ -378,6 +380,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                                                                 if (task.isSuccessful()) {
 
+                                                                                                    GenerateNotification(senderUserID, receiverUserID,"accept_remove_buddy_request");
+
                                                                                                     CURRENT_STATE = "not_buddy";
                                                                                                     requestBtn.setText("Request");
 
@@ -433,6 +437,9 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                                                                                             public void onComplete(@NonNull Task<Void> task) {
 
                                                                                                 if (task.isSuccessful()) {
+
+                                                                                                    GenerateNotification(senderUserID, receiverUserID,"accept_remove_buddy_request");
+
 
                                                                                                     CURRENT_STATE = "not_buddy";
                                                                                                     requestBtn.setText("Request");
@@ -512,6 +519,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                                                     if (task.isSuccessful()) {
 
+                                                                                        GenerateNotification(senderUserID, receiverUserID,"accept_buddy_request");
+
                                                                                         requestBtn.setEnabled(true);
                                                                                         CURRENT_STATE = "buddy";
                                                                                         requestBtn.setText("Remove Buddy");
@@ -562,6 +571,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                 } else if (source.equals("declineJuniorRequest")) {
 
+                                                    GenerateNotification(senderUserID, receiverUserID,"decline_buddy_request");
+
                                                     CURRENT_STATE = "not_buddy";
 
                                                     btnLinearLayout.removeView(requestBtn);
@@ -596,6 +607,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                             if (task.isSuccessful()) {
 
+                                                GenerateNotification(senderUserID, receiverUserID,"buddy_request");
                                                 requestBtn.setEnabled(true);
                                                 CURRENT_STATE = "buddy_request_sent";
                                                 requestBtn.setText("Cancel Request");
@@ -610,6 +622,27 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     }
                 });
 
+    }
+
+
+    private void GenerateNotification(String senderUserID, String receiverUserID, String type) {
+
+        HashMap<String, String> chatNotificationMap = new HashMap<>();
+        chatNotificationMap.put("from", senderUserID);
+        chatNotificationMap.put("type", type);
+
+        notificationRef.child(receiverUserID).push().setValue(chatNotificationMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+
+                            Toast.makeText(getApplicationContext(), "Notification Generated", Toast.LENGTH_LONG).show();
+
+                        }
+
+                    }
+                });
     }
 
 
@@ -731,7 +764,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                         }
                     });
 
-                }else{
+                } else {
 
                     //check which year is the applicant， only year 1 student can apply for a senior buddy
                     studentProfileRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
@@ -740,7 +773,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                             int year = Integer.parseInt(dataSnapshot.getValue(UserInfo.class).getYear());
 
-                            if(year > 1 && !dataSnapshot.hasChild("seniorBuddy") ){
+                            if (year > 1 && !dataSnapshot.hasChild("seniorBuddy")) {
                                 requestBtn.setBackgroundResource(R.drawable.btn_disabled);
                                 requestBtn.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -768,7 +801,6 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
             }
         });
-
 
 
         studentProfileRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
@@ -1182,8 +1214,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     infoExperience.setVisibility(View.INVISIBLE);
 
                     //show when did the relationship establish
-                    info_buddyDate.setVisibility(View.VISIBLE);
-                    GetBuddyRelationshipDate();
+                    //info_buddyDate.setVisibility(View.VISIBLE);
+                    //GetBuddyRelationshipDate();
 
                     backBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1219,14 +1251,14 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        if(dataSnapshot.hasChild(userNode)){
+                        if (dataSnapshot.hasChild(userNode)) {
 
-                            String date = dataSnapshot.child(userNode).child("juniorBuddy").child(reEmail.substring(0,reEmail.indexOf("@"))).getValue(SeniorBuddyModel.class).getRelationDate();
+                            String date = dataSnapshot.child(userNode).child("juniorBuddy").child(reEmail.substring(0, reEmail.indexOf("@"))).getValue(SeniorBuddyModel.class).getRelationDate();
                             info_buddyDate.setText("Buddy Since: " + date);
 
-                        }else{
+                        } else {
 
-                            String date = dataSnapshot.child(reEmail.substring(0,reEmail.indexOf("@"))).child("juniorBuddy").child(userNode).getValue(SeniorBuddyModel.class).getRelationDate();
+                            String date = dataSnapshot.child(reEmail.substring(0, reEmail.indexOf("@"))).child("juniorBuddy").child(userNode).getValue(SeniorBuddyModel.class).getRelationDate();
                             info_buddyDate.setText("Buddy Since: " + date);
                         }
                     }
@@ -1261,6 +1293,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
         studentProfileRef = firebaseDatabase.getReference("Student Profile");
         seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
         buddyRequestRef = firebaseDatabase.getReference().child("Buddy Requests");
+        notificationRef = firebaseDatabase.getReference().child("Notification");
 
 
         profilePic = (CircleImageView) findViewById(R.id.info_profilepic);
