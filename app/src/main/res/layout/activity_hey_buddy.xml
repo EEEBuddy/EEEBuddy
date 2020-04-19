@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/heybuddy_bg"
+    tools:context=".HeyBuddy">
+
+    <include layout="@layout/navigation"/>
+    <include layout="@layout/toolbar"/>
+
+    <ImageButton
+        android:id="@+id/heybuddy_microphone"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/microphone"
+        android:layout_marginBottom="75dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+    <LinearLayout
+        android:id="@+id/heybuddy_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:layout_marginBottom="80dp"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/heybuddy_textInput"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:hint="Ask HeyBuddy About NTU..."
+            android:padding="10dp"/>
+
+        <ImageButton
+            android:id="@+id/heybuddy_sendQueryBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/send_msg"/>
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/heybuddy_query_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="20dp"
+        android:fontFamily="@font/aldrich"
+        android:gravity="right"
+        android:text="You"
+        android:textColor="@color/blue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+
+    <TextView
+        android:id="@+id/heybuddy_userInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/heybuddy_query_title"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:fontFamily="@font/aldrich"
+        android:gravity="right"
+        android:text="Query"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/heybuddy_response_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/heybuddy_userInput"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/aldrich"
+        android:gravity="left"
+        android:text="HeyBuddy"
+        android:textColor="@color/blue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/heybuddy_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/heybuddy_response_title"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/aldrich"
+        android:gravity="left"
+        android:text="Response"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:visibility="gone" />
+
+
+</RelativeLayout>

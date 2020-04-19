@@ -46,7 +46,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
     Toolbar toolbar;
     TextView title, applyText;
-    ImageView backBtn, filterIcon, reminder_icon;
+    ImageView backBtn, filterIcon, reminder_icon, notificationIcon;
 
     TabLayout tabLayout;
     TabItem tab_recommendation, tab_all;
@@ -55,7 +55,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference buddyRequestRef, rootRef, seniorBuddyRef, studentProfileRef;
+    private DatabaseReference buddyRequestRef, rootRef, seniorBuddyRef, studentProfileRef, notificationRef;
     private String userEmail, userNode;
     private FirebaseUser user;
 
@@ -97,6 +97,8 @@ public class SeniorBuddyPage extends AppCompatActivity {
             public void onCentreButtonClick() {
                 Toast.makeText(SeniorBuddyPage.this, "onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 spaceNavigationView.setCentreButtonSelectable(true);
+                startActivity(new Intent(SeniorBuddyPage.this, HeyBuddy.class));
+
             }
 
             @Override
@@ -129,6 +131,7 @@ public class SeniorBuddyPage extends AppCompatActivity {
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
         filterIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
         reminder_icon = (ImageView) findViewById(R.id.seniorbuddy_reminder);
+        notificationIcon = (ImageView) findViewById(R.id.navigation_notification);
 
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -152,6 +155,8 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
         pageAdapter = new SeniorBuddyPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
+
+        UnreadMessageNotification();
 
         buddyRequestRef.keepSynced(true);
         buddyRequestRef.addValueEventListener(new ValueEventListener() {
@@ -317,6 +322,41 @@ public class SeniorBuddyPage extends AppCompatActivity {
         });
 
 
+    }
+
+    private void UnreadMessageNotification() {
+
+        notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+        notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    int count = 0;
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                        String type = ds.getValue(NotificationModel.class).getType();
+
+                        if(type.equals("message") || type.equals("group_messages")){
+
+                            count ++;
+                        }
+
+                    }
+
+                    if(count>0){
+
+                        notificationIcon.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 

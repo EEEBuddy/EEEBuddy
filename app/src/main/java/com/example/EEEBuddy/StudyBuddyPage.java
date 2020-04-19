@@ -52,11 +52,11 @@ public class StudyBuddyPage extends AppCompatActivity {
     private StudyEventAdapter adapter;
 
     private TextView toolbarTitle;
-    private ImageView addIcon, backBtn;
+    private ImageView addIcon, backBtn, notificationIcon;
 
     //declare database stuff
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference studyEventRef, registeredEventRef, messagesRef;
+    private DatabaseReference studyEventRef, registeredEventRef, messagesRef, notificationRef;
     private String userEmail, userNode;
 
     private SpaceNavigationView spaceNavigationView;
@@ -103,6 +103,8 @@ public class StudyBuddyPage extends AppCompatActivity {
             public void onCentreButtonClick() {
                 Toast.makeText(StudyBuddyPage.this, "onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 spaceNavigationView.setCentreButtonSelectable(true);
+                startActivity(new Intent(StudyBuddyPage.this, HeyBuddy.class));
+
             }
 
             @Override
@@ -135,6 +137,7 @@ public class StudyBuddyPage extends AppCompatActivity {
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         addIcon = (ImageView) findViewById(R.id.toolbar_right_icon);
         backBtn = (ImageView) findViewById(R.id.toolbar_back);
+        notificationIcon = (ImageView) findViewById(R.id.navigation_notification);
 
         recyclerView = (RecyclerView) findViewById(R.id.studybuddy_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -147,6 +150,7 @@ public class StudyBuddyPage extends AppCompatActivity {
         toolbarTitle.setText("Study Buddy");
         addIcon.setImageResource(R.drawable.ic_add);
 
+        UnreadMessageNotification();
 
         //retrieve list of study event
         studyEventRef = FirebaseDatabase.getInstance().getReference("Study Event");
@@ -372,6 +376,42 @@ public class StudyBuddyPage extends AppCompatActivity {
                     }
                 });
 
+    }
+
+
+    private void UnreadMessageNotification() {
+
+        notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+        notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    int count = 0;
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                        String type = ds.getValue(NotificationModel.class).getType();
+
+                        if(type.equals("message") || type.equals("group_messages")){
+
+                            count ++;
+                        }
+
+                    }
+
+                    if(count>0){
+
+                        notificationIcon.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 

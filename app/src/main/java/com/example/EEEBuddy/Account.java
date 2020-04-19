@@ -56,6 +56,7 @@ public class Account extends AppCompatActivity {
     private ImageView logout;
     private ImageView changepw;
     private String oldPass, newPass, cfmPass;
+    private ImageView notificationIcon;
 
     boolean hasSeniorBuddy, hasJuniorBuddy;
     String seniorBuddy;
@@ -65,7 +66,7 @@ public class Account extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     AuthCredential authCredential;
-    private DatabaseReference databaseReference, seniorBuddyRef;
+    private DatabaseReference databaseReference, seniorBuddyRef, notificationRef;
     private String userID;
     private String userEmail, userNode;
     private SpaceNavigationView spaceNavigationView;
@@ -95,6 +96,7 @@ public class Account extends AppCompatActivity {
             public void onCentreButtonClick() {
                 Toast.makeText(Account.this,"onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 spaceNavigationView.setCentreButtonSelectable(true);
+                startActivity(new Intent(Account.this, HeyBuddy.class));
             }
 
             @Override
@@ -139,6 +141,7 @@ public class Account extends AppCompatActivity {
         trackStudy = (ImageView) findViewById(R.id.acct_study);
         logout = (ImageView) findViewById(R.id.acct_logout);
         changepw = (ImageView) findViewById(R.id.acct_change_pw);
+        notificationIcon = (ImageView) findViewById(R.id.navigation_notification);
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -156,6 +159,8 @@ public class Account extends AppCompatActivity {
             startActivity(new Intent(this,Login.class));
         }
 
+
+        UnreadMessageNotification();
 
         // Read from the database student profile pic and name
         databaseReference.child(userNode).addValueEventListener(new ValueEventListener() {
@@ -460,6 +465,41 @@ public class Account extends AppCompatActivity {
         matcher = pattern.matcher(pw);
 
         return matcher.matches();
+    }
+
+    private void UnreadMessageNotification() {
+
+        notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+        notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    int count = 0;
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                        String type = ds.getValue(NotificationModel.class).getType();
+
+                        if(type.equals("message") || type.equals("group_messages")){
+
+                            count ++;
+                        }
+
+                    }
+
+                    if(count>0){
+
+                        notificationIcon.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

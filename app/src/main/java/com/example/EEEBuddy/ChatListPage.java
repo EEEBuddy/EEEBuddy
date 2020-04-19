@@ -279,6 +279,7 @@ public class ChatListPage extends AppCompatActivity {
             public void onCentreButtonClick() {
                 Toast.makeText(ChatListPage.this,"onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 spaceNavigationView.setCentreButtonSelectable(true);
+                startActivity(new Intent(ChatListPage.this, HeyBuddy.class));
             }
 
             @Override
