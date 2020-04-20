@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -30,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class HeyBuddy extends AppCompatActivity {
 
@@ -42,6 +45,7 @@ public class HeyBuddy extends AppCompatActivity {
     private ImageView backBtn, rightIcon;
     private TextView title;
 
+    TextToSpeech textToSpeech;
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
 
@@ -123,8 +127,7 @@ public class HeyBuddy extends AppCompatActivity {
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
         // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                "Ask HeyBuddy About NTU");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Ask HeyBuddy About NTU");
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
 
@@ -267,7 +270,17 @@ public class HeyBuddy extends AppCompatActivity {
             response_title.setVisibility(View.VISIBLE);
             responseOutput.setVisibility(View.VISIBLE);
 
-            responseOutput.setText(s);
+            if(microphone.getVisibility() == View.VISIBLE){
+
+                responseOutput.setText(s);
+                int speech = textToSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+
+            }else{
+
+                responseOutput.setText(s);
+                //int speech = textToSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+
+            }
 
         }
 
@@ -293,6 +306,16 @@ public class HeyBuddy extends AppCompatActivity {
         textInput = (EditText) findViewById(R.id.heybuddy_textInput);
         sendQueryBtn = (ImageButton) findViewById(R.id.heybuddy_sendQueryBtn);
         linearLayout = (LinearLayout) findViewById(R.id.heybuddy_layout);
+
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+
+                if(status == TextToSpeech.SUCCESS){
+                    int lang = textToSpeech.setLanguage(Locale.ENGLISH);
+                }
+            }
+        });
 
     }
 
