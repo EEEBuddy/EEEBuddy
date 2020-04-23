@@ -150,26 +150,6 @@
                         android:textStyle="bold"/>
                 </TableRow>
 
-                <TableRow android:layout_marginBottom="10dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:fontFamily="@font/roboto"
-                        android:text="No. of Study Event Attended : "
-                        android:textColor="@color/mainFontColor"
-                        android:textSize="22sp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:fontFamily="@font/roboto"
-                        android:text="-"
-                        android:textColor="@color/purple"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
-                </TableRow>
 
             </TableLayout>
 

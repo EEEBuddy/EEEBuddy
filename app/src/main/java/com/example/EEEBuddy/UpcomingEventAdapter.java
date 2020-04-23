@@ -190,6 +190,8 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
             swipeEdit = (TextView) itemView.findViewById(R.id.my_event_swipe_edit);
             swipeDelete = (TextView) itemView.findViewById(R.id.my_event_swipe_delete);
 
+            swipeDelete.setText("Withdraw");
+            swipeDelete.setTextSize(14f);
             eventSwipeContainer = (LinearLayout) itemView.findViewById(R.id.my_event_swipe_content);
             eventSwipeContainer.removeView(swipeEdit);
 

@@ -1,7 +1,5 @@
 package com.example.EEEBuddy;
 
-import java.util.jar.Attributes;
-
 public class UserInfo {
 
     private String name;
@@ -33,8 +31,9 @@ public class UserInfo {
         return seniorBuddy;
     }
 
-    public void setSeniorBuddy(String seniorBuddy) {
+    public UserInfo setSeniorBuddy(String seniorBuddy) {
         this.seniorBuddy = seniorBuddy;
+        return null;
     }
 
     public String getProfileImageUrl() {

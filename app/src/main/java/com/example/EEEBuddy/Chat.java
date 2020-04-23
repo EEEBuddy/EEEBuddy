@@ -46,7 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class Chat extends AppCompatActivity {
 
     private ImageView backBtn, rightIcon;
-    private TextView toolbarTitle;
+    private TextView toolbarTitle, notificationIcon;
     private CircleImageView profilePic;
     private ImageButton sendMsgBtn, sendImageBtn;
     private EditText msgEditText;

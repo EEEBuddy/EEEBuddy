@@ -1,30 +1,19 @@
 package com.example.EEEBuddy;
 
 
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.tabs.TabItem;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,8 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static android.view.View.GONE;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,7 +34,7 @@ public class RecommFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ArrayList<UserInfo> juniorBuddyList;
-    private JuniorBuddyAdapter adapter;
+    private BuddyRequestAdapter adapter;
     private String request_type;
     private TextView last_update;
 
@@ -131,7 +118,7 @@ public class RecommFragment extends Fragment {
 
 
                                             //create adapter
-                                            adapter = new JuniorBuddyAdapter(getActivity(), juniorBuddyList);
+                                            adapter = new BuddyRequestAdapter(getActivity(), juniorBuddyList);
                                             recyclerView.setAdapter(adapter);
 
                                             adapter.notifyDataSetChanged();

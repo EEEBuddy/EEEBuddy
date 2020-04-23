@@ -45,15 +45,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference messagesRef, studentProfileRef, notificationRef;
-    private String userEmail, userNode,getName,getProfileImageUrl, profileImageUrl;
+    private DatabaseReference messagesRef, studentProfileRef, notificationRef, adminRef;
+    private String userEmail, userNode, getName, getProfileImageUrl, profileImageUrl;
 
     private Date parsedCurrentDate, parsedSentDate;
     private long diffDays;
-    private int request_code = 0;
+    private String request_code = "";
 
 
-    public ChatListAdapter(Context context,ArrayList<ChatModel> chatList_1to1_array, ArrayList<String> receiverID_array ){
+    public ChatListAdapter(Context context, ArrayList<ChatModel> chatList_1to1_array, ArrayList<String> receiverID_array) {
 
         this.context = context;
         this.chatList_1to1_array = chatList_1to1_array;
@@ -65,7 +65,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
     @Override
     public ChatListAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        return new ChatListAdapter.MyViewHolder(LayoutInflater.from(context).inflate(R.layout.chatlist_card,parent, false));
+        return new ChatListAdapter.MyViewHolder(LayoutInflater.from(context).inflate(R.layout.chatlist_card, parent, false));
 
     }
 
@@ -89,9 +89,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 messagesRef.keepSynced(true);
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
 
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                         ChatModel chatModel = ds.getValue(ChatModel.class);
                         String last_msg = chatModel.getMessage();
@@ -117,15 +117,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
                         }
 
 
-                        if(diffDays > 0 && diffDays != 1){
+                        if (diffDays > 0 && diffDays != 1) {
 
                             holder.lastMsgTime.setText(sentDate);
 
-                        }else if(diffDays == 1){
+                        } else if (diffDays == 1) {
 
                             holder.lastMsgTime.setText("Yesterday");
 
-                        }else if(diffDays == 0){
+                        } else if (diffDays == 0) {
 
                             holder.lastMsgTime.setText(sentTime);
                         }
@@ -163,10 +163,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
                 });
 
 
+        notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+        adminRef = FirebaseDatabase.getInstance().getReference("Admin");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                adminRef.child("notification_request_code").setValue("1");
 
                 Intent chatIntent = new Intent(context, Chat.class);
 
@@ -177,11 +180,58 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
                 chatIntent.putExtra("receiverProfileImgUrl", "none");
                 context.startActivity(chatIntent);
 
-                DeleteNotification(holder, receiverID_array.get(position), 1);
+
+                //delete read message
+                notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+                adminRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        request_code = dataSnapshot.child("notification_request_code").getValue().toString();
+
+
+                        notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                                if (dataSnapshot.exists() && request_code.equals("1")) {
+
+                                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                                        String notificationKey = ds.getKey();
+                                        String from = ds.getValue(NotificationModel.class).getFrom();
+                                        String type = ds.getValue(NotificationModel.class).getType();
+
+                                        if (type.equals("message") && from.equals(receiverID)) {
+                                            notificationRef.child(userNode).child(notificationKey).removeValue();
+                                        }
+
+                                    }
+                                }
+
+                                adminRef.child("notification_request_code").setValue("0");
+                                holder.notificationIcon.setVisibility(View.INVISIBLE);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
             }
 
         });
-
 
 
         holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -229,7 +279,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
                 messagesRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Toast.makeText(context, "Chat Deleted", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -249,7 +299,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView receiverName, lastMsgTextView, lastMsgTime,notificationIcon;
+        TextView receiverName, lastMsgTextView, lastMsgTime, notificationIcon;
         TextView swipeDelete;
         SwipeLayout swipeLayout;
         CircleImageView profileImage;
@@ -277,22 +327,24 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     int count = 0;
 
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
-                        String from = ds.getValue(NotificationModel.class).getFrom();
-                        String type = ds.getValue(NotificationModel.class).getType();
+                        NotificationModel notificationModel = ds.getValue(NotificationModel.class);
+                        String from = notificationModel.getFrom();
+                        String type = notificationModel.getType();
+                        String status = notificationModel.getStatus();
 
-                        if(type.equals("message") && from.equals(receiverID)){
+                        if (type.equals("message") && from.equals(receiverID)) {
 
-                            count ++;
+                            count++;
                         }
 
                     }
 
-                    if(count>0){
+                    if (count > 0) {
 
                         holder.notificationIcon.setVisibility(View.VISIBLE);
                         holder.notificationIcon.setText(String.valueOf(count));
@@ -307,50 +359,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
         });
     }
 
-    private void DeleteNotification(final ChatListAdapter.MyViewHolder holder, final String receiverID, final int request_code) {
-        //delete the notification
 
-        if(request_code == 1){
-
-            final ArrayList<String> tempIDArray = new ArrayList<>();
-
-            notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
-            notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if(dataSnapshot.exists()){
-
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
-
-                            String notificationKey = ds.getKey();
-                            String from = ds.getValue(NotificationModel.class).getFrom();
-                            String type = ds.getValue(NotificationModel.class).getType();
-
-                            if(type.equals("message") && from.equals(receiverID)){
-                                tempIDArray.add(notificationKey);
-                            }
-
-                        }
-
-                        for(String notificationKey : tempIDArray){
-
-                            notificationRef.child(userNode).child(notificationKey).removeValue();
-                        }
-
-                        holder.notificationIcon.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        }else{
-            return;
-        }
-
-    }
 }
+
+
+

@@ -13,9 +13,7 @@ public class SeniorBuddyModel {
     private String applicationDate;
     private  String relationDate;
 
-    public SeniorBuddyModel(){
 
-    }
 
     public SeniorBuddyModel(String name, String email, String course, String year, String profileImageUrl, String joinedDate, String selfIntro, String hall, String gender) {
         this.name = name;
@@ -55,6 +53,11 @@ public class SeniorBuddyModel {
         this.applicationDate = applicationDate;
     }
 
+
+
+    public SeniorBuddyModel(){
+
+    }
 
 
     public void setName(String name) {

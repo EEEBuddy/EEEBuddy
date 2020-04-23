@@ -426,7 +426,7 @@ public class AddStudyEvent extends AppCompatActivity implements DatePickerDialog
         String messageKey = messagesRef.child("messages").push().getKey();
         messagesRef.child("messages").child(messageKey).child("date").setValue(messageSentDate);
         messagesRef.child("messages").child(messageKey).child("time").setValue(messageSentTime);
-        messagesRef.child("messages").child(messageKey).child("message").setValue("Welcome to '" + subjectCode + " " + subjectName + "'Group Study Event!");
+        messagesRef.child("messages").child(messageKey).child("message").setValue("Welcome to '" + subjectCode + " " + subjectName + "' Group Study Event!");
         messagesRef.child("messages").child(messageKey).child("from").setValue(userNode);
         messagesRef.child("messages").child(messageKey).child("type").setValue("text");
 

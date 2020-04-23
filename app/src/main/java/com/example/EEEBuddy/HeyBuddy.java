@@ -1,5 +1,6 @@
 package com.example.EEEBuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ActivityNotFoundException;
@@ -17,6 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
@@ -42,8 +50,12 @@ public class HeyBuddy extends AppCompatActivity {
     private EditText textInput;
     private LinearLayout linearLayout;
 
-    private ImageView backBtn, rightIcon;
+    private ImageView backBtn, rightIcon, notificationIcon;
     private TextView title;
+
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference notificationRef;
+    private String userNode, userEmail;
 
     TextToSpeech textToSpeech;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -56,7 +68,7 @@ public class HeyBuddy extends AppCompatActivity {
 
         Initialization();
         NavigationSetUp(savedInstanceState);
-
+        UnreadMessageNotification();
 
         rightIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,7 +290,7 @@ public class HeyBuddy extends AppCompatActivity {
             }else{
 
                 responseOutput.setText(s);
-                //int speech = textToSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+                int speech = textToSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
 
             }
 
@@ -329,7 +341,6 @@ public class HeyBuddy extends AppCompatActivity {
         spaceNavigationView.addSpaceItem(new SpaceItem("Chat", R.drawable.ic_chat_grey));
         spaceNavigationView.addSpaceItem(new SpaceItem("Account", R.drawable.ic_person_grey));
 
-        spaceNavigationView.changeCurrentItem(2);
         spaceNavigationView.showIconOnly();
 
 
@@ -364,4 +375,50 @@ public class HeyBuddy extends AppCompatActivity {
         });
 
     }
+
+
+    private void UnreadMessageNotification() {
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        userEmail = user.getEmail();
+        userNode = userEmail.substring(0, userEmail.indexOf("@"));
+
+        notificationIcon = (ImageView) findViewById(R.id.navigation_notification);
+
+        notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
+        notificationRef.child(userNode).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    int count = 0;
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                        NotificationModel notificationModel = ds.getValue(NotificationModel.class);
+                        String type = notificationModel.getType();
+
+
+                        if(type.equals("message") || type.equals("group_messages")){
+
+                            count ++;
+                        }
+
+                    }
+
+                    if(count>0){
+
+                        notificationIcon.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }

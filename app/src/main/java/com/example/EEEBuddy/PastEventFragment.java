@@ -142,6 +142,7 @@ public class PastEventFragment extends Fragment{
 
                             //if no upcoming event show hints
                             //if(arraySize == 0 && loopCount !=1){
+                            /*
                             if(pastEventList.size() == 0){
                                 hint = view.findViewById(R.id.past_event_hint);
                                 hint.setVisibility(View.VISIBLE);
@@ -150,6 +151,8 @@ public class PastEventFragment extends Fragment{
                                 gif.setVisibility(View.VISIBLE);
                                 Glide.with(PastEventFragment.this).asGif().load(R.drawable.happystudy).into(gif);
                             }
+
+                             */
 
 
                             adapter = new PastEventAdapter(getActivity(), pastEventList, keyArray, userNode);

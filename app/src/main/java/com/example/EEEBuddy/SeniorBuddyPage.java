@@ -336,7 +336,9 @@ public class SeniorBuddyPage extends AppCompatActivity {
 
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
 
-                        String type = ds.getValue(NotificationModel.class).getType();
+                        NotificationModel notificationModel = ds.getValue(NotificationModel.class);
+                        String type = notificationModel.getType();
+
 
                         if(type.equals("message") || type.equals("group_messages")){
 

@@ -2,20 +2,22 @@ package com.example.EEEBuddy;
 
 public class NotificationModel {
 
-    private String from, type, groupChatID;
+    private String from, type, groupChatID, status;
 
     public NotificationModel() {
     }
 
-    public NotificationModel(String from, String type) {
+    public NotificationModel(String from, String type, String status) {
         this.from = from;
         this.type = type;
+        this.status = status;
     }
 
-    public NotificationModel(String from, String type, String groupChatID) {
+    public NotificationModel(String from, String type, String groupChatID, String status) {
         this.from = from;
         this.type = type;
         this.groupChatID = groupChatID;
+        this.status = status;
     }
 
     public String getFrom() {
@@ -40,5 +42,13 @@ public class NotificationModel {
 
     public void setGroupChatID(String groupChatID) {
         this.groupChatID = groupChatID;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -48,7 +48,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private DatabaseReference seniorBuddyRef, studentProfileRef, buddyRequestRef, notificationRef;
+    private DatabaseReference seniorBuddyRef, studentProfileRef, buddyRequestRef, notificationRef, adminRef;
     private String userEmail, userNode, seniorNode;
 
 
@@ -64,7 +64,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     private LinearLayout pageLayout;
     private ScrollView scrollView;
 
-    private String reEmail, reName, reCourse, reHall, reGender, reImgUrl, reYear, juniorBuddyPageRequestPage, myJuniorBuddyPage;
+    private String reEmail, reName, reCourse, reHall, reGender, reImgUrl, reYear, buddyRequestPage, myJuniorBuddyPage;
 
     //private View layout;
     private LinearLayout btnLinearLayout;
@@ -73,11 +73,11 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     //for request for a senior-junior relationship
     private String senderUserID, receiverUserID, CURRENT_STATE, mySeniorBuddyID;
     private String currentDate;
-    private boolean seniorBuddyIdentity, hasSeniorBuddy, isYearOneStudent, removeRequestReceived, removeRequestSent, buddyRequestReceived, buddyRequestSent;
+    private boolean seniorBuddyIdentity, removeRequestReceived, removeRequestSent, buddyRequestReceived, buddyRequestSent;
 
 
     //pass variable to chat via intent
-    private String chat_receiverUserID, chat_receiverName, chat_receiverProfileImgUrl, chat_senderID;
+    private String chat_receiverUserID, chat_receiverName, chat_receiverProfileImgUrl, chat_senderID, buddy_removal_code;
 
 
     @Override
@@ -96,6 +96,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
         senderUserID = userNode;
         receiverUserID = seniorNode;
         CURRENT_STATE = "not_buddy";
+        buddy_removal_code = "0";
+        adminRef = FirebaseDatabase.getInstance().getReference("Admin");
 
         MaintenanceOfButtons();
 
@@ -140,7 +142,52 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     }
 
                     if (CURRENT_STATE.equals("remove_request_received")) {
-                        AcceptRemoveBuddyRequest();
+
+                        adminRef.child("buddy_removal_code").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                adminRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        buddy_removal_code = dataSnapshot.child("buddy_removal_code").getValue().toString();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                seniorBuddyRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        if (dataSnapshot.hasChild(userNode) && buddy_removal_code.equals("1")) {
+
+                                            SeniorAcceptRemoveBuddyRequest(buddy_removal_code);
+
+                                        } else if(!dataSnapshot.hasChild(userNode) && buddy_removal_code.equals("1")){
+                                            JuniorAcceptRemoveBuddyRequest(buddy_removal_code);
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
                     }
 
                 }
@@ -154,7 +201,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                if (juniorBuddyPageRequestPage.equals("yes") || myJuniorBuddyPage.equals("yes") || CURRENT_STATE.equals("buddy")) {
+                if (buddyRequestPage.equals("yes") || myJuniorBuddyPage.equals("yes") || CURRENT_STATE.equals("buddy")) {
                     messageBtn.setEnabled(true);
 
                     Intent chatIntent = new Intent(SeniorBuddyInfo.this, Chat.class);
@@ -172,58 +219,6 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                             "You Can Only Message the Senior Buddy after he/she accepts your request. Senior Buddy can message you upon receiving your Request",
                             Toast.LENGTH_LONG).show();
                 }
-
-            }
-        });
-
-    }
-
-
-    private void HasSeniorBuddy() {
-
-        studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.hasChild("seniorBuddy")) {
-                    hasSeniorBuddy = true;
-                    UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
-                    mySeniorBuddyID = userInfo.getSeniorBuddy().trim();
-
-                } else {
-                    hasSeniorBuddy = false;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-
-    private void IsYearOneStudent() {
-        //check which year is the applicant
-        studentProfileRef.child(senderUserID).child("year").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                int year = Integer.parseInt(dataSnapshot.getValue().toString());
-
-                if (year > 1) {
-
-                    isYearOneStudent = false;
-
-                } else {
-                    isYearOneStudent = true;
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
@@ -254,29 +249,6 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     }
 
 
-    //senior buddy cannot apply for a senior buddy
-    private void CheckSeniorBuddyIdentity() {
-        seniorBuddyRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.hasChild(senderUserID)) {
-                    seniorBuddyIdentity = true;
-
-                } else {
-                    seniorBuddyIdentity = false;
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
     private void SendRemoveBuddyRequest() {
 
         buddyRequestRef.child(senderUserID).child(receiverUserID).child("request_type").setValue("remove_request_sent")
@@ -292,7 +264,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                             if (task.isSuccessful()) {
 
-                                                GenerateNotification(senderUserID, receiverUserID,"remove_buddy_request");
+                                                GenerateNotification(senderUserID, receiverUserID, "remove_buddy_request");
 
                                                 requestBtn.setEnabled(true);
                                                 CURRENT_STATE = "remove_request_sent";
@@ -342,6 +314,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     }
 
 
+    /*
+
     private void AcceptRemoveBuddyRequest() {
         //senior buddy agree to remove  buddy relationship
 
@@ -355,7 +329,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     //mySeniorBuddyID = userInfo.getSeniorBuddy().trim();
 
                     studentProfileRef.child(senderUserID).child("seniorBuddy").removeValue()
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {r
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
@@ -380,16 +354,17 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                                                                 if (task.isSuccessful()) {
 
-                                                                                                    GenerateNotification(senderUserID, receiverUserID,"accept_remove_buddy_request");
+                                                                                                    GenerateNotification(senderUserID, receiverUserID, "accept_remove_buddy_request");
 
                                                                                                     CURRENT_STATE = "not_buddy";
-                                                                                                    requestBtn.setText("Request");
+                                                                                                    btnLinearLayout.removeView(requestBtn);
 
                                                                                                     btnLinearLayout.removeView(declineBtn);
                                                                                                     declineBtn.setEnabled(false);
                                                                                                     finish();
                                                                                                     startActivity(new Intent(getApplicationContext(), SeniorBuddyPage.class));
                                                                                                     Toast.makeText(getApplicationContext(), "Buddy Relationship Removed successfully", Toast.LENGTH_LONG).show();
+                                                                                                    MaintenanceOfButtons();
                                                                                                 }
                                                                                             }
                                                                                         });
@@ -438,7 +413,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                                                                 if (task.isSuccessful()) {
 
-                                                                                                    GenerateNotification(senderUserID, receiverUserID,"accept_remove_buddy_request");
+                                                                                                    GenerateNotification(senderUserID, receiverUserID, "accept_remove_buddy_request");
 
 
                                                                                                     CURRENT_STATE = "not_buddy";
@@ -449,6 +424,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                                                                                                     finish();
                                                                                                     startActivity(new Intent(getApplicationContext(), SeniorBuddyPage.class));
                                                                                                     Toast.makeText(getApplicationContext(), "Buddy Relationship Removed successfully", Toast.LENGTH_LONG).show();
+                                                                                                    MaintenanceOfButtons();
                                                                                                 }
                                                                                             }
                                                                                         });
@@ -478,6 +454,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
 
     }
+
+    */
 
 
     private void AcceptBuddyRequest() {
@@ -519,7 +497,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                                                     if (task.isSuccessful()) {
 
-                                                                                        GenerateNotification(senderUserID, receiverUserID,"accept_buddy_request");
+                                                                                        GenerateNotification(senderUserID, receiverUserID, "accept_buddy_request");
 
                                                                                         requestBtn.setEnabled(true);
                                                                                         CURRENT_STATE = "buddy";
@@ -571,7 +549,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                                 } else if (source.equals("declineJuniorRequest")) {
 
-                                                    GenerateNotification(senderUserID, receiverUserID,"decline_buddy_request");
+                                                    GenerateNotification(senderUserID, receiverUserID, "decline_buddy_request");
 
                                                     CURRENT_STATE = "not_buddy";
 
@@ -607,7 +585,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                             if (task.isSuccessful()) {
 
-                                                GenerateNotification(senderUserID, receiverUserID,"buddy_request");
+                                                GenerateNotification(senderUserID, receiverUserID, "buddy_request");
                                                 requestBtn.setEnabled(true);
                                                 CURRENT_STATE = "buddy_request_sent";
                                                 requestBtn.setText("Cancel Request");
@@ -621,6 +599,129 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                         }
                     }
                 });
+
+    }
+
+
+    private void JuniorAcceptRemoveBuddyRequest(String buddy_removal_code) {
+
+
+            studentProfileRef.child(senderUserID).child("seniorBuddy").removeValue()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+
+                                seniorBuddyRef.child(receiverUserID).child("juniorBuddy").child(senderUserID).removeValue()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                if (task.isSuccessful()) {
+
+                                                    buddyRequestRef.child(senderUserID).child(receiverUserID).child("request_type").removeValue()
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                                    if (task.isSuccessful()) {
+                                                                        buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").removeValue()
+                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                        if (task.isSuccessful()) {
+
+                                                                                            GenerateNotification(senderUserID, receiverUserID, "accept_remove_buddy_request");
+                                                                                            CURRENT_STATE = "not_buddy";
+                                                                                            btnLinearLayout.removeView(requestBtn);
+
+                                                                                            btnLinearLayout.removeView(declineBtn);
+                                                                                            declineBtn.setEnabled(false);
+                                                                                            finish();
+                                                                                            startActivity(new Intent(getApplicationContext(), SeniorBuddyPage.class));
+                                                                                            Toast.makeText(getApplicationContext(), "Buddy Relationship Removed successfully", Toast.LENGTH_LONG).show();
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                }
+                                                            });
+
+                                                }
+                                            }
+                                        });
+
+                            } else {
+
+                                Toast.makeText(getApplicationContext(), "Failed to remove senior Buddy. " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                            }
+                        }
+                    });
+
+
+
+    }
+
+
+    private void SeniorAcceptRemoveBuddyRequest(String buddy_removal_code) {
+
+        buddyRequestRef.child(senderUserID).child(receiverUserID).child("request_type").removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").removeValue()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                if (task.isSuccessful()) {
+
+                                                    studentProfileRef.child(receiverUserID).child("seniorBuddy").removeValue()
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                                    if (task.isSuccessful()) {
+                                                                        seniorBuddyRef.child(senderUserID).child("juniorBuddy").child(receiverUserID).removeValue()
+                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                        if (task.isSuccessful()) {
+
+                                                                                            GenerateNotification(senderUserID, receiverUserID, "accept_remove_buddy_request");
+
+                                                                                            CURRENT_STATE = "not_buddy";
+                                                                                            requestBtn.setText("Request");
+
+                                                                                            btnLinearLayout.removeView(declineBtn);
+                                                                                            declineBtn.setEnabled(false);
+                                                                                            finish();
+                                                                                            startActivity(new Intent(getApplicationContext(), SeniorBuddyPage.class));
+                                                                                            Toast.makeText(getApplicationContext(), "Buddy Relationship Removed successfully", Toast.LENGTH_LONG).show();
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                }
+                                                            });
+
+                                                }
+                                            }
+                                        });
+
+                            } else {
+
+                                Toast.makeText(getApplicationContext(), "Failed to remove senior Buddy. " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                            }
+                        }
+                    });
+
+
 
     }
 
@@ -665,6 +766,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                                 buddyRequestSent = true;
                                 CURRENT_STATE = "buddy_request_sent";
                                 requestBtn.setText("Cancel Request");
+                                adminRef.child("buddy_removal_code").setValue("0");
+
 
 
                             } else if (request_type.equals("buddy_request_received")) {
@@ -672,6 +775,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                                 buddyRequestReceived = true;
                                 CURRENT_STATE = "buddy_request_received";
                                 requestBtn.setText("Accept Request");
+                                adminRef.child("buddy_removal_code").setValue("0");
+
 
                                 //btnLinearLayout.removeView(declineBtn);
                                 btnLinearLayout.addView(declineBtn);
@@ -681,11 +786,14 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                                     @Override
                                     public void onClick(View v) {
 
+
                                         CancelBuddyRequest("declineJuniorRequest");
 
                                     }
                                 });
                             } else if (request_type.equals("remove_request_sent")) {
+
+                                adminRef.child("buddy_removal_code").setValue("0");
 
                                 removeRequestSent = true;
                                 CURRENT_STATE = "remove_request_sent";
@@ -693,6 +801,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
 
                             } else if (request_type.equals("remove_request_received")) {
+
+                                adminRef.child("buddy_removal_code").setValue("1");
 
                                 removeRequestReceived = true;
                                 CURRENT_STATE = "remove_request_received";
@@ -730,6 +840,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                 CURRENT_STATE = "buddy";
                                 requestBtn.setText("Remove Buddy");
+                                adminRef.child("buddy_removal_code").setValue("0");
+
 
                                 pageLayout.removeView(scrollView);
                                 //commentBtn.setVisibility(View.VISIBLE);
@@ -739,6 +851,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                                 CURRENT_STATE = "remove_request_received";
                                 requestBtn.setText("Accept Remove Request");
                                 requestBtn.setTextSize(14f);
+                                adminRef.child("buddy_removal_code").setValue("1");
+
 
 
                                 pageLayout.removeView(scrollView);
@@ -749,7 +863,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
 
                                 CURRENT_STATE = "remove_request_sent";
                                 requestBtn.setText("Cancel Request");
-                                requestBtn.setTextSize(14f);
+                                adminRef.child("buddy_removal_code").setValue("0");
+
 
                                 requestBtn.setEnabled(true);
                                 pageLayout.removeView(scrollView);
@@ -813,7 +928,6 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                     UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
                     mySeniorBuddyID = userInfo.getSeniorBuddy().trim();
 
-                    HasSeniorBuddy();
                     if (mySeniorBuddyID.equals(reEmail.substring(0, reEmail.indexOf("@")))) {
 
                         CURRENT_STATE = "buddy";
@@ -988,7 +1102,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                 && getIntent().hasExtra("gender")
                 && getIntent().hasExtra("profileImg")
                 && getIntent().hasExtra("year")
-                && getIntent().hasExtra("juniorBuddyRequestPage")
+                && getIntent().hasExtra("buddyRequestPage")
 
         ) {
 
@@ -999,7 +1113,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
             reGender = getIntent().getStringExtra("gender");
             reImgUrl = getIntent().getStringExtra("profileImg");
             reYear = getIntent().getStringExtra("year");
-            juniorBuddyPageRequestPage = getIntent().getStringExtra("juniorBuddyRequestPage");
+            buddyRequestPage = getIntent().getStringExtra("buddyRequestPage");
 
             chat_receiverUserID = reEmail.substring(0, reEmail.indexOf("@"));
             chat_receiverName = reName;
@@ -1065,7 +1179,7 @@ public class SeniorBuddyInfo extends AppCompatActivity {
     private void InitialiseLayout() {
 
         myJuniorBuddyPage = "";
-        juniorBuddyPageRequestPage = "";
+        buddyRequestPage = "";
 
         getIncomingIntent();
         infoEmail.setText(reEmail);
@@ -1204,10 +1318,8 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                         }
                     });
 
-                    //MaintenanceOfButtons();
 
-
-                } else if (juniorBuddyPageRequestPage.equals("yes")) {
+                } else if (buddyRequestPage.equals("yes")) {
 
                     //layout of juniorInfo page if user(senior) go into the page from buddy request page.
                     pageLayout.removeView(scrollView);
@@ -1225,22 +1337,6 @@ public class SeniorBuddyInfo extends AppCompatActivity {
                         }
                     });
 
-                    /*
-                    commentFromBuddy.setVisibility(View.VISIBLE);
-                    underline.setVisibility(View.VISIBLE);
-
-                    commentFromBuddy.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            Intent intent = new Intent(SeniorBuddyInfo.this,Comment.class);
-                            intent.putExtra("commentOfWho", reEmail.substring(0,reEmail.indexOf("@")));
-                            intent.putExtra("identity", "junior/senior");
-                            startActivity(intent);
-                        }
-                    });
-
-                     */
                 }
             }
 

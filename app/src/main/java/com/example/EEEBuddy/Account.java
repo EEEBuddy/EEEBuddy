@@ -60,6 +60,7 @@ public class Account extends AppCompatActivity {
 
     boolean hasSeniorBuddy, hasJuniorBuddy;
     String seniorBuddy;
+    int loop = 0;
 
     //declare database stuff
     private FirebaseDatabase firebaseDatabase;
@@ -168,8 +169,20 @@ public class Account extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
                 profileName.setText(userInfo.getName());
-                profileImageUrl = userInfo.getProfileImageUrl();
-                Picasso.get().load(profileImageUrl).into(profileImage);
+
+                if(dataSnapshot.child("profileImageUrl").exists()){
+                    profileImageUrl = userInfo.getProfileImageUrl();
+                }else{
+
+                    profileImageUrl = "";
+                }
+
+                if(profileImageUrl.isEmpty()){
+                    profileImage.setImageResource(R.drawable.user_profile);
+
+                }else{
+                    Picasso.get().load(profileImageUrl).into(profileImage);
+                }
             }
 
             @Override
@@ -467,6 +480,8 @@ public class Account extends AppCompatActivity {
         return matcher.matches();
     }
 
+
+
     private void UnreadMessageNotification() {
 
         notificationRef = FirebaseDatabase.getInstance().getReference("Notification");
@@ -479,12 +494,16 @@ public class Account extends AppCompatActivity {
 
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
 
-                        String type = ds.getValue(NotificationModel.class).getType();
+                        NotificationModel notificationModel = ds.getValue(NotificationModel.class);
+                        String type = notificationModel.getType();
+
 
                         if(type.equals("message") || type.equals("group_messages")){
 
                             count ++;
                         }
+
+                        loop++;
 
                     }
 

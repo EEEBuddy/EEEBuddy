@@ -56,7 +56,7 @@ public class StudyBuddyPage extends AppCompatActivity {
 
     //declare database stuff
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference studyEventRef, registeredEventRef, messagesRef, notificationRef;
+    private DatabaseReference studyEventRef, registeredEventRef, messagesRef, notificationRef, studentProfileRef;
     private String userEmail, userNode;
 
     private SpaceNavigationView spaceNavigationView;
@@ -234,17 +234,37 @@ public class StudyBuddyPage extends AppCompatActivity {
     }
 
 
-    private void Search(String searchString) {
+    private void Search(final String searchString) {
 
         searchResultList.clear();
 
-        for (StudyEvent object : studyEventsList) {
-            if (object.getSubjectCode().toLowerCase().contains(searchString.toLowerCase()) ||
-                    object.getSubjectName().toLowerCase().contains(searchString.toLowerCase()) ||
-                    object.getCreatedBy().toLowerCase().contains(searchString.toLowerCase())) {
+        for (final StudyEvent object : studyEventsList) {
 
-                searchResultList.add(object);
-            }
+            String eventCreatedBy = object.getCreatedBy();
+            studentProfileRef = FirebaseDatabase.getInstance().getReference("Student Profile");
+            studentProfileRef.child(eventCreatedBy).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    String name = dataSnapshot.child("name").getValue().toString().toLowerCase();
+
+                    if (object.getSubjectCode().toLowerCase().contains(searchString.toLowerCase()) ||
+                            object.getSubjectName().toLowerCase().contains(searchString.toLowerCase()) ||
+                            object.getCreatedBy().toLowerCase().contains(searchString.toLowerCase()) ||
+                            name.contains(searchString.toLowerCase())){
+
+                        searchResultList.add(object);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
         }
 
         adapter = new StudyEventAdapter(this, searchResultList, keyArray);
@@ -391,7 +411,9 @@ public class StudyBuddyPage extends AppCompatActivity {
 
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
 
-                        String type = ds.getValue(NotificationModel.class).getType();
+                        NotificationModel notificationModel = ds.getValue(NotificationModel.class);
+                        String type = notificationModel.getType();
+
 
                         if(type.equals("message") || type.equals("group_messages")){
 
@@ -399,7 +421,6 @@ public class StudyBuddyPage extends AppCompatActivity {
                         }
 
                     }
-
                     if(count>0){
 
                         notificationIcon.setVisibility(View.VISIBLE);

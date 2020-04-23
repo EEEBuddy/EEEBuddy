@@ -50,7 +50,7 @@ public class BuddyManagementPage extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private DatabaseReference seniorBuddyRef, studentProfileRef, buddyRequestRef;
+    private DatabaseReference seniorBuddyRef, studentProfileRef, buddyRequestRef,adminRef;
     private String userEmail, userNode;
 
 
@@ -75,7 +75,7 @@ public class BuddyManagementPage extends AppCompatActivity {
     private RecyclerView recyclerView;
     private String seniorBuddy, exp, relationDate;
 
-    private String CURRENT_STATE, remove_request_type, senderUserID, receiverUserID;
+    private String CURRENT_STATE, remove_request_type, senderUserID, receiverUserID,buddy_removal_code;
     private Boolean seniorRemovedFromJuniorProfile;
     private String receiverName, receiverProfileImgUrl;
 
@@ -90,6 +90,7 @@ public class BuddyManagementPage extends AppCompatActivity {
         studentProfileRef = firebaseDatabase.getReference("Student Profile");
         seniorBuddyRef = firebaseDatabase.getReference("Senior Buddy");
         buddyRequestRef = firebaseDatabase.getReference("Buddy Requests");
+        adminRef = firebaseDatabase.getReference("Admin");
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         userEmail = user.getEmail();
@@ -173,9 +174,11 @@ public class BuddyManagementPage extends AppCompatActivity {
 
                     senderUserID = userNode;
 
-                    ShowSeniorBuddyInfo();
 
+                    ShowSeniorBuddyInfo();
                     MaintenanceOfButtons();
+
+
 
                     requestBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -191,7 +194,36 @@ public class BuddyManagementPage extends AppCompatActivity {
                             }
 
                             if (CURRENT_STATE.equals("remove_request_received")) {
-                                AcceptRemoveBuddyRequest();
+
+                                adminRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        buddy_removal_code = dataSnapshot.child("buddy_removal_code").getValue().toString();
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                studentProfileRef.child(userNode).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        if(dataSnapshot.hasChild("seniorBuddy") && buddy_removal_code.equals("1")){
+                                            AcceptRemoveBuddyRequest();
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
                             }
 
                         }
@@ -365,7 +397,6 @@ public class BuddyManagementPage extends AppCompatActivity {
                                                 declineBtn.setEnabled(false);
                                                 Toast.makeText(getApplicationContext(), "Remove Buddy Request Sent", Toast.LENGTH_LONG).show();
 
-                                                MaintenanceOfButtons();
                                             }
                                         }
                                     });
@@ -399,7 +430,6 @@ public class BuddyManagementPage extends AppCompatActivity {
                                                 declineBtn.setEnabled(false);
                                                 Toast.makeText(getApplicationContext(), "Remove Buddy Request Cancelled", Toast.LENGTH_LONG).show();
 
-                                                MaintenanceOfButtons();
                                             }
                                         }
                                     });
@@ -411,33 +441,27 @@ public class BuddyManagementPage extends AppCompatActivity {
 
     private void AcceptRemoveBuddyRequest() {
 
-        seniorRemovedFromJuniorProfile = true;
+       // seniorRemovedFromJuniorProfile = true;
         //junior buddy agree to removes  buddy relationship
-        studentProfileRef.child(senderUserID).child("seniorBuddy").removeValue()
+        buddyRequestRef.child(senderUserID).child(receiverUserID).child("request_type").removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-
-
-                            seniorBuddyRef.child(receiverUserID).child("juniorBuddy").child(senderUserID).child("relationDate").removeValue()
+                            buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").removeValue()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-
                                             if (task.isSuccessful()) {
-
-                                                buddyRequestRef.child(senderUserID).child(receiverUserID).child("request_type").removeValue()
+                                                studentProfileRef.child(senderUserID).child("seniorBuddy").removeValue()
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
-
                                                                 if (task.isSuccessful()) {
-                                                                    buddyRequestRef.child(receiverUserID).child(senderUserID).child("request_type").removeValue()
+                                                                    seniorBuddyRef.child(receiverUserID).child("juniorBuddy").child(senderUserID).child("relationDate").removeValue()
                                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                 @Override
                                                                                 public void onComplete(@NonNull Task<Void> task) {
-
                                                                                     if (task.isSuccessful()) {
 
                                                                                         CURRENT_STATE = "not_buddy";
@@ -447,7 +471,7 @@ public class BuddyManagementPage extends AppCompatActivity {
                                                                                         declineBtn.setEnabled(false);
                                                                                         finish();
                                                                                         startActivity(new Intent(getApplicationContext(), Account.class));
-                                                                                        Toast.makeText(getApplicationContext(), "Buddy Relationship Removed successfully", Toast.LENGTH_LONG).show();
+                                                                                        Toast.makeText(getApplicationContext(), "Buddy Relationship Removed", Toast.LENGTH_LONG).show();
                                                                                     }
                                                                                 }
                                                                             });
@@ -485,11 +509,16 @@ public class BuddyManagementPage extends AppCompatActivity {
                                 CURRENT_STATE = "remove_request_sent";
                                 requestBtn.setText("Cancel Request");
 
+                                adminRef.child("buddy_removal_code").setValue("0");
+
+
                             } else if (request_type.equals("remove_request_received")) {
 
                                 CURRENT_STATE = "remove_request_received";
                                 requestBtn.setText("Accept remove Request");
                                 requestBtn.setTextSize(14f);
+
+                                adminRef.child("buddy_removal_code").setValue("1");
 
                                 btnLinearLayout.removeView(requestBtn);
                                 btnLinearLayout.addView(requestBtn);
@@ -498,23 +527,6 @@ public class BuddyManagementPage extends AppCompatActivity {
                                 commentBtn.setVisibility(View.VISIBLE);
                                 removeBuddyRequestHint.setVisibility(View.VISIBLE);
                                 removeBuddyRequestHint.setText("Your Senior Buddy Requests to Remove Buddy Relationship");
-                                //btnLinearLayout.removeView(declineBtn);
-                                //btnLinearLayout.addView(declineBtn);
-
-                                //declineBtn.setEnabled(true);
-
-
-                                /*
-                                declineBtn.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-
-                                        CancelBuddyRequest();
-
-                                    }
-                                });
-
-                                 */
 
 
                             }

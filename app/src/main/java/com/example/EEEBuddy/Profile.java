@@ -140,8 +140,20 @@ public class Profile extends AppCompatActivity {
                 profileMatric.setText(userInfo.getMatric());
                 profileEmail.setText(userInfo.getEmail());
                 profileCourse.setText(userInfo.getCourse() + ",Yr " + userInfo.getYear());
-                profileImageUrl = userInfo.getProfileImageUrl();
-                Picasso.get().load(profileImageUrl).into(profileImage);
+
+                if(dataSnapshot.child("profileImageUrl").exists()){
+                    profileImageUrl = userInfo.getProfileImageUrl();
+                }else{
+
+                    profileImageUrl = "";
+                }
+
+                if(profileImageUrl.isEmpty()){
+                    profileImage.setImageResource(R.drawable.user_profile);
+
+                }else{
+                    Picasso.get().load(profileImageUrl).into(profileImage);
+                }
             }
 
             @Override
